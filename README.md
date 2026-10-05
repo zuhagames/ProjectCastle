@@ -56,6 +56,15 @@ V menu i v pauze: citlivost a obrácení myši, FOV, hlasitost, velikost rozhran
 
 V levém horním rohu je minimapa ve stylu Wolfensteinu, která odkrývá místnosti, jak jimi procházíš.
 
+## Novinky ve verzi 1.1
+
+- Nové ruce z pohledu první osoby, které zbraně skutečně drží (IK na rukojeti, prsty kolem úchopu), rukávy britské vlněné uniformy.
+- Opravený Sten (zásobník už nelevituje) a nové textury Stenu a granátu.
+- Nepřátelé jsou němečtí vojáci 2. světové války (Wehrmacht, SS, důstojníci, odstřelovači v maskáči, nemrtví) se Stahlhelmem nebo čepicí.
+- Skutečné zvuky (kroky, dveře, výkřiky, výbuchy, siréna, oheň…), výstřely zůstaly původní.
+- Tlumiče, snazší získávání zbraní, menu nastavení, škálování rozhraní, minimapa, přepínací krčení.
+- Otazníky a vykřičníky nad mrtvými zmizí, padlí vojáci leží uvolněně a jsou vidět i po zabití mimo záběr.
+
 ## Struktura projektu
 
 ```

@@ -2584,7 +2584,7 @@ function makeEnemy(type, cx, cz, yaw, opts = {}) {
 }
 function resetEnemy(e) {
   e.x = e.spawn.x; e.z = e.spawn.z; e.y = e.spawn.y; e.yaw = e.spawnYaw; e.hp = e.maxHp; e.state = 'idle'; e.deadT = 0; e.cooldown = 1; e.painT = 0; e.flash = 0; e.burnT = 0; e.pi = 0; e.waitT = 0; e.lastSeen = null; e.poseW = 0;
-  e.sus = 0; e.wary = false; e.lostT = 0; e.goal = null; e.bodySeen = false; e.alertT = -9; e.alarmTried = false; e.mark.visible = false;
+  e.sus = 0; e.wary = false; e.lostT = 0; e.goal = null; e.bodySeen = false; e.alertT = -9; e.alarmTried = false; e.mark.visible = false; e.limp = false;
   e.inner.rotation.set(0, 0, 0); e.inner.position.set(0, 0, 0); e.root.visible = true; e.blob.visible = true; e.cur = ''; e.curAction = null;
   if (e.holder) e.holder.visible = true;
   if (e.mixer) e.mixer.stopAllAction(); setAnim(e, 'Idle');
@@ -2636,6 +2636,20 @@ function poseSoldier(e, k, pitch) {
     const sw = Math.sin(time * 3 + e.animT) * .08;
     e.root.localToWorld(_T.set(-.2 + sw, lerp(1.0, 1.45, k) * sc, lerp(.15, .55, k))); solveArm(B.RightArm, B.RightForeArm, B.RightHand, _T, _pole.set(-.6, -1, 0).applyQuaternion(e.root.quaternion));
     e.root.localToWorld(_T.set(.2 - sw, lerp(1.0, 1.4, k) * sc, lerp(.15, .5, k))); solveArm(B.LeftArm, B.LeftForeArm, B.LeftHand, _T, _pole.set(.6, -1, 0).applyQuaternion(e.root.quaternion));
+  }
+}
+
+// a dead man goes limp: arms flung out, legs apart, knees and elbows bent (directions in body space, facing +Z, his left = +X)
+const LIMP = [['LeftArm', 'LeftForeArm', [.75, -.45, .25]], ['LeftForeArm', 'LeftHand', [.55, -.2, .75]], ['RightArm', 'RightForeArm', [-.8, -.35, .1]], ['RightForeArm', 'RightHand', [-.6, -.5, -.3]],
+  ['LeftUpLeg', 'LeftLeg', [.22, -1, .25]], ['LeftLeg', 'LeftFoot', [.12, -1, -.15]], ['RightUpLeg', 'RightLeg', [-.12, -1, .05]], ['RightLeg', 'RightFoot', [-.1, -1, .3]], ['Neck', 'Head', [.15, 1, -.25]]];
+function limpPose(e) {
+  const B = e.bones; e.root.updateMatrixWorld(true);
+  const q = e.root.getWorldQuaternion(new THREE.Quaternion()), s = (e.fallSide || 0) > 0 ? 1 : -1;
+  for (const [a, b, d] of LIMP) {
+    if (!B[a] || !B[b]) continue;
+    B[a].getWorldPosition(_S); B[b].getWorldPosition(_E);
+    const want = _d2.set(d[0], d[1], d[2] * s).normalize().applyQuaternion(q);
+    turnBone(B[a], _d1.subVectors(_E, _S).normalize(), want);
   }
 }
 
@@ -2842,7 +2856,7 @@ function damageEnemy(e, dmg, dir, opts = {}) {
   if (opts.burn) { e.burnT = Math.max(e.burnT, 3.2); }
   if (e.hp <= 0) {
     e.state = 'dead'; e.deadT = 0; player.kills++; player.score += e.T.score; sfx.play(e.T.boss ? 'uber' : 'die', e.root.position);
-    e.fallSide = (Math.random() - .5) * .6; after(.5, () => addBlood(e.x, e.z, (.8 + Math.random() * .5) * (e.T.boss ? 1.8 : 1)));
+    e.fallSide = (Math.random() - .5) * .6; after(.5, () => { const k = e.T.boss ? 1.1 : .75; addBlood(e.x - Math.sin(e.yaw) * k, e.z - Math.cos(e.yaw) * k, (.8 + Math.random() * .5) * (e.T.boss ? 1.8 : 1)); }); // under the torso: they fall backwards
     const gw = e.T.gun === 'rifle' || e.T.gun === 'sten' ? WEAPONS.find(w => w.id === e.T.gun) : null, at = { x: e.x + (Math.random() - .5), z: e.z + (Math.random() - .5) };
     if (gw && !gw.owned && !pickups.some(p => p.active && p.kind === 'W:' + gw.id)) addPickup('W:' + gw.id, at, null, true);   // dead men's guns are yours
     else if (e.T.drop && Math.random() < .9) addPickup(e.T.drop, at, null, true);
@@ -3105,6 +3119,7 @@ function updateEnemy(e, dt, frameNo) {
     e.deadT += dt; const t = Math.min(1, e.deadT / (T.boss ? .9 : .55)), k = t * t;
     e.inner.rotation.x = -k * Math.PI / 2; e.inner.rotation.z = e.fallSide * k; e.inner.position.y = .05 * k;
     if (e.deadT < .15 && e.mixer) e.mixer.update(dt);
+    else if (!e.limp && e.ikOK && !T.boss) { e.limp = true; limpPose(e); }
     if (e.holder && e.deadT > .3) e.holder.visible = false;
     if (e.glint) e.glint.visible = false;
     e.mark.visible = false; // no ? / ! over the dead
@@ -3609,7 +3624,7 @@ function showMainMenu() {
     <h3>OBTÍŽNOST</h3><div>${DIFFS.map((d, i) => `<button class="btn sm${i === menuDiff ? ' sel' : ''}" data-d="${i}">${d.name}</button>`).join('')}</div><p style="font-size:13px;color:#a99c80;margin:6px 0 0">${DIFFS[menuDiff].desc}</p>
     <h3>MISE</h3><div>${LEVELS.map((L, i) => `<button class="btn sm${i === menuLevel ? ' sel' : ''}" data-l="${i}" ${i > un ? 'disabled' : ''}>${i + 1}. ${L.name.split('· ')[1]}</button>`).join('')}</div>
     <div><button class="btn" data-play="1">HRÁT</button><button class="btn sm" data-set="1">NASTAVENÍ</button></div>${KEYS_HTML}
-    <p style="font-size:12px;color:#777;margin-top:10px">Zbraně: CC0 z OpenGameArt (Lucian Pavel, ege, elmerenges) · ruce: para (CC0) · němečtí vojáci: nisu (CC0), animace three.js / Mixamo · ${Object.keys(FBX).length}/6 FBX načteno${soldierTpl ? '' : ' · servery s modely vojáků nedostupné – náhradní postavy'}</p><div id="load"></div>`;
+    <p style="font-size:12px;color:#777;margin-top:10px">v1.1 · Zbraně: CC0 z OpenGameArt (Lucian Pavel, ege, elmerenges) · ruce: para (CC0) · němečtí vojáci: nisu (CC0), animace three.js / Mixamo · ${Object.keys(FBX).length}/6 FBX načteno${soldierTpl ? '' : ' · servery s modely vojáků nedostupné – náhradní postavy'}</p><div id="load"></div>`;
   overlay.style.display = 'flex'; $('hud').style.display = 'none';
   overlay.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { menuDiff = +b.dataset.d; store.set('cg_diff', menuDiff); showMainMenu(); });
   overlay.querySelectorAll('[data-l]').forEach(b => b.onclick = () => { menuLevel = +b.dataset.l; showMainMenu(); });
@@ -3682,10 +3697,20 @@ function initGrid() {
     wallTop[cidx(x, z)] = h === -Infinity ? 99 : h;
   }
 }
+const TIPS = [
+  'Sadu tlumičů najdeš ve strážnici. Klávesou T tlumič nasadíš – tlumený výstřel uslyší jen stráže v těsné blízkosti.',
+  'Padlí vojáci upustí Sten nebo pušku, pokud je ještě nemáš.',
+  'C přepíná přikrčení. Přikrčený ve stínu jsi skoro neviditelný a tvoje kroky nejsou slyšet.',
+  'Minimapa vlevo nahoře odkrývá místnosti, kterými jsi prošel. Červené tečky jsou vojáci, kteří o tobě vědí.',
+  'Kroky hlídek je slyšet dřív, než je uvidíš.',
+  'Zezadu mačetou = tichá likvidace a bonus +100.',
+  'Velikost rozhraní, citlivost myši, FOV a další najdeš v menu NASTAVENÍ (i v pauze).',
+  'Důstojníci a elitní stráž běží k alarmu. Zastřel je dřív, nebo alarm rozstřel.'
+];
 async function loadLevel(i) {
   game.state = 'loading'; game.level = i; game.dirty = false;
   const L0 = LEVELS[i];
-  setOverlay(`<h1 style="font-size:clamp(28px,5vw,56px)">${L0.name}</h1><h2>${L0.sub}</h2>`, []);
+  setOverlay(`<h1 style="font-size:clamp(28px,5vw,56px)">${L0.name}</h1><h2>${L0.sub}</h2><p style="font-size:14px;color:#a99c80;max-width:560px">TIP: ${TIPS[Math.random() * TIPS.length | 0]}</p>`, []);
   setLoad('Stavím hrad…'); await nextFrame();
   clearLevel();
   LV = structuredClone(L0); rndL = mulberry32(1234 + i * 77);
