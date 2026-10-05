@@ -18,7 +18,7 @@ python -m http.server 8765 --bind 127.0.0.1
 
 Pak otevři <http://127.0.0.1:8765/castle_grimhold.html>.
 
-Three.js a modely postav se načítají z CDN (jsDelivr), takže je potřeba připojení k internetu. Webové textury jsou volitelné – když nejsou dostupné, hra si textury vygeneruje procedurálně.
+Three.js se načítá z CDN (jsDelivr), takže je potřeba připojení k internetu. Modely, textury zbraní a zvuky jsou zabalené v `assets/*.js`. Webové textury jsou volitelné – když nejsou dostupné, hra si textury vygeneruje procedurálně.
 
 ## Ovládání
 
@@ -32,7 +32,8 @@ Three.js a modely postav se načítají z CDN (jsDelivr), takže je potřeba př
 | `F` | použít / dveře |
 | `Q` / `E` | vyklonit se |
 | `Shift` | sprint |
-| `C` | přikrčit / plížit |
+| `C` | přikrčit / plížit (přepínač, v nastavení lze změnit na držení) |
+| `T` | nasadit / sejmout tlumič (revolver, Sten, puška) |
 | `1`–`6` / kolečko | výběr zbraně |
 | `Tab` | úkoly mise |
 | `M` | zvuk on/off |
@@ -40,19 +41,30 @@ Three.js a modely postav se načítají z CDN (jsDelivr), takže je potřeba př
 
 ## Zbraně
 
-Lee-Enfield No.4, revolver, Sten, plamenomet, mačeta a granát (Stielhandgranate).
+Lee-Enfield No.4 (T) s puškohledem, revolver, Sten Mk II, plamenomet, mačeta a granát (Stielhandgranate).
+
+- **Tlumiče** – sadu tlumičů najdeš ve strážnici v první misi. Tlumený výstřel uslyší jen stráže v těsné blízkosti a nemá záblesk, který by tě prozradil.
+- **Snazší získávání zbraní** – padlí vojáci upustí svou zbraň (Sten, puška), dokud ji ještě nemáš. Plamenomet je i ve zbrojnici druhé mise.
+
+## Nastavení
+
+V menu i v pauze: citlivost a obrácení myši, FOV, hlasitost, velikost rozhraní (škáluje se s rozlišením), rozlišení vykreslování, způsob přikrčení, minimapa a pohupování kamery. Nastavení se ukládá v prohlížeči.
+
+V levém horním rohu je minimapa ve stylu Wolfensteinu, která odkrývá místnosti, jak jimi procházíš.
 
 ## Struktura projektu
 
 ```
 castle_grimhold.html   # celá hra (HTML + JS)
 assets/
-  models.js            # zbraně (FBX) zabalené do JS
-  characters.js        # postavy zabalené do JS
+  models.js            # zbraně, ruce a němečtí vojáci (FBX) zabalení do JS
+  characters.js        # animace (Soldier.glb) a boss (Xbot.glb) zabalené do JS
+  sounds.js            # zvukové efekty (MP3) zabalené do JS
   models/              # zdrojové modely (.fbx, .glb)
+  sounds/              # zdrojové zvuky (.mp3)
   CREDITS.txt          # autoři a licence assetů
 ```
 
 ## Credits
 
-3D modely zbraní jsou CC0 z [OpenGameArt.org](https://opengameart.org/) (Lucian Pavel, ege, elmerenges), postavy pocházejí z příkladů three.js (MIT / Mixamo). Podrobnosti v [assets/CREDITS.txt](assets/CREDITS.txt).
+3D modely zbraní, ruce a němečtí vojáci jsou CC0 z [OpenGameArt.org](https://opengameart.org/) (Lucian Pavel, ege, elmerenges, para, nisu), animace z příkladů three.js (MIT / Mixamo), zvuky CC0 od [Kenney](https://kenney.nl/) a z OpenGameArt. Podrobnosti v [assets/CREDITS.txt](assets/CREDITS.txt).

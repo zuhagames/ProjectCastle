@@ -1,5 +1,5 @@
-CASTLE GRIMHOLD - 3D assets & licences
-=======================================
+CASTLE GRIMHOLD - 3D assets, sounds & licences
+===============================================
 
 Weapon models (assets/models/*.fbx, embedded in assets/models.js)
 All sources are CC0 1.0 (public domain) from OpenGameArt.org. They were
@@ -15,16 +15,48 @@ re-exported as binary FBX 7.4 with embedded textures (Blender 3.6).
                 https://opengameart.org/content/flamethrower-pbrunity-cc0
   machete.fbx   "PBR Machete (CC0)" by Lucian Pavel (CC0)
                 https://opengameart.org/content/pbr-machete-cc0
-  sten.fbx      "Sten Smg" by ege (CC0)  (converted from .blend)
+  sten.fbx      "Sten Smg" by ege (CC0)  (converted from .blend; magazine seated in its
+                housing, new UVs and a baked parkerised-steel texture with AO / worn edges)
                 https://opengameart.org/content/sten-smg
-  grenade.fbx   "Stielhandgranate" by elmerenges (CC0)  (converted from .blend)
+  grenade.fbx   "Stielhandgranate" by elmerenges (CC0)  (converted from .blend; baked
+                texture: painted head, wooden handle, steel cap)
                 https://opengameart.org/content/stielhandgranate
+  Suppressors are built in code.
 
-Characters (loaded at runtime from the three.js examples repository, MIT / Mixamo)
+First-person arms (assets/models/arms.fbx)
+  "fps arms (rigged only)" by para (CC0, made with MakeHuman)
+  https://opengameart.org/content/fps-arms-rigged-only
+  Bones renamed, wool battledress sleeves + cuffs baked into the texture (Blender 3.6).
+  Posed in code with two-bone IK onto each weapon's grips, fingers curled per grip.
+
+German soldiers (assets/models/german.fbx)
+  "Rigged Lowpoly WW2 Soldier" by nisu (CC0)
+  https://opengameart.org/content/rigged-lowpoly-ww2-soldier
+  Helmet joined into the body mesh. Uniform variants (Wehrmacht, SS, officer, sniper
+  camo, undead) are repainted at runtime; caps are generated in code.
+
+Animations / boss (loaded from assets/characters.js, three.js examples, MIT / Mixamo)
   Soldier.glb  https://threejs.org/examples/models/gltf/Soldier.glb
-  Xbot.glb     https://threejs.org/examples/models/gltf/Xbot.glb
-  Uniform variants (Wehrmacht, SS, officer, sniper, undead) are recoloured at
-  runtime from the Soldier texture; helmets/caps are generated in code.
+               (its Idle / Walk / Run clips are retargeted onto the German soldier)
+  Xbot.glb     https://threejs.org/examples/models/gltf/Xbot.glb  (the Übersoldat)
+
+Sound effects (assets/sounds/*.mp3, embedded in assets/sounds.js), all CC0
+Gunshots are synthesised in code (Web Audio). Samples were trimmed, peak-normalised
+and converted to mono MP3.
+  Kenney "RPG Audio" (doors, latches, clicks, cloth, knife, coins)
+                https://kenney.nl/assets/rpg-audio
+  Kenney "Impact Sounds" (footsteps stone/wood, body hits, metal, thuds)
+                https://kenney.nl/assets/impact-sounds
+  "grunts of male death and pain" (CC0, OpenGameArt)
+                https://opengameart.org/content/grunts-male-death-and-pain
+  "Zombies Sound Pack" (CC0, OpenGameArt)
+                https://opengameart.org/content/zombies-sound-pack
+  "25 CC0 bang / firework SFX" (explosions, CC0, OpenGameArt)
+                https://opengameart.org/content/25-cc0-bang-firework-sfx
+  "Fire Crackling" (CC0, OpenGameArt)
+                https://opengameart.org/content/fire-crackling
+  "Sirens and Alarm Noise" (CC0, OpenGameArt)
+                https://opengameart.org/content/sirens-and-alarm-noise
 
 Optional web textures (Poly Haven, CC0) and three.js example textures are
 used when reachable; otherwise procedural textures are painted at start-up.
