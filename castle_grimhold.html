@@ -2151,8 +2151,8 @@ const FALLBACK = { machete: buildKnife, revolver: buildPistol, sten: buildSMG, r
 // view-model layout per weapon (camera space): FBX models are real size, barrel along -Z
 const VMCFG = {
   machete: { pos: [.16, -.16, -.5], rot: [-.1, .2, -.3], muzzle: [0, 0, -.27], rh: { p: [0, -.005, .2], r: [0, 0, 0], e: [.08, -.25, .62] } },
-  revolver: { pos: [.15, -.13, -.45], rot: [.03, .12, -.04], muzzle: [0, .052, -.15], rh: { p: [0, -.045, .072], r: [-.38, 0, 0], e: [.1, -.3, .5] } },
-  sten: { pos: [.135, -.16, -.39], rot: [0, .03, 0], muzzle: [0, .03, -.39], rh: { p: [.005, -.055, .035], r: [-.2, 0, 0], e: [.13, -.32, .48] }, lh: { p: [-.075, .02, -.12], r: [0, 0, 1.3], e: [-.28, -.3, .3], left: true } },
+  revolver: { pos: [.15, -.13, -.45], rot: [.03, .12, -.04], ads: { pos: [0, -.082, -.4], rot: [0, 0, 0] }, muzzle: [0, .052, -.15], rh: { p: [0, -.045, .072], r: [-.38, 0, 0], e: [.1, -.3, .5] } },
+  sten: { pos: [.135, -.16, -.39], rot: [0, .03, 0], ads: { pos: [0, -.089, -.36], rot: [0, 0, 0] }, muzzle: [0, .03, -.39], rh: { p: [.005, -.055, .035], r: [-.2, 0, 0], e: [.13, -.32, .48] }, lh: { p: [-.075, .02, -.12], r: [0, 0, 1.3], e: [-.28, -.3, .3], left: true } },
   rifle: { pos: [.12, -.14, -.36], rot: [0, .03, 0], muzzle: [0, .045, -.57], rh: { p: [.0, -.045, .17], r: [-.3, 0, 0], e: [.12, -.32, .55] }, lh: { p: [-.01, -.04, -.2], r: [.2, 0, .3], e: [-.22, -.32, .25], left: true } },
   grenade: { pos: [.17, -.15, -.42], rot: [-.4, .25, -.15], muzzle: [0, 0, -.15], rh: { p: [0, 0, .06], r: [0, 0, 0], e: [.08, -.28, .45] } },
   flamer: { pos: [.11, -.19, -.45], rot: [0, .03, 0], muzzle: [0, .07, -.5], rh: { p: [0, -.06, .1], r: [-.3, 0, 0], e: [.13, -.3, .5] }, lh: { p: [-.01, -.03, -.16], r: [.1, 0, .3], e: [-.24, -.3, .25], left: true } }
@@ -2772,7 +2772,7 @@ function rayEnemy(o, d, e) {
 const player = { pos: V(0, 0, 0), vel: V(0, 0, 0), yaw: 0, pitch: 0, recoilPitch: 0, vy: 0, onGround: true, hp: 100, armor: 0, stamina: 100, crouch: 0, lean: 0, ammo: {}, weapon: 1, score: 0, kills: 0, treasure: 0, bobT: 0, fireT: 0, reloadT: 0, shake: 0, dmgFlash: 0, burn: 0, dead: false, time: 0, queued: false, zoom: false, keys: new Set(), viewY: 0, fallV: 0, vis: .5, light: .5, crouchOn: false, supKit: false };
 const game = { state: 'boot', level: 0, snapshot: null, totalTreasure: 0, totalEnemies: 0, objT: 0, showObj: false, alarmed: false, bossE: null, detections: 0 };
 const keys = {}; let mouseDown = false, rightDown = false;
-const vm = { recoil: 0, swayX: 0, swayY: 0, switchT: 0, pending: -1, flashT: 0, actT: 0, act: '' };
+const vm = { recoil: 0, swayX: 0, swayY: 0, switchT: 0, pending: -1, flashT: 0, actT: 0, act: '', adsK: 0 };
 const after = (t, fn) => timers.push({ t, fn });
 function newLoadout() {
   WEAPONS.forEach((w, i) => { w.owned = i === 0 || i === 1 || i === 4; if (w.mag) w.clip = i === 1 ? w.mag : 0; w.sup = false; });
@@ -2937,7 +2937,7 @@ function fire() {
   const d0 = camFwd(), right = V(1, 0, 0).applyQuaternion(camera.quaternion), up = V(0, 1, 0).applyQuaternion(camera.quaternion);
   if (!sup) { DL.pos[0].copy(camera.position).addScaledVector(d0, .8); DL.col[0].setRGB(1.6, 1.15, .55); DL.rad[0] = 9; dynFlash.position.copy(DL.pos[0]); dynFlash.intensity = 6; }
   const moving = Math.hypot(player.vel.x, player.vel.z) / 7;
-  const spread = (player.zoom ? 0 : w.spread) * (1 + moving * .7 + (w.auto ? vm.recoil * 3 : 0)) * (player.crouch > .5 ? .7 : 1) * (player.onGround ? 1 : 2);
+  const spread = (player.zoom ? 0 : w.spread) * (1 - .55 * vm.adsK) * (1 + moving * .7 + (w.auto ? vm.recoil * 3 : 0)) * (player.crouch > .5 ? .7 : 1) * (player.onGround ? 1 : 2);
   const o = camera.position.clone();
   const d = d0.clone().addScaledVector(right, (Math.random() - .5) * 2 * spread).addScaledVector(up, (Math.random() - .5) * 2 * spread).normalize();
   const hit = rayWorld(o, d, 140);
@@ -3379,6 +3379,13 @@ function updateViewModel(dt) {
   }
   if (w.flame && flameOn > 0) { px += (Math.random() - .5) * .004; py += (Math.random() - .5) * .004; }
   if (player.crouch > .5) py -= .01;
+  // aiming down the sights (RMB): bring the sight line onto the screen centre, keep a little of the bob / sway / recoil
+  vm.adsK = lerp(vm.adsK, player.ads ? 1 : 0, 1 - Math.exp(-14 * dt));
+  if (cfg.ads && vm.adsK > .001) {
+    const k = vm.adsK, a = cfg.ads, keep = lerp(1, .3, k);
+    px = lerp(cfg.pos[0], a.pos[0], k) + (px - cfg.pos[0]) * keep; py = lerp(cfg.pos[1], a.pos[1], k) + (py - cfg.pos[1]) * keep; pz = lerp(cfg.pos[2], a.pos[2], k) + (pz - cfg.pos[2]) * keep;
+    rx = lerp(cfg.rot[0], a.rot[0], k) + (rx - cfg.rot[0]) * keep; ry = lerp(cfg.rot[1], a.rot[1], k) + (ry - cfg.rot[1]) * keep; rz = lerp(cfg.rot[2], a.rot[2], k) + (rz - cfg.rot[2]) * keep;
+  }
   m.position.set(px, py, pz); m.rotation.set(rx, ry, rz);
   poseArms(w, m.visible);
   if (vm.flashT > 0) {
@@ -3404,10 +3411,10 @@ function updatePlayer(dt) {
   if (player.crouchOn && keys.Space) { player.crouchOn = false; keys.Space = false; }
   const crouchKey = SET.crouchToggle ? player.crouchOn : keys.KeyC;
   player.crouch = lerp(player.crouch, crouchKey ? 1 : 0, 1 - Math.exp(-12 * dt));
-  const wantsSprint = (keys.ShiftLeft || keys.ShiftRight) && (ix || iz) && player.crouch < .3 && !player.zoom;
+  const wantsSprint = (keys.ShiftLeft || keys.ShiftRight) && (ix || iz) && player.crouch < .3 && !player.zoom && !player.ads;
   const sprinting = wantsSprint && player.stamina > 1;
   if (sprinting) player.stamina = Math.max(0, player.stamina - 20 * dt); else player.stamina = Math.min(100, player.stamina + (wantsSprint ? 4 : 13) * dt);
-  const l = Math.hypot(ix, iz), spd = player.zoom ? 2.6 : player.crouch > .5 ? 3.2 : sprinting ? 9.6 : 6.4;
+  const l = Math.hypot(ix, iz), spd = player.zoom ? 2.6 : player.crouch > .5 ? 3.2 : player.ads ? 4.2 : sprinting ? 9.6 : 6.4;
   const tx = l ? ix / l * spd : 0, tz = l ? iz / l * spd : 0, acc = player.onGround ? 12 : 2.2, k = 1 - Math.exp(-acc * dt);
   player.vel.x += (tx - player.vel.x) * k; player.vel.z += (tz - player.vel.z) * k;
   const P = player.pos, ph = lerp(P_HEIGHT, 1.15, player.crouch);
@@ -3442,8 +3449,9 @@ function updatePlayer(dt) {
   // zoom (scope)
   const w = WEAPONS[player.weapon];
   player.zoom = rightDown && w.scope && player.reloadT <= 0 && vm.switchT <= 0;
-  const fov = player.zoom ? 18 : SET.fov; if (Math.abs(camera.fov - fov) > .1) { camera.fov = player.zoom ? fov : lerp(camera.fov, fov, .5); camera.updateProjectionMatrix(); }
-  hud.scope.style.display = player.zoom ? 'block' : 'none'; hud.cross.style.display = player.zoom ? 'none' : 'block';
+  player.ads = rightDown && !!(w.cfg && w.cfg.ads) && player.reloadT <= 0 && vm.switchT <= 0 && vm.act !== 'sup';
+  const fov = player.zoom ? 18 : SET.fov * (1 - .2 * vm.adsK); if (Math.abs(camera.fov - fov) > .1) { camera.fov = player.zoom ? fov : lerp(camera.fov, fov, .5); camera.updateProjectionMatrix(); }
+  hud.scope.style.display = player.zoom ? 'block' : 'none'; hud.cross.style.display = player.zoom || vm.adsK > .5 ? 'none' : 'block';
   // firing
   player.fireT -= dt; flameOn -= dt;
   if (player.fireT <= 0 && vm.switchT <= 0 && player.reloadT <= 0 && (((w.auto || w.flame) && mouseDown) || player.queued)) { player.queued = false; fire(); }
@@ -3597,7 +3605,7 @@ addEventListener('mousedown', e => {
 addEventListener('mouseup', e => { if (e.button === 0) mouseDown = false; if (e.button === 2) rightDown = false; });
 addEventListener('mousemove', e => {
   if (document.pointerLockElement !== canvas || game.state !== 'playing') return;
-  const sens = .0022 * SET.sens * (player.zoom ? .3 : 1);
+  const sens = .0022 * SET.sens * (player.zoom ? .3 : player.ads ? .75 : 1);
   player.yaw -= e.movementX * sens; player.pitch = clamp(player.pitch - e.movementY * sens * (SET.invertY ? -1 : 1), -1.45, 1.45);
   vm.swayX = clamp(vm.swayX + e.movementX * .00018, -.04, .04); vm.swayY = clamp(vm.swayY + e.movementY * .00018, -.04, .04);
 });
@@ -3607,7 +3615,7 @@ addEventListener('wheel', e => {
 });
 canvas.addEventListener('click', () => { if (game.state === 'playing' && document.pointerLockElement !== canvas) { const p = canvas.requestPointerLock(); if (p && p.catch) p.catch(() => { }); } });
 document.addEventListener('pointerlockchange', () => { if (document.pointerLockElement !== canvas && game.state === 'playing') pauseGame(); });
-const KEYS_HTML = `<div class="keys"><span><b>WASD</b> pohyb · <b>SPACE</b> skok</span><span><b>LMB</b> střelba · <b>RMB</b> zaměřovač</span><span><b>R</b> přebít · <b>F</b> použít / dveře</span><span><b>Q / E</b> vyklonit se</span><span><b>SHIFT</b> sprint · <b>C</b> přikrčit / plížit</span><span><b>1–6 / kolečko</b> zbraně · <b>T</b> tlumič</span><span><b>TAB</b> úkoly mise</span><span><b>M</b> zvuk · <b>ESC</b> pauza</span></div>`;
+const KEYS_HTML = `<div class="keys"><span><b>WASD</b> pohyb · <b>SPACE</b> skok</span><span><b>LMB</b> střelba · <b>RMB</b> mířidla / puškohled</span><span><b>R</b> přebít · <b>F</b> použít / dveře</span><span><b>Q / E</b> vyklonit se</span><span><b>SHIFT</b> sprint · <b>C</b> přikrčit / plížit</span><span><b>1–6 / kolečko</b> zbraně · <b>T</b> tlumič</span><span><b>TAB</b> úkoly mise</span><span><b>M</b> zvuk · <b>ESC</b> pauza</span></div>`;
 function setOverlay(html, buttons) {
   overlay.innerHTML = html + '<div>' + buttons.map((b, i) => `<button class="btn ${b.cls || ''}" data-i="${i}" ${b.disabled ? 'disabled' : ''}>${b.label}</button>`).join('') + '</div><div id="load"></div>';
   overlay.style.display = 'flex'; $('hud').style.display = 'none';
@@ -3809,7 +3817,7 @@ function tick(dt) {
 window.__errs = [];
 addEventListener('error', e => window.__errs.push(String(e.message) + ' @' + e.lineno));
 addEventListener('unhandledrejection', e => window.__errs.push('rejection: ' + (e.reason && e.reason.message || e.reason)));
-window.__castle = { step(n = 1, dt = 1 / 60) { for (let i = 0; i < n; i++) tick(dt); }, THREE, ARMS, GRIPS, RIGS, FBX, sfx, SET, get pickups() { return pickups; }, damageEnemy, player, enemies, WEAPONS, VMCFG, POSES, game, renderer, scene, camera, vmScene, vmCamera, get LV() { return LV; }, get lmB() { return lmB; }, get doors() { return doors; }, get patches() { return patches; }, get wallFaces() { return wallFaces; }, get ROOMS() { return ROOMS; }, get roomAt() { return roomAt; }, get wallTop() { return wallTop; }, floorAt, topAt, tp(x, z) { const p = C(x, z); player.pos.copy(p); player.viewY = p.y; }, give() { WEAPONS.forEach(w => { w.owned = true; if (w.mag) w.clip = w.mag; }); Object.assign(player.ammo, AMMO_MAX); }, loadLevel, startMission, buildViewModels, async quick(i = 0) { await startMission(i, true); startPlaying(); } };
+window.__castle = { step(n = 1, dt = 1 / 60) { for (let i = 0; i < n; i++) tick(dt); }, THREE, ARMS, GRIPS, RIGS, FBX, sfx, SET, get pickups() { return pickups; }, damageEnemy, aim(v) { rightDown = v; }, player, enemies, WEAPONS, VMCFG, POSES, game, renderer, scene, camera, vmScene, vmCamera, get LV() { return LV; }, get lmB() { return lmB; }, get doors() { return doors; }, get patches() { return patches; }, get wallFaces() { return wallFaces; }, get ROOMS() { return ROOMS; }, get roomAt() { return roomAt; }, get wallTop() { return wallTop; }, floorAt, topAt, tp(x, z) { const p = C(x, z); player.pos.copy(p); player.viewY = p.y; }, give() { WEAPONS.forEach(w => { w.owned = true; if (w.mag) w.clip = w.mag; }); Object.assign(player.ammo, AMMO_MAX); }, loadLevel, startMission, buildViewModels, async quick(i = 0) { await startMission(i, true); startPlaying(); } };
 frame();
 boot().catch(err => { console.error(err); setLoad('Chyba při načítání: ' + err.message); });
 </script>

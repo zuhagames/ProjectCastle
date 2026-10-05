@@ -31,7 +31,7 @@ Three.js se načítá z CDN (jsDelivr), takže je potřeba připojení k interne
 | `WASD` | pohyb |
 | `Space` | skok |
 | `LMB` | střelba |
-| `RMB` | zaměřovač |
+| `RMB` | míření přes mířidla (revolver, Sten) / puškohled (puška) |
 | `R` | přebít |
 | `F` | použít / dveře |
 | `Q` / `E` | vyklonit se |
@@ -62,7 +62,7 @@ V levém horním rohu je minimapa ve stylu Wolfensteinu, která odkrývá místn
 - Opravený Sten (zásobník už nelevituje) a nové textury Stenu a granátu.
 - Nepřátelé jsou němečtí vojáci 2. světové války (Wehrmacht, SS, důstojníci, odstřelovači v maskáči, nemrtví) se Stahlhelmem nebo čepicí.
 - Skutečné zvuky (kroky, dveře, výkřiky, výbuchy, siréna, oheň…), výstřely zůstaly původní.
-- Tlumiče, snazší získávání zbraní, menu nastavení, škálování rozhraní, minimapa, přepínací krčení.
+- Tlumiče, míření přes mířidla, snazší získávání zbraní, menu nastavení, škálování rozhraní, minimapa, přepínací krčení.
 - Otazníky a vykřičníky nad mrtvými zmizí, padlí vojáci leží uvolněně a jsou vidět i po zabití mimo záběr.
 
 ## Struktura projektu
