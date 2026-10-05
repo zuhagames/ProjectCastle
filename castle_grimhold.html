@@ -2150,11 +2150,11 @@ function buildFlamer() { const g = new THREE.Group(); part(g, Cz(.02, .02, .8), 
 const FALLBACK = { machete: buildKnife, revolver: buildPistol, sten: buildSMG, rifle: buildRifle, grenade: buildGrenade, flamer: buildFlamer };
 // view-model layout per weapon (camera space): FBX models are real size, barrel along -Z
 const VMCFG = {
-  machete: { pos: [.13, -.17, -.36], rot: [-.15, .15, -.35], muzzle: [0, 0, -.27], rh: { p: [0, -.005, .2], r: [0, 0, 0], e: [.08, -.25, .62] } },
-  revolver: { pos: [.115, -.14, -.35], rot: [.02, .06, 0], muzzle: [0, .052, -.15], rh: { p: [0, -.045, .072], r: [-.38, 0, 0], e: [.1, -.3, .5] } },
-  sten: { pos: [.12, -.15, -.42], rot: [0, .03, 0], muzzle: [0, .03, -.39], rh: { p: [.005, -.055, .035], r: [-.2, 0, 0], e: [.13, -.32, .48] }, lh: { p: [-.075, .02, -.12], r: [0, 0, 1.3], e: [-.28, -.3, .3], left: true } },
+  machete: { pos: [.16, -.16, -.5], rot: [-.1, .2, -.3], muzzle: [0, 0, -.27], rh: { p: [0, -.005, .2], r: [0, 0, 0], e: [.08, -.25, .62] } },
+  revolver: { pos: [.15, -.13, -.45], rot: [.03, .12, -.04], muzzle: [0, .052, -.15], rh: { p: [0, -.045, .072], r: [-.38, 0, 0], e: [.1, -.3, .5] } },
+  sten: { pos: [.12, -.15, -.38], rot: [0, .03, 0], muzzle: [0, .03, -.39], rh: { p: [.005, -.055, .035], r: [-.2, 0, 0], e: [.13, -.32, .48] }, lh: { p: [-.075, .02, -.12], r: [0, 0, 1.3], e: [-.28, -.3, .3], left: true } },
   rifle: { pos: [.12, -.14, -.36], rot: [0, .03, 0], muzzle: [0, .045, -.57], rh: { p: [.0, -.045, .17], r: [-.3, 0, 0], e: [.12, -.32, .55] }, lh: { p: [-.01, -.04, -.2], r: [.2, 0, .3], e: [-.22, -.32, .25], left: true } },
-  grenade: { pos: [.16, -.17, -.33], rot: [-.5, .2, -.1], muzzle: [0, 0, -.15], rh: { p: [0, 0, .06], r: [0, 0, 0], e: [.08, -.28, .45] } },
+  grenade: { pos: [.17, -.15, -.42], rot: [-.4, .25, -.15], muzzle: [0, 0, -.15], rh: { p: [0, 0, .06], r: [0, 0, 0], e: [.08, -.28, .45] } },
   flamer: { pos: [.11, -.19, -.45], rot: [0, .03, 0], muzzle: [0, .07, -.5], rh: { p: [0, -.06, .1], r: [-.3, 0, 0], e: [.13, -.3, .5] }, lh: { p: [-.01, -.03, -.16], r: [.1, 0, .3], e: [-.24, -.3, .25], left: true } }
 };
 const WEAPONS = [
@@ -2212,20 +2212,20 @@ function buildViewModels() {
 const ARMS = { ok: false };
 // grip per weapon, in weapon space (barrel along -Z): p = point the palm closes around, a = knuckle line (little finger -> index),
 // f = wrist -> knuckles, c = finger curl [index, middle, ring, little, thumb] (number or per-joint triple)
-const TRIG = [[.45, .95, .6], 1.35, 1.42, 1.5, [1.0, .6, .4]], SUPPORT = [1.25, 1.35, 1.4, 1.45, [1.1, .7, .5]];
+const TRIG = [[.6, 1.1, .8], 1.7, 1.75, 1.8, [1.3, .8, .5]], SUPPORT = [1.5, 1.6, 1.65, 1.7, [1.2, .7, .5]];
 const GRIPS = {
-  machete: { R: { p: [0, -.012, .2], a: [0, .08, -1], f: [-.15, -1, .35], c: [1.3, 1.4, 1.45, 1.5, [1.1, .6, .4]] } },
-  revolver: { R: { p: [-.004, -.024, .1], a: [0, 1, -.6], f: [-.1, .3, -1], c: TRIG } },
-  sten: { R: { p: [0, -.012, .165], a: [0, .45, -.9], f: [-.05, .5, -1], c: TRIG }, L: { p: [-.004, .045, -.19], a: [0, .05, -1], f: [1, .45, .1], c: SUPPORT } },
+  machete: { R: { p: [0, -.012, .2], a: [0, .08, -1], f: [0, 1, .3], c: [1.5, 1.6, 1.65, 1.7, [.9, .9, .6]] } },
+  revolver: { R: { p: [-.004, -.012, .095], a: [0, 1, -.6], f: [-.1, .3, -1], c: TRIG } },
+  sten: { R: { p: [0, -.012, .165], a: [0, .45, -.9], f: [-.05, .5, -1], c: TRIG }, L: { p: [-.004, .045, -.18], a: [0, .05, -1], f: [1, .45, .1], c: SUPPORT } },
   rifle: { R: { p: [0, .021, .24], a: [0, .53, -.85], f: [-.05, .6, -1], c: TRIG }, L: { p: [0, .056, -.2], a: [0, .04, -1], f: [1, .4, .05], c: SUPPORT } },
-  grenade: { R: { p: [0, 0, .06], a: [0, .1, -1], f: [-.2, -1, .3], c: [1.25, 1.35, 1.4, 1.45, [1.1, .6, .4]] } },
+  grenade: { R: { p: [0, 0, .06], a: [0, .1, -1], f: [0, 1, .3], c: [1.5, 1.6, 1.65, 1.7, [.9, .9, .6]] } },
   flamer: { R: { p: [0, -.024, .25], a: [0, .83, -.55], f: [-.05, .4, -1], c: TRIG }, L: { p: [0, .046, -.11], a: [0, .05, -1], f: [1, .45, .1], c: SUPPORT } }
 };
-const ARM_ROOT = [0, -.165, .085], ARM_SCALE = 1.12;
+const ARM_ROOT = [0, -.165, .06], ARM_SCALE = 1.2, ARM_YAW = -.4; // bladed shooting stance: left shoulder forward
 const _aq = new THREE.Quaternion(), _aq2 = new THREE.Quaternion(), _am = new THREE.Matrix4(), _aA = V(0, 0, 0), _aF = V(0, 0, 0), _aN = V(0, 0, 0), _aP = V(0, 0, 0), _aW = V(0, 0, 0);
 function initArms() {
   const rig = RIGS.arms; if (!rig) return;
-  const root = new THREE.Group(); rig.rotation.set(0, Math.PI, 0); root.add(rig); root.scale.setScalar(ARM_SCALE); vmScene.add(root);
+  const root = new THREE.Group(); rig.rotation.set(0, Math.PI, 0); root.add(rig); root.scale.setScalar(ARM_SCALE); root.rotation.y = ARM_YAW; vmScene.add(root);
   const B = {};
   rig.traverse(o => {
     if (o.isBone) B[o.name] = o;
@@ -2564,7 +2564,7 @@ function makeEnemy(type, cx, cz, yaw, opts = {}) {
   e.flashSprite.scale.setScalar(.7); e.flashSprite.visible = false; levelRoot.add(e.flashSprite);
   if (T.scope || T.melee || T.boss) { // scope glint / glowing eyes
     e.glint = new THREE.Sprite(new THREE.SpriteMaterial({ map: TX.glow, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, color: T.scope ? new THREE.Color(1.4, 1.4, 1.6) : T.melee ? new THREE.Color(.5, 1.6, .7) : new THREE.Color(1.8, .25, .15) }));
-    e.glint.scale.setScalar(T.scope ? .4 : .22); e.glint.visible = !T.scope; levelRoot.add(e.glint);
+    e.glint.scale.setScalar(T.scope ? .4 : T.melee ? .13 : .22); e.glint.visible = !T.scope; levelRoot.add(e.glint);
   }
   e.mark = new THREE.Sprite(new THREE.SpriteMaterial({ map: TX.markQ, depthTest: false, depthWrite: false, transparent: true }));
   e.mark.scale.set(.32, .4, 1); e.mark.position.y = T.h + .45; e.mark.renderOrder = 5; root.add(e.mark);
