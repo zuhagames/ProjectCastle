@@ -39,6 +39,8 @@
   #introS { margin-top:6px; letter-spacing:6px; color:#c23b2c; font-size:clamp(12px,1.6vw,16px); text-shadow:0 2px 2px #000; }
   #boss { position:absolute; top:58px; left:50%; width:420px; margin-left:-210px; text-align:center; display:none; font:600 13px 'Oswald'; letter-spacing:4px; color:#e9c2b5; text-shadow:0 2px 2px #000; }
   #boss .bar { width:100%; height:9px; margin-top:4px; } #boss .bar b { background:linear-gradient(#b8231a,#5e0b06); }
+  #stealth { position:absolute; bottom:18px; left:50%; width:160px; margin-left:-80px; text-align:center; font:600 12px 'Oswald',sans-serif; letter-spacing:3px; text-shadow:0 2px 2px #000; }
+  #stealth .bar { width:100%; height:5px; } #visb b { background:linear-gradient(90deg,#55606a,#e8e2c8); transition:width .15s; }
   #prompt { position:absolute; top:62%; width:100%; text-align:center; font-family:'Special Elite',monospace; font-size:19px; color:#fff; text-shadow:0 2px 3px #000; }
   #scope { position:absolute; inset:0; display:none; background:radial-gradient(circle at center, transparent 0, transparent 30vh, #000 30.3vh); }
   #scope::before { content:''; position:absolute; left:0; right:0; top:50%; height:1px; background:#000; }
@@ -82,6 +84,7 @@
   <div id="boss"><span id="bossN">ÜBERSOLDAT</span><div class="bar"><b id="bossB"></b></div></div>
   <div id="log"></div>
   <div id="prompt"></div>
+  <div id="stealth"><div id="stl">SKRYT</div><div class="bar" id="visb"><b></b></div></div>
   <div id="hl" class="p">
     <div class="lbl">ZDRAVÍ</div><div class="num" id="hp">100</div><div class="bar" id="hpb"><b></b></div>
     <div class="row"><span class="lbl">VESTA</span> <span id="ar">0</span></div><div class="bar" id="arb" style="height:5px"><b></b></div>
@@ -2251,8 +2254,15 @@ const GRIP = { rifle: { rh: [0, -.075, .24], lh: [-.045, -.075, -.16] }, sten: {
 const HOLD = { long: { aim: [-.13, 1.33, .3, 0, .04], low: [-.05, 1.0, .3, -.55, .6] }, pistol: { aim: [-.16, 1.36, .5, 0, .06], low: [-.22, .96, .2, -1.25, 0] } };
 const POSES = { GRIP, HOLD };
 const GUN_GRIP = { rifle: [0, -.045, .17], sten: [.005, -.055, .035], revolver: [0, -.045, .072], flamer: [0, -.06, .1] };
-let DIFF = { name: 'DESÁTNÍK', dmg: 1, acc: 1, hp: 1 };
-const DIFFS = [{ name: 'VOJÍN', dmg: .6, acc: .8, hp: .85 }, { name: 'DESÁTNÍK', dmg: 1, acc: 1, hp: 1 }, { name: 'RYTÍŘ', dmg: 1.45, acc: 1.15, hp: 1.15 }];
+// dmg/acc/hp: combat · react: enemy aim-time multiplier · rest: cooldown between bursts multiplier
+// detect: how fast guards notice you · view: sight range multiplier · lose: seconds before a chasing guard loses your trail
+const DIFFS = [
+  { name: 'VOJÍN', desc: 'Pro poklidné hraní. Nepřátelé míří pomalu, vidí méně a rychle tě ztratí.', dmg: .45, acc: .7, hp: .8, react: 1.6, rest: 1.5, detect: .55, view: .75, lose: 5 },
+  { name: 'DESÁTNÍK', desc: 'Vyvážená výzva. Plížení i přestřelky jsou férové.', dmg: .75, acc: .88, hp: .95, react: 1.2, rest: 1.15, detect: .8, view: .9, lose: 8 },
+  { name: 'RYTÍŘ', desc: 'Zkušené stráže. Každá chyba bolí.', dmg: 1.1, acc: 1, hp: 1.1, react: .95, rest: .95, detect: 1.1, view: 1, lose: 12 },
+  { name: 'LEGENDA', desc: 'Jedna kulka, jeden mrtvý. Stráže vidí vše a nevzdávají se.', dmg: 1.6, acc: 1.15, hp: 1.25, react: .75, rest: .8, detect: 1.5, view: 1.15, lose: 18 }
+];
+let DIFF = DIFFS[1];
 function buildFallbackSoldier(tint) {
   const g = new THREE.Group();
   const cloth = new THREE.MeshLambertMaterial({ color: new THREE.Color(.36, .38, .3).multiply(tint), map: TX.mattress });
@@ -2267,11 +2277,18 @@ function buildFallbackSoldier(tint) {
   const handObj = new THREE.Object3D(); handObj.position.set(0, -.6, 0); arms[0].add(handObj);
   g.userData = { legs, arms, handObj, mats: [cloth, skin, helm, boot] }; return g;
 }
+function markTex(ch, col) {
+  const c = document.createElement('canvas'); c.width = 64; c.height = 80; const g = c.getContext('2d');
+  g.font = 'bold 70px Georgia,serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.lineWidth = 8; g.strokeStyle = 'rgba(0,0,0,.85)'; g.strokeText(ch, 32, 44); g.fillStyle = col; g.fillText(ch, 32, 44);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.NoColorSpace; return t;
+}
+TX.markQ = markTex('?', '#f2c53d'); TX.markX = markTex('!', '#ff3b24');
 const MODEL_YAW_OFFSET = Math.PI; // Mixamo models face -Z in this pipeline
 function makeEnemy(type, cx, cz, yaw, opts = {}) {
   const T = ETYPES[type], c = C(cx, cz), root = new THREE.Group(); root.position.copy(c); levelRoot.add(root);
   const inner = new THREE.Group(); root.add(inner);
-  const e = { type, T, root, inner, x: c.x, z: c.z, y: c.y, spawn: c.clone(), spawnYaw: yaw, yaw, maxHp: Math.round(T.hp * DIFF.hp), hp: 0, h: T.h, r: T.boss ? .6 : .38, state: 'idle', mats: [], actions: {}, mixer: null, bones: {}, cur: '', curAction: null, cooldown: 0, aimT: 0, burst: 0, burstT: 0, painT: 0, deadT: 0, visionT: Math.random() * .3, flash: 0, strafe: 1, strafeT: 0, animT: Math.random() * 10, flashT: 0, poseW: 0, burnT: 0, meleeT: 0, patrol: opts.patrol ? opts.patrol.map(([x, z]) => C(x, z)) : null, pi: 0, waitT: 0, reinforce: !!opts.reinforce, lastSeen: null, growlT: rand(2, 6), pitch: 0, stuckT: 0 };
+  const e = { type, T, root, inner, x: c.x, z: c.z, y: c.y, spawn: c.clone(), spawnYaw: yaw, yaw, maxHp: Math.round(T.hp * DIFF.hp), hp: 0, h: T.h, r: T.boss ? .6 : .38, state: 'idle', mats: [], actions: {}, mixer: null, bones: {}, cur: '', curAction: null, cooldown: 0, aimT: 0, burst: 0, burstT: 0, painT: 0, deadT: 0, visionT: Math.random() * .3, flash: 0, strafe: 1, strafeT: 0, animT: Math.random() * 10, flashT: 0, poseW: 0, burnT: 0, meleeT: 0, patrol: opts.patrol ? opts.patrol.map(([x, z]) => C(x, z)) : null, pi: 0, waitT: 0, reinforce: !!opts.reinforce, lastSeen: null, growlT: rand(2, 6), pitch: 0, stuckT: 0, sus: 0, wary: false, lostT: 0, goal: null, goalT: 0, lookT: 0, arrived: false, bodySeen: false, alertT: -9 };
   const tpl = T.model === 'xbot' ? (xbotTpl || soldierTpl) : soldierTpl;
   if (tpl) {
     const m = SkeletonUtils.clone(tpl.scene);
@@ -2313,10 +2330,13 @@ function makeEnemy(type, cx, cz, yaw, opts = {}) {
     e.glint = new THREE.Sprite(new THREE.SpriteMaterial({ map: TX.glow, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, color: T.scope ? new THREE.Color(1.4, 1.4, 1.6) : T.melee ? new THREE.Color(.5, 1.6, .7) : new THREE.Color(1.8, .25, .15) }));
     e.glint.scale.setScalar(T.scope ? .4 : .22); e.glint.visible = !T.scope; levelRoot.add(e.glint);
   }
+  e.mark = new THREE.Sprite(new THREE.SpriteMaterial({ map: TX.markQ, depthTest: false, depthWrite: false, transparent: true }));
+  e.mark.scale.set(.32, .4, 1); e.mark.position.y = T.h + .45; e.mark.renderOrder = 5; root.add(e.mark);
   enemies.push(e); resetEnemy(e); return e;
 }
 function resetEnemy(e) {
   e.x = e.spawn.x; e.z = e.spawn.z; e.y = e.spawn.y; e.yaw = e.spawnYaw; e.hp = e.maxHp; e.state = 'idle'; e.deadT = 0; e.cooldown = 1; e.painT = 0; e.flash = 0; e.burnT = 0; e.pi = 0; e.waitT = 0; e.lastSeen = null; e.poseW = 0;
+  e.sus = 0; e.wary = false; e.lostT = 0; e.goal = null; e.bodySeen = false; e.alertT = -9; e.alarmTried = false; e.mark.visible = false;
   e.inner.rotation.set(0, 0, 0); e.inner.position.set(0, 0, 0); e.root.visible = true; e.blob.visible = true; e.cur = ''; e.curAction = null;
   if (e.holder) e.holder.visible = true;
   if (e.mixer) e.mixer.stopAllAction(); setAnim(e, 'Idle');
@@ -2487,8 +2507,8 @@ function rayEnemy(o, d, e) {
 /* =====================================================================
    PLAYER / STATE
    ===================================================================== */
-const player = { pos: V(0, 0, 0), vel: V(0, 0, 0), yaw: 0, pitch: 0, recoilPitch: 0, vy: 0, onGround: true, hp: 100, armor: 0, stamina: 100, crouch: 0, lean: 0, ammo: {}, weapon: 1, score: 0, kills: 0, treasure: 0, bobT: 0, fireT: 0, reloadT: 0, shake: 0, dmgFlash: 0, burn: 0, dead: false, time: 0, queued: false, zoom: false, keys: new Set(), viewY: 0, fallV: 0 };
-const game = { state: 'boot', level: 0, snapshot: null, totalTreasure: 0, totalEnemies: 0, objT: 0, showObj: false, alarmed: false, bossE: null };
+const player = { pos: V(0, 0, 0), vel: V(0, 0, 0), yaw: 0, pitch: 0, recoilPitch: 0, vy: 0, onGround: true, hp: 100, armor: 0, stamina: 100, crouch: 0, lean: 0, ammo: {}, weapon: 1, score: 0, kills: 0, treasure: 0, bobT: 0, fireT: 0, reloadT: 0, shake: 0, dmgFlash: 0, burn: 0, dead: false, time: 0, queued: false, zoom: false, keys: new Set(), viewY: 0, fallV: 0, vis: .5, light: .5 };
+const game = { state: 'boot', level: 0, snapshot: null, totalTreasure: 0, totalEnemies: 0, objT: 0, showObj: false, alarmed: false, bossE: null, detections: 0 };
 const keys = {}; let mouseDown = false, rightDown = false;
 const vm = { recoil: 0, swayX: 0, swayY: 0, switchT: 0, pending: -1, flashT: 0, actT: 0, act: '' };
 const after = (t, fn) => timers.push({ t, fn });
@@ -2516,18 +2536,18 @@ function resetLevelState() {
   sparks.clear(); smoke.clear(); fireP.clear();
   timers.length = 0; vm.pending = -1; vm.switchT = 0; vm.actT = 0; logLines.length = 0;
   for (const o of LV.objectives) o.done = false;
-  game.alarmed = false; game.bossE = enemies.find(e => e.T.boss) || null;
+  game.alarmed = false; game.detections = 0; game.bossE = enemies.find(e => e.T.boss) || null;
   restoreLoadout(); placePlayerAtStart(); sfx.flame(false);
 }
 
 /* ---------- HUD ---------- */
-const hud = { hp: $('hp'), hpb: $('hpb').firstChild, stb: $('stb').firstChild, ar: $('ar'), arb: $('arb').firstChild, ammo: $('ammo'), wname: $('wname'), score: $('score'), kills: $('kills'), treas: $('treas'), log: $('log'), prompt: $('prompt'), hitm: $('hitm'), scope: $('scope'), dmg: $('dmg'), burn: $('burn'), cross: $('cross'), obj: $('obj'), intro: $('intro'), introT: $('introT'), introS: $('introS'), boss: $('boss'), bossB: $('bossB'), bossN: $('bossN'), keysel: $('keysel') };
+const hud = { hp: $('hp'), hpb: $('hpb').firstChild, stb: $('stb').firstChild, ar: $('ar'), arb: $('arb').firstChild, ammo: $('ammo'), wname: $('wname'), score: $('score'), kills: $('kills'), treas: $('treas'), log: $('log'), prompt: $('prompt'), hitm: $('hitm'), scope: $('scope'), dmg: $('dmg'), burn: $('burn'), cross: $('cross'), obj: $('obj'), intro: $('intro'), introT: $('introT'), introS: $('introS'), boss: $('boss'), bossB: $('bossB'), bossN: $('bossN'), keysel: $('keysel'), stl: $('stl'), visb: $('visb').firstChild };
 const logLines = []; let logDirty = false, logT = 0;
 function log(t) { logLines.push({ t, life: 3.5 }); if (logLines.length > 5) logLines.shift(); logDirty = true; }
 function renderLog() { hud.log.innerHTML = logLines.map(l => `<div style="opacity:${Math.min(1, l.life).toFixed(2)}">${l.t}</div>`).join(''); }
 let hitTimer = 0;
 function hitMarker(head) { hud.hitm.className = head ? 'head' : ''; hud.hitm.style.opacity = 1; hitTimer = .12; }
-let lastHud = '', lastObj = '', lastPrompt = '', lastDmg = -1, lastBurn = -1;
+let lastStealth = '', lastHud = '', lastObj = '', lastPrompt = '', lastDmg = -1, lastBurn = -1;
 const KEY_NAMES = { brana: 'klíč od brány', knihovna: 'klíč od knihovny', strojovna: 'klíč od strojovny' };
 function updateHud() {
   const w = WEAPONS[player.weapon];
@@ -2544,6 +2564,14 @@ function updateHud() {
   const objHtml = LV ? `<h4>${LV.name}</h4>` + LV.objectives.map(o => `<div class="${o.done ? 'done' : o.optional ? 'opt' : ''}">${o.done ? '☑' : '☐'} ${o.text}</div>`).join('') : '';
   if (objHtml !== lastObj) { lastObj = objHtml; hud.obj.innerHTML = objHtml; }
   hud.obj.style.opacity = (game.showObj || game.objT > 0) ? 1 : 0;
+  let st = 0, sus = 0;
+  for (const e of enemies) { if (e.state === 'dead') continue; if (!calm(e)) { st = 2; break; } if (e.state !== 'idle' || e.sus > .06) { st = 1; sus = Math.max(sus, e.sus); } }
+  const ss = st + '|' + Math.round(player.vis * 20) + '|' + Math.round(sus * 10);
+  if (ss !== lastStealth) {
+    lastStealth = ss; hud.visb.style.width = Math.round(player.vis * 100) + '%';
+    hud.stl.textContent = st === 2 ? 'ODHALEN' : st === 1 ? 'PODEZŘENÍ' : player.vis < .3 ? 'SKRYT VE STÍNU' : 'NEODHALEN';
+    hud.stl.style.color = st === 2 ? '#ff4a35' : st === 1 ? `rgb(242,${Math.round(197 - 60 * sus)},61)` : '#9fb08a';
+  }
   if (game.bossE && game.bossE.state !== 'dead' && game.bossE.state !== 'idle') { hud.boss.style.display = 'block'; hud.bossB.style.width = Math.max(0, game.bossE.hp / game.bossE.maxHp * 100) + '%'; } else hud.boss.style.display = 'none';
 }
 function setPrompt(t) { if (t !== lastPrompt) { lastPrompt = t; hud.prompt.textContent = t; } }
@@ -2558,7 +2586,8 @@ const objectivesDone = () => LV.objectives.every(o => o.done || o.optional || o.
    ===================================================================== */
 const _v = V(0, 0, 0), _v2 = V(0, 0, 0);
 const eyeH = () => lerp(1.62, 1.0, player.crouch);
-function alertEnemy(e, shout = true) { if (e.state !== 'idle') return; e.state = 'chase'; e.cooldown = .5 + Math.random() * .8; e.lastSeen = player.pos.clone(); if (shout && Math.random() < .6) sfx.play(e.T.melee ? 'growl' : e.T.boss ? 'uber' : 'alert', e.root.position, .9); }
+const CALM = { idle: 1, investigate: 1, search: 1, return: 1 }, calm = e => CALM[e.state] === 1;
+function alertEnemy(e, shout = true) { if (!calm(e)) return; e.state = 'chase'; e.sus = 1; e.wary = true; e.lostT = 0; e.alertT = time; game.detections++; e.cooldown = (.5 + Math.random() * .8) * DIFF.react; e.lastSeen = player.pos.clone(); if (shout && Math.random() < .6) sfx.play(e.T.melee ? 'growl' : e.T.boss ? 'uber' : 'alert', e.root.position, .9); }
 function damageEnemy(e, dmg, dir, opts = {}) {
   if (e.state === 'dead') return;
   e.hp -= dmg; e.flash = 1;
@@ -2574,7 +2603,7 @@ function damageEnemy(e, dmg, dir, opts = {}) {
     sfx.flame(false);
   } else {
     e.painT = e.T.boss ? .05 : .22; if (dir && !e.T.boss) { e.x += dir.x * .15; e.z += dir.z * .15; }
-    if (e.state === 'idle') alertEnemy(e); if (Math.random() < .35) sfx.play(e.T.melee ? 'growl' : 'pain', e.root.position, .8);
+    if (calm(e)) alertEnemy(e); if (Math.random() < .35) sfx.play(e.T.melee ? 'growl' : 'pain', e.root.position, .8);
   }
 }
 function damagePlayer(n, src) {
@@ -2592,7 +2621,7 @@ function explosion(p, R, dmg) {
   sfx.play('explode', p, 1.5);
   addDecal(V(p.x, floorAt(p.x, p.z) + .01, p.z), V(0, 1, 0), 6);
   const cy = p.y + .4;
-  for (const e of enemies) { if (e.state === 'dead') continue; const d = Math.hypot(e.x - p.x, e.z - p.z, (e.y + 1) - cy); if (d < R && losClear(p.x, cy, p.z, e.x, e.y + 1, e.z)) { _v.set(e.x - p.x, 0, e.z - p.z).normalize(); damageEnemy(e, dmg * (1 - d / R) + 20, _v); if (e.state === 'idle') alertEnemy(e); } }
+  for (const e of enemies) { if (e.state === 'dead') continue; const d = Math.hypot(e.x - p.x, e.z - p.z, (e.y + 1) - cy); if (d < R && losClear(p.x, cy, p.z, e.x, e.y + 1, e.z)) { _v.set(e.x - p.x, 0, e.z - p.z).normalize(); damageEnemy(e, dmg * (1 - d / R) + 20, _v); alertEnemy(e); } }
   const pd = Math.hypot(player.pos.x - p.x, player.pos.z - p.z, player.pos.y + 1 - cy);
   if (pd < R && losClear(p.x, cy, p.z, player.pos.x, player.pos.y + 1, player.pos.z)) damagePlayer(dmg * .5 * (1 - pd / R));
   player.shake = Math.min(1, player.shake + 6 / (pd + 4));
@@ -2608,7 +2637,7 @@ function damageDestructible(d, dmg) {
 function destroyAlarm(a) { if (a.dead) return; a.dead = true; a.mesh.visible = false; a.occ.active = false; a.lamp.material.color.setHex(0x111111); for (let i = 0; i < 14; i++) sparks.spawn(a.wallPos, rand(-3, 3), rand(0, 3), rand(-3, 3), 2, 1.6, .8, .04, .4, 9, 1); sfx.play('clang', a.wallPos); log('Alarm vyřazen'); }
 function camFwd() { return V(0, 0, -1).applyQuaternion(camera.quaternion); }
 function wakeNearby(radius = 30) {
-  for (const e of enemies) if (e.state === 'idle') { const d = Math.hypot(e.x - player.pos.x, e.z - player.pos.z), dy = Math.abs(e.y - player.pos.y); if ((d < 12 && dy < 3.5) || (d < radius && losClear(e.x, e.y + 1.6, e.z, player.pos.x, player.pos.y + 1.4, player.pos.z))) after(.2 + Math.random() * .5, () => alertEnemy(e)); }
+  for (const e of enemies) if (calm(e)) { const d = Math.hypot(e.x - player.pos.x, e.z - player.pos.z), dy = Math.abs(e.y - player.pos.y); if ((d < 12 && dy < 3.5) || (d < radius && losClear(e.x, e.y + 1.6, e.z, player.pos.x, player.pos.y + 1.4, player.pos.z))) after(.2 + Math.random() * .5, () => alertEnemy(e)); }
 }
 function vmMuzzleWorld() { const w = WEAPONS[player.weapon]; return camera.localToWorld(V(w.cfg.pos[0] * .9, w.cfg.pos[1] * .7, -.75)); }
 function fire() {
@@ -2619,8 +2648,8 @@ function fire() {
     let best = null, bt = 1.9;
     for (const e of enemies) { if (e.state === 'dead') continue; const r = rayEnemy(o, d, e); if (r && r.t < bt) { bt = r.t; best = e; } }
     if (best) {
-      const back = (Math.sin(best.yaw) * d.x + Math.cos(best.yaw) * d.z) > .3 && best.state === 'idle' && !best.T.boss;
-      after(.1, () => { damageEnemy(best, back ? 999 : w.dmg, _v2.set(d.x, 0, d.z).normalize()); sfx.play('stab'); fxImpact(o.clone().addScaledVector(d, bt), d.clone().negate(), 'flesh'); hitMarker(back); if (back) log('Tichá likvidace'); });
+      const back = (Math.sin(best.yaw) * d.x + Math.cos(best.yaw) * d.z) > .3 && calm(best) && !best.T.boss;
+      after(.1, () => { if (back) player.score += 100; damageEnemy(best, back ? 999 : w.dmg, _v2.set(d.x, 0, d.z).normalize()); sfx.play('stab'); fxImpact(o.clone().addScaledVector(d, bt), d.clone().negate(), 'flesh'); hitMarker(back); if (back) log('Tichá likvidace +100'); });
     } else { const h = rayWorld(o, d, 1.8); if (h.kind !== 'none') after(.1, () => { fxImpact(h.point, h.n, 'metal'); sfx.play('clang', h.point, .5); }); }
     return;
   }
@@ -2761,9 +2790,60 @@ function openDoor(d, fx, fz) {
 function triggerAlarm(a, by) {
   if (a.used || a.dead || game.alarmed) return; a.used = true; game.alarmed = true; a.sirenT = 8;
   sfx.play('siren', a.wallPos, 1.2); log('<span style="color:#ff6a50">ALARM! Přicházejí posily.</span>');
-  for (const e of enemies) if (e.state === 'idle' && Math.hypot(e.x - a.pos.x, e.z - a.pos.z) < 45) after(Math.random(), () => alertEnemy(e, false));
+  for (const e of enemies) if (calm(e) && Math.hypot(e.x - a.pos.x, e.z - a.pos.z) < 45) after(Math.random(), () => alertEnemy(e, false));
   const spots = (LV.reinforce || []).map(([x, z]) => C(x, z)).filter(p => p.distanceTo(player.pos) > 10).slice(0, 3);
   spots.forEach((p, k) => after(2 + k * 1.2, () => { if (game.state !== 'playing') return; const e = makeEnemy(k % 2 ? 'soldat' : 'sturm', toCell(p.x), toCell(p.z), 0, { reinforce: true }); e.state = 'chase'; game.totalEnemies++; tintMats(e.mats, e.x, e.z); }));
+}
+/* ---------- stealth: player visibility, noise, guard suspicion ---------- */
+const LIGHT_DARK = .45, LIGHT_BRIGHT = 1.35, _lg = [0, 0, 0];
+function updateStealth(dt) {
+  sampleGrid(player.pos.x, player.pos.z, _lg);
+  const light = clamp(((_lg[0] + _lg[1] + _lg[2]) / 3 - LIGHT_DARK) / (LIGHT_BRIGHT - LIGHT_DARK), 0, 1);
+  const hs = Math.hypot(player.vel.x, player.vel.z);
+  let v = (.2 + .8 * light) * (hs < .6 ? .75 : hs > 7 ? 1.25 : 1) * (player.crouch > .5 ? .55 : 1);
+  if (vm.flashT > 0 || flameOn > 0) v = 1; // a muzzle flash gives you away anywhere
+  player.light = light; player.vis = lerp(player.vis, clamp(v, .06, 1), 1 - Math.exp(-6 * dt));
+}
+// quiet noises (footsteps, landings) make guards come and look; loud ones (gunfire) are handled by wakeNearby
+function makeNoise(x, y, z, radius) {
+  radius *= .7 + .3 * DIFF.detect;
+  for (const e of enemies) {
+    if (!calm(e) || e.T.boss || Math.abs(e.y - y) > 3.5) continue;
+    const d = Math.hypot(e.x - x, e.z - z); if (d > radius) continue;
+    if (d > radius * .5 && !losClear(e.x, e.y + 1.5, e.z, x, y + 1, z)) continue; // walls muffle
+    e.sus = Math.min(.95, Math.max(e.sus, .45 + .45 * (1 - d / radius)) + (e.wary ? .1 : 0));
+    if (e.state !== 'search') startSearch(e, x, z, false);
+    else e.goalT = Math.max(e.goalT, 6);
+  }
+}
+function setGoal(e, x, z) {
+  e.goal = { x, z }; e.goalT = 25; e.arrived = false;
+  if (!e.sflow || e.sflow.length !== MW * MH) e.sflow = new Int32Array(MW * MH);
+  computeFlowFrom(toCell(x), toCell(z), e.sflow);
+}
+// investigate = heard/glimpsed something (walks over), search = lost the player or found a body (runs, stays wary)
+function startSearch(e, x, z, alerted) {
+  const fresh = e.state !== 'investigate' && e.state !== 'search';
+  e.state = alerted ? 'search' : 'investigate'; if (alerted) e.wary = true;
+  if (fresh) e.waitT = alerted ? .2 : rand(.7, 1.2);
+  e.lookT = alerted ? rand(7, 10) : rand(3.5, 5.5);
+  setGoal(e, x, z);
+}
+function startReturn(e) {
+  if (e.T.stationary) { e.state = 'idle'; return; }
+  const p = e.patrol && e.patrol.length ? e.patrol[e.pi] : e.spawn;
+  e.state = 'return'; setGoal(e, p.x, p.z);
+}
+function discoverBody(e, b) {
+  b.bodySeen = true; e.sus = 1; e.wary = true; e.alertT = time;
+  sfx.play('alert', e.root.position, .9); log('<span style="color:#e6a23c">Stráž našla tělo!</span>');
+  if (e.T.alarm && !game.alarmed && !e.alarmTried) { // officers raise the alarm
+    e.alarmTried = true; const ci = cidx(toCell(e.x), toCell(e.z));
+    const a = alarms.filter(a => !a.dead && !a.used && a.flow && a.flow[ci] >= 0 && a.flow[ci] <= 12).sort((p, q) => p.flow[ci] - q.flow[ci])[0];
+    if (a) { e.state = 'alarm'; e.alarm = a; return; }
+  }
+  startSearch(e, b.x, b.z, true);
+  for (const o of enemies) if (o !== e && calm(o) && o.state !== 'search' && Math.hypot(o.x - e.x, o.z - e.z) < 14 && Math.abs(o.y - e.y) < 3) after(rand(.4, 1.2), () => { if (calm(o)) startSearch(o, b.x, b.z, true); });
 }
 const _fr = new THREE.Frustum(), _pm = new THREE.Matrix4(), _sph = new THREE.Sphere();
 function updateEnemy(e, dt, frameNo) {
@@ -2783,21 +2863,58 @@ function updateEnemy(e, dt, frameNo) {
   e.visionT -= dt;
   if (e.visionT <= 0) {
     e.visionT = .2;
-    e.los = !player.dead && dist < (T.scope ? 75 : 50) && losClear(e.x, eyeY, e.z, player.pos.x, player.pos.y + eyeH(), player.pos.z);
-    if (e.los) e.lastSeen = player.pos.clone();
-    if (e.state === 'idle' && e.los) { const fd = (dx * Math.sin(e.yaw) + dz * Math.cos(e.yaw)) / dist; const sneak = player.crouch > .5 ? .55 : 1; if (dist < 4.5 * sneak || (fd > .3 && dist < (T.scope ? 60 : 30) * sneak)) alertEnemy(e); }
+    e.los = !player.dead && dist < (T.scope ? 75 : 50) * DIFF.view && losClear(e.x, eyeY, e.z, player.pos.x, player.pos.y + eyeH(), player.pos.z);
+    if (calm(e)) {
+      const sy = Math.sin(e.yaw), cy = Math.cos(e.yaw);
+      if (e.los) {
+        // suspicion builds up with light, distance, stance and movement instead of instant detection
+        const fd = (dx * sy + dz * cy) / dist, sight = (T.scope ? 60 : 30) * DIFF.view * (e.wary ? 1.25 : 1);
+        let g = 0;
+        if (fd > .3 && dist < sight) g = 1.8 * DIFF.detect * player.vis * (1.2 * (1 - dist / sight) + .15) * (e.state === 'idle' || e.state === 'return' ? 1 : 1.6) * (e.wary ? 1.5 : 1);
+        if (dist < (player.crouch > .5 ? 1.6 : 2.6) && fd > -.3) g += 4; // bumped right into him
+        if (g > 0) { e.sus += g * .2; e.lastSeen = player.pos.clone(); }
+        if (e.sus >= 1) alertEnemy(e);
+        else if (g > 0 && e.sus > .4 && e.state !== 'search') startSearch(e, player.pos.x, player.pos.z, false);
+      }
+      if (calm(e)) for (const b of enemies) { // dead comrades
+        if (b.state !== 'dead' || b.bodySeen || b.deadT < .6) continue;
+        const bx = b.x - e.x, bz = b.z - e.z, bd = Math.hypot(bx, bz) + 1e-4;
+        if (bd < 22 * DIFF.view && Math.abs(b.y - e.y) < 3 && (bx * sy + bz * cy) / bd > .3 && losClear(e.x, eyeY, e.z, b.x, b.y + .3, b.z)) { discoverBody(e, b); break; }
+      }
+    } else if (e.los) e.lastSeen = player.pos.clone();
   }
+  if (calm(e) && e.state !== 'search') e.sus = Math.max(0, e.sus - dt * (e.wary ? .08 : .14));
   e.painT -= dt; e.cooldown -= dt;
   if (e.burnT > 0) { e.burnT -= dt; damageEnemy(e, (T.melee ? 22 : 12) * dt, null); if (Math.random() < dt * 20) fireP.spawn(_v.set(e.x + rand(-.3, .3), e.y + rand(.3, 1.7), e.z + rand(-.3, .3)), rand(-.3, .3), 1.5, rand(-.3, .3), 1.5, .8, .4, .35, .45, -2, 1, 1.5); if (e.state === 'dead') return; }
   let mx = 0, mz = 0, speed = 0, face = null;
   const run = T.run, walk = T.walk;
   const goTo = (tx, tz, sp) => { const ax = tx - e.x, az = tz - e.z, l = Math.hypot(ax, az); if (l > .08) { mx = ax / l; mz = az / l; speed = sp; } return l; };
+  const goGoal = sp => { const g = e.goal, l = Math.hypot(g.x - e.x, g.z - e.z); if (l < CELL * .9) return goTo(g.x, g.z, sp); const n = flowNext(e.x, e.z, e.sflow); goTo(n ? n.x : g.x, n ? n.z : g.z, sp); return l; };
   switch (e.state) {
     case 'idle':
       if (e.patrol && e.patrol.length) {
         if (e.waitT > 0) { e.waitT -= dt; }
         else { const tp = e.patrol[e.pi]; if (goTo(tp.x, tp.z, walk) < .6) { e.pi = (e.pi + 1) % e.patrol.length; e.waitT = 1.5 + Math.random() * 2; } face = mx || mz ? { x: mx, z: mz } : null; }
-      } else e.yaw += Math.sin(time * .35 + e.animT) * dt * .2;
+      } else face = { x: Math.sin(e.spawnYaw + Math.sin(time * .35 + e.animT) * .45), z: Math.cos(e.spawnYaw + Math.sin(time * .35 + e.animT) * .45) };
+      break;
+    case 'investigate':
+    case 'search': {
+      const g = e.goal, srch = e.state === 'search';
+      if (e.waitT > 0) { e.waitT -= dt; face = { x: g.x - e.x, z: g.z - e.z }; break; } // stop and stare first
+      e.goalT -= dt;
+      if (!e.arrived) {
+        if (T.stationary || goGoal(srch ? run * .75 : walk) < .9 || e.goalT <= 0) e.arrived = true;
+        face = T.stationary ? { x: g.x - e.x, z: g.z - e.z } : mx || mz ? { x: mx, z: mz } : null;
+      } else {
+        e.lookT -= dt; e.yaw += Math.sin(time * 1.1 + e.animT) * dt * 1.5;
+        if (e.lookT <= 0) { e.sus = Math.min(e.sus, srch ? .5 : .3); startReturn(e); }
+      }
+      break;
+    }
+    case 'return':
+      e.goalT -= dt;
+      if (goGoal(walk) < .6 || e.goalT <= 0) { e.state = 'idle'; e.waitT = 0; }
+      face = mx || mz ? { x: mx, z: mz } : null;
       break;
     case 'burn':
     case 'chase': {
@@ -2805,6 +2922,9 @@ function updateEnemy(e, dt, frameNo) {
         e.strafeT -= dt; if (e.strafeT <= 0) { e.strafe = Math.random() * 6.28; e.strafeT = .5 + Math.random() * .6; }
         mx = Math.sin(e.strafe); mz = Math.cos(e.strafe); speed = run; face = { x: mx, z: mz }; break;
       }
+      // out of sight for too long: go and search where he was last seen
+      if (e.los || player.dead) e.lostT = 0; else e.lostT += dt;
+      if (e.lostT > DIFF.lose && !T.boss && e.lastSeen) { e.lostT = 0; if (T.stationary) { e.state = 'idle'; e.sus = .5; } else startSearch(e, e.lastSeen.x, e.lastSeen.z, true); break; }
       // officers & elites run for the alarm
       if (T.alarm && !game.alarmed && !e.alarmTried) {
         e.alarmTried = true; const ci = cidx(toCell(e.x), toCell(e.z));
@@ -2820,7 +2940,7 @@ function updateEnemy(e, dt, frameNo) {
         e.growlT -= dt; if (e.growlT <= 0) { e.growlT = rand(3, 7); sfx.play('growl', e.root.position, .8); }
         break;
       }
-      if (!player.dead && e.los && dist < T.range && e.cooldown <= 0) { e.state = 'aim'; e.aimT = rand(T.aim[0], T.aim[1]); if (e.glint && T.scope) e.glint.visible = true; break; }
+      if (!player.dead && e.los && dist < T.range && e.cooldown <= 0) { e.state = 'aim'; e.aimT = rand(T.aim[0], T.aim[1]) * DIFF.react; if (e.glint && T.scope) e.glint.visible = true; break; }
       if (T.stationary) { face = e.lastSeen ? { x: e.lastSeen.x - e.x, z: e.lastSeen.z - e.z } : null; break; }
       let tx, tz;
       if (player.dead) { }
@@ -2842,18 +2962,18 @@ function updateEnemy(e, dt, frameNo) {
     }
     case 'melee':
       face = { x: dx, z: dz }; e.meleeT -= dt;
-      if (e.meleeT <= 0) { if (dist < 2 && Math.abs(dy) < 1.3 && !player.dead) { damagePlayer(rand(T.dmg[0], T.dmg[1])); sfx.play('stab', e.root.position); } e.state = 'chase'; e.cooldown = .6; }
+      if (e.meleeT <= 0) { if (dist < 2 && Math.abs(dy) < 1.3 && !player.dead) { damagePlayer(rand(T.dmg[0], T.dmg[1])); sfx.play('stab', e.root.position); } e.state = 'chase'; e.cooldown = .6 * DIFF.rest; }
       break;
     case 'aim': face = { x: dx, z: dz }; e.aimT -= dt; if (!e.los && !T.scope) { e.state = 'chase'; break; } if (e.aimT <= 0) { e.state = 'fire'; e.burst = Math.round(rand(T.burst[0], T.burst[1])); e.burstT = 0; } break;
     case 'fire':
       face = { x: dx, z: dz }; e.burstT -= dt;
       if (T.flamer) {
         if (e.burst > 0 && e.los && dist < T.range + 2 && !player.dead) { enemyFlame(e, dist, dt); if (e.burstT <= 0) { e.burst--; e.burstT = T.rof; } if (Math.random() < dt * 2) sfx.play('ignite', e.root.position, .7); }
-        else { e.state = 'chase'; e.cooldown = .8 + Math.random(); }
+        else { e.state = 'chase'; e.cooldown = (.8 + Math.random()) * DIFF.rest; }
         if (dist > 4) goTo(player.pos.x, player.pos.z, walk);
         break;
       }
-      if (e.burstT <= 0) { if (e.burst > 0 && e.los && !player.dead) { enemyShoot(e, Math.hypot(dist, dy)); e.burst--; e.burstT = T.rof; } else { e.state = 'chase'; e.cooldown = (T.scope ? T.rof : T.alarm ? .6 : 1) + Math.random() * 1.3; if (e.glint && T.scope) e.glint.visible = false; } }
+      if (e.burstT <= 0) { if (e.burst > 0 && e.los && !player.dead) { enemyShoot(e, Math.hypot(dist, dy)); e.burst--; e.burstT = T.rof; } else { e.state = 'chase'; e.cooldown = ((T.scope ? T.rof : T.alarm ? .6 : 1) + Math.random() * 1.3) * DIFF.rest; if (e.glint && T.scope) e.glint.visible = false; } }
       break;
   }
   if (e.painT > 0) { mx *= .15; mz *= .15; }
@@ -2870,7 +2990,7 @@ function updateEnemy(e, dt, frameNo) {
   e.root.visible = vis; e.blob.visible = vis;
   const moving = (mx || mz) && speed > 0 && e.painT <= 0;
   const aiming = e.state === 'aim' || e.state === 'fire' || (e.state === 'chase' && e.los);
-  e.poseW = lerp(e.poseW, T.melee ? (e.state !== 'idle' ? 1 : .35) : aiming ? 1 : e.state === 'idle' ? 0 : .55, 1 - Math.exp(-8 * dt));
+  e.poseW = lerp(e.poseW, T.melee ? (e.state !== 'idle' ? 1 : .35) : aiming ? 1 : e.state === 'idle' || e.state === 'return' ? 0 : e.state === 'investigate' ? .35 : .55, 1 - Math.exp(-8 * dt));
   if (e.mixer) {
     const near = vis && dist < 40, ts = T.slow ? (speed > 3 ? 1.1 : .7) : T.boss ? .8 : 1;
     setAnim(e, moving ? (speed > 3 ? 'Run' : 'Walk') : 'Idle', ts);
@@ -2884,6 +3004,9 @@ function updateEnemy(e, dt, frameNo) {
     if (e.glint) { const hb = e.bones.Head; if (hb) { hb.getWorldPosition(_v); e.glint.position.copy(_v).add(_v2.set(Math.sin(e.yaw), 0, Math.cos(e.yaw)).multiplyScalar(T.scope ? .25 : .12)); if (!T.scope) e.glint.position.y += .02; } else e.glint.position.set(e.x, e.y + e.h * .93, e.z); e.glint.material.opacity = T.scope ? .6 + .4 * Math.sin(time * 9) : .8; }
   }
   if (e.flashT > 0 && e.holder) e.flashSprite.position.copy(enemyMuzzle(e));
+  const shout = time - e.alertT < 2.2 && !calm(e) || (e.state === 'search' && time - e.alertT < 2.2);
+  e.mark.visible = vis && dist < 35 && (shout || (calm(e) && e.sus > .06));
+  if (e.mark.visible) { e.mark.material.map = shout ? TX.markX : TX.markQ; e.mark.material.opacity = shout ? 1 : .35 + .65 * Math.min(1, e.sus); }
   if (vis) { sampleGrid(e.x, e.z, _g); for (const m of e.mats) { const b = m.userData.base || (m.userData.base = m.color.clone()); m.color.setRGB(b.r * _g[0] + e.flash * .8 + (e.burnT > 0 ? .3 : 0), b.g * _g[1] + (e.burnT > 0 ? .12 : 0), b.b * _g[2]); } }
 }
 
@@ -2999,7 +3122,7 @@ function updatePlayer(dt) {
   let ix = 0, iz = 0;
   if (keys.KeyW || keys.ArrowUp) { ix -= s; iz -= c; } if (keys.KeyS || keys.ArrowDown) { ix += s; iz += c; }
   if (keys.KeyD || keys.ArrowRight) { ix += c; iz -= s; } if (keys.KeyA || keys.ArrowLeft) { ix -= c; iz += s; }
-  const crouchKey = keys.KeyC || keys.ControlLeft || keys.ControlRight;
+  const crouchKey = keys.KeyC; // not Ctrl: Ctrl+W (crouch + forward) closes the browser tab
   player.crouch = lerp(player.crouch, crouchKey ? 1 : 0, 1 - Math.exp(-12 * dt));
   const wantsSprint = (keys.ShiftLeft || keys.ShiftRight) && (ix || iz) && player.crouch < .3 && !player.zoom;
   const sprinting = wantsSprint && player.stamina > 1;
@@ -3018,13 +3141,13 @@ function updatePlayer(dt) {
     player.vy -= 16 * dt; P.y += player.vy * dt;
     const top = topAt(P.x, P.z); if (P.y + ph > top) { P.y = top - ph; if (player.vy > 0) player.vy = 0; }
     if (P.y <= gnd) {
-      const v = -player.vy; P.y = gnd; player.vy = 0; player.onGround = true; sfx.play('step', null, 1.5); vm.recoil += .03;
+      const v = -player.vy; P.y = gnd; player.vy = 0; player.onGround = true; sfx.play('step', null, 1.5); vm.recoil += .03; if (v > 4) makeNoise(P.x, P.y, P.z, 8);
       if (v > 11) { damagePlayer(Math.pow(v - 10, 1.6) * 2.2 / DIFF.dmg); player.shake = .5; }
     }
   } else { P.y = gnd; player.vy = 0; }
   player.viewY = P.y > player.viewY ? lerp(player.viewY, P.y, 1 - Math.exp(-16 * dt)) : P.y;
   const hs = Math.hypot(player.vel.x, player.vel.z); if (player.onGround) player.bobT += dt * hs * 1.15;
-  const sp = Math.floor(player.bobT / Math.PI); if (sp !== stepPhase) { stepPhase = sp; if (hs > 2 && player.crouch < .5) sfx.play('step'); }
+  const sp = Math.floor(player.bobT / Math.PI); if (sp !== stepPhase) { stepPhase = sp; if (hs > 2 && player.crouch < .5) { sfx.play('step'); makeNoise(P.x, P.y, P.z, hs > 7 ? 13 : 5); } }
   // lean (Q/E) — limited by walls
   const leanT = (keys.KeyE ? 1 : 0) - (keys.KeyQ ? 1 : 0);
   player.lean = lerp(player.lean, leanT, 1 - Math.exp(-10 * dt));
@@ -3078,8 +3201,10 @@ addEventListener('keydown', e => {
   if (e.code === 'KeyR') startReload();
   if (e.code === 'KeyF' && !e.repeat) useAction();
   if (e.code === 'KeyM') { sfx.muted = !sfx.muted; if (sfx.master) sfx.master.gain.value = sfx.muted ? 0 : .55; log(sfx.muted ? 'Zvuk vypnut' : 'Zvuk zapnut'); }
-  if (['Space', 'ControlLeft', 'KeyC', 'KeyQ', 'KeyE', 'KeyF'].includes(e.code)) e.preventDefault();
+  if (['Space', 'KeyC', 'KeyQ', 'KeyE', 'KeyF'].includes(e.code) || e.ctrlKey) e.preventDefault();
 });
+// browsers never let a page swallow Ctrl+W, so at least ask before the tab closes mid-mission
+addEventListener('beforeunload', e => { if (game.state === 'playing' || game.state === 'paused') { e.preventDefault(); e.returnValue = ''; } });
 addEventListener('keyup', e => keys[e.code] = false);
 addEventListener('blur', () => { for (const k in keys) keys[k] = false; mouseDown = rightDown = false; });
 addEventListener('contextmenu', e => e.preventDefault());
@@ -3100,20 +3225,21 @@ addEventListener('wheel', e => {
 });
 canvas.addEventListener('click', () => { if (game.state === 'playing' && document.pointerLockElement !== canvas) { const p = canvas.requestPointerLock(); if (p && p.catch) p.catch(() => { }); } });
 document.addEventListener('pointerlockchange', () => { if (document.pointerLockElement !== canvas && game.state === 'playing') pauseGame(); });
-const KEYS_HTML = `<div class="keys"><span><b>WASD</b> pohyb · <b>SPACE</b> skok</span><span><b>LMB</b> střelba · <b>RMB</b> zaměřovač</span><span><b>R</b> přebít · <b>F</b> použít / dveře</span><span><b>Q / E</b> vyklonit se</span><span><b>SHIFT</b> sprint · <b>C / CTRL</b> přikrčit</span><span><b>1–6 / kolečko</b> zbraně</span><span><b>TAB</b> úkoly mise</span><span><b>M</b> zvuk · <b>ESC</b> pauza</span></div>`;
+const KEYS_HTML = `<div class="keys"><span><b>WASD</b> pohyb · <b>SPACE</b> skok</span><span><b>LMB</b> střelba · <b>RMB</b> zaměřovač</span><span><b>R</b> přebít · <b>F</b> použít / dveře</span><span><b>Q / E</b> vyklonit se</span><span><b>SHIFT</b> sprint · <b>C</b> přikrčit / plížit</span><span><b>1–6 / kolečko</b> zbraně</span><span><b>TAB</b> úkoly mise</span><span><b>M</b> zvuk · <b>ESC</b> pauza</span></div>`;
 function setOverlay(html, buttons) {
   overlay.innerHTML = html + '<div>' + buttons.map((b, i) => `<button class="btn ${b.cls || ''}" data-i="${i}" ${b.disabled ? 'disabled' : ''}>${b.label}</button>`).join('') + '</div><div id="load"></div>';
   overlay.style.display = 'flex'; $('hud').style.display = 'none';
   overlay.querySelectorAll('button[data-i]').forEach(el => el.onclick = () => buttons[+el.dataset.i].fn());
 }
 function unlocked() { return clamp(store.get('cg_unlocked', 0), 0, LEVELS.length - 1); }
-let menuDiff = clamp(store.get('cg_diff', 1), 0, 2), menuLevel = 0;
+let menuDiff = clamp(store.get('cg_diff', 1), 0, DIFFS.length - 1), menuLevel = 0;
 function showMainMenu() {
   game.state = 'menu'; sfx.flame(false);
   const un = unlocked(); menuLevel = clamp(menuLevel, 0, un);
   overlay.innerHTML = `<h1>CASTLE GRIMHOLD</h1><h2>OPERATION IRON WOLF · 1943</h2>
     <p>Hrad v Bavorských Alpách, okultní divize SS a tajná laboratoř. Tři mise napříč patry hradu – od kobek přes rytířský sál a hradby až do krypty.</p>
-    <h3>OBTÍŽNOST</h3><div>${DIFFS.map((d, i) => `<button class="btn sm${i === menuDiff ? ' sel' : ''}" data-d="${i}">${d.name}</button>`).join('')}</div>
+    <p style="font-size:13px;color:#a99c80">Plížení: drž se ve stínu a přikrč se (C). Stráže tě nejdřív jen tuší <b style="color:#f2c53d">?</b> – teprve pak spustí poplach <b style="color:#ff3b24">!</b>. Kroky a sprint jsou slyšet, mrtvá těla vzbudí podezření. Zezadu nožem = tichá likvidace.</p>
+    <h3>OBTÍŽNOST</h3><div>${DIFFS.map((d, i) => `<button class="btn sm${i === menuDiff ? ' sel' : ''}" data-d="${i}">${d.name}</button>`).join('')}</div><p style="font-size:13px;color:#a99c80;margin:6px 0 0">${DIFFS[menuDiff].desc}</p>
     <h3>MISE</h3><div>${LEVELS.map((L, i) => `<button class="btn sm${i === menuLevel ? ' sel' : ''}" data-l="${i}" ${i > un ? 'disabled' : ''}>${i + 1}. ${L.name.split('· ')[1]}</button>`).join('')}</div>
     <div><button class="btn" data-play="1">HRÁT</button></div>${KEYS_HTML}
     <p style="font-size:12px;color:#777;margin-top:10px">Zbraně: FBX modely CC0 z OpenGameArt (Lucian Pavel, ege, elmerenges) · vojáci: three.js / Mixamo · ${Object.keys(FBX).length}/6 FBX načteno${soldierTpl ? '' : ' · servery s modely vojáků nedostupné – náhradní postavy'}</p><div id="load"></div>`;
@@ -3148,11 +3274,11 @@ function startPlaying() {
 }
 function pauseGame() { game.state = 'paused'; mouseDown = rightDown = false; sfx.flame(false); setOverlay(`<h1>PAUZA</h1><h2>${LV.name}</h2>${KEYS_HTML}`, [{ label: 'POKRAČOVAT', fn: startPlaying }, { label: 'RESTART MISE', cls: 'sm', fn: () => { resetLevelState(); showBriefing(); } }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]); }
 const fmtTime = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
-const statsHtml = () => `<div class="stats">ZABITO <b>${player.kills}/${game.totalEnemies}</b><br>POKLADY <b>${player.treasure}/${game.totalTreasure}</b><br>ČAS <b>${fmtTime(player.time)}</b><br>SKÓRE <b>${player.score}</b></div>`;
+const statsHtml = () => `<div class="stats">ZABITO <b>${player.kills}/${game.totalEnemies}</b><br>ODHALEN <b>${game.detections}×</b><br>POKLADY <b>${player.treasure}/${game.totalTreasure}</b><br>ČAS <b>${fmtTime(player.time)}</b><br>SKÓRE <b>${player.score}</b></div>`;
 function die() { game.state = 'dead'; sfx.flame(false); setTimeout(() => { document.exitPointerLock(); setOverlay(`<h1 style="color:#c22">KIA</h1><h2>MISE NESPLNĚNA</h2>${statsHtml()}`, [{ label: 'ZKUSIT ZNOVU', fn: () => { resetLevelState(); startPlaying(); } }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]); }, 1500); }
 function win() {
   if (game.state !== 'playing') return; game.state = 'won'; sfx.flame(false);
-  player.score += Math.max(0, 3000 - Math.floor(player.time) * 4); document.exitPointerLock();
+  player.score += Math.max(0, 3000 - Math.floor(player.time) * 4); if (!game.detections) { player.score += 1500; log('Duch: neodhalen +1500'); } document.exitPointerLock();
   const last = game.level >= LEVELS.length - 1;
   store.set('cg_unlocked', Math.max(unlocked(), Math.min(LEVELS.length - 1, game.level + 1)));
   snapshotLoadout();
@@ -3205,7 +3331,7 @@ async function loadLevel(i) {
   enemies.forEach((e, k) => e.id4 = k % 4);
   for (const [t, cx, cz, yaw, opts] of LV.enemies) makeEnemy(t, cx, cz, yaw, opts);
   enemies.forEach((e, k) => e.id4 = k % 4);
-  game.totalEnemies = enemies.length; game.alarmed = false; game.bossE = enemies.find(e => e.T.boss) || null;
+  game.totalEnemies = enemies.length; game.alarmed = false; game.detections = 0; game.bossE = enemies.find(e => e.T.boss) || null;
   for (const e of enemies) tintMats(e.mats, e.x, e.z);
   placePlayerAtStart(); flowCell = -1;
   camera.position.set(player.pos.x, player.pos.y + 1.62, player.pos.z); camera.rotation.set(0, player.yaw, 0);
@@ -3254,9 +3380,10 @@ function tick(dt) {
     flowT -= dt; const pc = cidx(toCell(player.pos.x), toCell(player.pos.z));
     if (flowT <= 0 || pc !== flowCell) { if (flowT <= 0 || pc !== flowCell) { computeFlowFrom(toCell(player.pos.x), toCell(player.pos.z), flowDist); flowCell = pc; flowT = .5; } }
     camera.updateMatrixWorld(); _pm.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); _fr.setFromProjectionMatrix(_pm);
+    if (game.state === 'playing') updateStealth(dt);
     for (const e of enemies) updateEnemy(e, dt, frameNo);
     for (let i = 0; i < enemies.length; i++) { const a = enemies[i]; if (a.state === 'dead') continue; for (let j = i + 1; j < enemies.length; j++) { const b = enemies[j]; if (b.state === 'dead' || Math.abs(a.y - b.y) > 1.5) continue; const dx = a.x - b.x, dz = a.z - b.z, d = Math.hypot(dx, dz), rr = a.r + b.r + .1; if (d < rr && d > 1e-4) { const p = (rr - d) * .5; a.x += dx / d * p; a.z += dz / d * p; b.x -= dx / d * p; b.z -= dz / d * p; } } }
-    for (const e of enemies) if (e.state === 'chase' || e.state === 'alarm') for (const d of doors) if (d.target === 0 && !doorLocked(d) && Math.abs(d.y - e.y) < 1.5 && Math.hypot(d.c.x - e.x, d.c.z - e.z) < 3) openDoor(d, e.x, e.z);
+    for (const e of enemies) if (e.state === 'chase' || e.state === 'alarm' || e.state === 'investigate' || e.state === 'search' || e.state === 'return') for (const d of doors) if (d.target === 0 && !doorLocked(d) && Math.abs(d.y - e.y) < 1.5 && Math.hypot(d.c.x - e.x, d.c.z - e.z) < 3) openDoor(d, e.x, e.z);
     updatePickups(dt); updateGrenades(dt);
     for (let i = timers.length - 1; i >= 0; i--) { timers[i].t -= dt; if (timers[i].t <= 0) { const f = timers[i].fn; timers.splice(i, 1); f(); } }
     for (const l of logLines) l.life -= dt; while (logLines.length && logLines[0].life <= 0) { logLines.shift(); logDirty = true; }
