@@ -1,0 +1,30 @@
+CASTLE GRIMHOLD - 3D assets & licences
+=======================================
+
+Weapon models (assets/models/*.fbx, embedded in assets/models.js)
+All sources are CC0 1.0 (public domain) from OpenGameArt.org. They were
+re-oriented, scaled to real-world size, cleaned (loose props removed),
+UV-unwrapped where needed, textures downsized to 1024/512 px and
+re-exported as binary FBX 7.4 with embedded textures (Blender 3.6).
+
+  rifle.fbx     Lee-Enfield No.4 - "Bolt action Rifle: Lee Enfield" by Lucian Pavel (CC0)
+                https://opengameart.org/content/bolt-action-rifle-lee-enfield
+  revolver.fbx  "Old Revolver" by Lucian Pavel (CC0)
+                https://opengameart.org/content/old-revolver
+  flamer.fbx    "Flamethrower PBR (Unity) CC0" by Lucian Pavel (CC0)
+                https://opengameart.org/content/flamethrower-pbrunity-cc0
+  machete.fbx   "PBR Machete (CC0)" by Lucian Pavel (CC0)
+                https://opengameart.org/content/pbr-machete-cc0
+  sten.fbx      "Sten Smg" by ege (CC0)  (converted from .blend)
+                https://opengameart.org/content/sten-smg
+  grenade.fbx   "Stielhandgranate" by elmerenges (CC0)  (converted from .blend)
+                https://opengameart.org/content/stielhandgranate
+
+Characters (loaded at runtime from the three.js examples repository, MIT / Mixamo)
+  Soldier.glb  https://threejs.org/examples/models/gltf/Soldier.glb
+  Xbot.glb     https://threejs.org/examples/models/gltf/Xbot.glb
+  Uniform variants (Wehrmacht, SS, officer, sniper, undead) are recoloured at
+  runtime from the Soldier texture; helmets/caps are generated in code.
+
+Optional web textures (Poly Haven, CC0) and three.js example textures are
+used when reachable; otherwise procedural textures are painted at start-up.
