@@ -2152,7 +2152,7 @@ const FALLBACK = { machete: buildKnife, revolver: buildPistol, sten: buildSMG, r
 const VMCFG = {
   machete: { pos: [.16, -.16, -.5], rot: [-.1, .2, -.3], muzzle: [0, 0, -.27], rh: { p: [0, -.005, .2], r: [0, 0, 0], e: [.08, -.25, .62] } },
   revolver: { pos: [.15, -.13, -.45], rot: [.03, .12, -.04], muzzle: [0, .052, -.15], rh: { p: [0, -.045, .072], r: [-.38, 0, 0], e: [.1, -.3, .5] } },
-  sten: { pos: [.12, -.15, -.38], rot: [0, .03, 0], muzzle: [0, .03, -.39], rh: { p: [.005, -.055, .035], r: [-.2, 0, 0], e: [.13, -.32, .48] }, lh: { p: [-.075, .02, -.12], r: [0, 0, 1.3], e: [-.28, -.3, .3], left: true } },
+  sten: { pos: [.135, -.16, -.39], rot: [0, .03, 0], muzzle: [0, .03, -.39], rh: { p: [.005, -.055, .035], r: [-.2, 0, 0], e: [.13, -.32, .48] }, lh: { p: [-.075, .02, -.12], r: [0, 0, 1.3], e: [-.28, -.3, .3], left: true } },
   rifle: { pos: [.12, -.14, -.36], rot: [0, .03, 0], muzzle: [0, .045, -.57], rh: { p: [.0, -.045, .17], r: [-.3, 0, 0], e: [.12, -.32, .55] }, lh: { p: [-.01, -.04, -.2], r: [.2, 0, .3], e: [-.22, -.32, .25], left: true } },
   grenade: { pos: [.17, -.15, -.42], rot: [-.4, .25, -.15], muzzle: [0, 0, -.15], rh: { p: [0, 0, .06], r: [0, 0, 0], e: [.08, -.28, .45] } },
   flamer: { pos: [.11, -.19, -.45], rot: [0, .03, 0], muzzle: [0, .07, -.5], rh: { p: [0, -.06, .1], r: [-.3, 0, 0], e: [.13, -.3, .5] }, lh: { p: [-.01, -.03, -.16], r: [.1, 0, .3], e: [-.24, -.3, .25], left: true } }
@@ -2232,7 +2232,15 @@ function initArms() {
     if (o.isMesh) {
       o.frustumCulled = false; const src = [].concat(o.material)[0];
       const pm = new THREE.MeshPhongMaterial({ map: src.map || null, color: 0xffffff, specular: new THREE.Color(.06, .05, .045), shininess: 12 });
-      if (pm.map) { pm.map.colorSpace = THREE.NoColorSpace; pm.map.anisotropy = 4; }
+      if (pm.map) {
+        pm.map.colorSpace = THREE.NoColorSpace; pm.map.anisotropy = 4;
+        whenImage(pm.map, im => { // darker, browner battledress wool for the sleeves; skin (reddish) untouched
+          const c = mkCanvas(im.width, im.height), g = c.getContext('2d'); g.drawImage(im, 0, 0);
+          const d = g.getImageData(0, 0, c.width, c.height), p = d.data;
+          for (let i = 0; i < p.length; i += 4) { const r = p[i], gg = p[i + 1], b = p[i + 2]; if (!(r > gg * 1.1 && r > b * 1.2)) { p[i] = r * .78; p[i + 1] = gg * .68; p[i + 2] = b * .52; } }
+          g.putImageData(d, 0, 0); const t = new THREE.CanvasTexture(c); t.flipY = pm.map.flipY; t.colorSpace = THREE.NoColorSpace; t.anisotropy = 4; pm.map = t; pm.needsUpdate = true;
+        });
+      }
       o.material = pm; ARMS.mat = pm;
     }
   });
@@ -3229,6 +3237,8 @@ function updateEnemy(e, dt, frameNo) {
   const vis = dist < 80 && _fr.intersectsSphere(_sph);
   e.root.visible = vis; e.blob.visible = vis;
   const moving = (mx || mz) && speed > 0 && e.painT <= 0;
+  // hob-nailed boots: you can hear patrols coming (positional, only when close)
+  if (moving && dist < 16 && Math.abs(dy) < 4 && !T.boss) { e.stepT = (e.stepT || 0) - dt * speed; if (e.stepT <= 0) { e.stepT = 1.25; sfx.play('step', e.root.position, speed > 3 ? .75 : .5); } }
   const aiming = e.state === 'aim' || e.state === 'fire' || (e.state === 'chase' && e.los);
   e.poseW = lerp(e.poseW, T.melee ? (e.state !== 'idle' ? 1 : .35) : aiming ? 1 : e.state === 'idle' || e.state === 'return' ? 0 : e.state === 'investigate' ? .35 : .55, 1 - Math.exp(-8 * dt));
   if (e.mixer) {

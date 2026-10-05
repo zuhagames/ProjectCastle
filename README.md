@@ -2,11 +2,15 @@
 
 **Operation Iron Wolf · 1943** – 3D FPS z druhé světové války běžící přímo v prohlížeči, postavený na [three.js](https://threejs.org/) (r160).
 
+![Kuchyň hradu Grimhold – Sten v rukou, němečtí vojáci v dálce](docs/screenshot-kitchen.jpg)
+
 Proplížíš se a probojuješ hradem Grimhold přes tři mise:
 
 1. **Mise 1 · Kobky**
 2. **Mise 2 · Velitelství**
 3. **Mise 3 · Krypta**
+
+![Vinný sklep – revolver s tlumičem, podezíravý důstojník a minimapa](docs/screenshot-cellar.jpg)
 
 ## Spuštění
 
