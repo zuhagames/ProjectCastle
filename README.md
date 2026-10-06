@@ -35,15 +35,13 @@ Epizoda 1 se odehrává v hradu. Epizoda 2 je venku, v noci a daleko od hradu: s
 
 ## Spuštění
 
-Hra je jeden HTML soubor, ale kvůli načítání assetů ji spusť přes lokální server (ne přes `file://`):
+Hra nepotřebuje žádný vlastní server, three.js i všechny modely, zvuky a dabing jsou přibalené v repozitáři (`assets/`).
 
-```bash
-python -m http.server 8765 --bind 127.0.0.1
-```
+- **Na webu (GitHub Pages):** v nastavení repozitáře zapni *Settings → Pages → Build and deployment → Source: Deploy from a branch*, vyber větev `main` a složku `/ (root)` a dej *Save*. Za minutu běží hra na <https://zuhagames.github.io/ProjectCastle/>.
+- **V Google Sites:** *Vložit → Vložit (Embed) → Podle adresy URL* a zadej adresu z GitHub Pages výš, pak rámeček roztáhni na celou šířku. Kdyby vložená stránka nedovolila zamknout myš, hra sama nabídne tlačítko **Otevřít v novém okně** (v menu jsou i tlačítka *Celá obrazovka* a *Otevřít v novém okně*).
+- **Z disku:** stačí otevřít `castle_grimhold.html` dvojklikem. Three.js se v tom případě stáhne z CDN (jsDelivr), takže je potřeba internet.
 
-Pak otevři <http://127.0.0.1:8765/castle_grimhold.html>.
-
-Three.js se načítá z CDN (jsDelivr), takže je potřeba připojení k internetu. Modely, zvuky a dabing jsou zabalené v `assets/*.js`. Fotografické textury (Poly Haven) jsou volitelné – když nejsou dostupné, hra si textury vygeneruje procedurálně.
+Fotografické textury (Poly Haven) jsou volitelné – když nejsou dostupné, hra si textury vygeneruje procedurálně.
 
 ## Ovládání
 

@@ -110,11 +110,15 @@
 <script src="assets/characters.js"></script>
 <script src="assets/sounds.js"></script>
 <script src="assets/voices.js"></script>
-<script type="importmap">
-{ "imports": {
-  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-} }
+<script>
+// three.js ships with the game (assets/three) so a static host such as GitHub Pages – embedded in Google Sites –
+// needs nothing else; opened straight from disk (file://) browsers refuse local modules, so use the CDN there
+(() => {
+  const base = location.protocol === 'file:' ? 'https://cdn.jsdelivr.net/npm/three@0.160.0/' : new URL('assets/three/', location.href).href;
+  const im = document.createElement('script'); im.type = 'importmap';
+  im.textContent = JSON.stringify({ imports: { three: base + 'build/three.module.js', 'three/addons/': base + 'examples/jsm/' } });
+  document.currentScript.after(im);
+})();
 </script>
 </head>
 <body>
@@ -5981,6 +5985,18 @@ addEventListener('wheel', e => {
 });
 canvas.addEventListener('click', () => { if (game.state === 'playing' && document.pointerLockElement !== canvas) { const p = canvas.requestPointerLock(); if (p && p.catch) p.catch(() => { }); } });
 document.addEventListener('pointerlockchange', () => { if (document.pointerLockElement !== canvas && game.state === 'playing') pauseGame(); });
+// embedded in another page (Google Sites…): the host may forbid locking the mouse – offer the game in its own tab
+const IN_FRAME = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
+function openStandalone() { const w = window.open(location.href.split('#')[0], '_blank'); if (!w) location.href = location.href; }
+function goFullscreen() { const el = document.documentElement, f = el.requestFullscreen || el.webkitRequestFullscreen; if (f) { const p = f.call(el); if (p && p.catch) p.catch(() => { }); } }
+let lockedOnce = false; document.addEventListener('pointerlockchange', () => { if (document.pointerLockElement) lockedOnce = true; });
+document.addEventListener('pointerlockerror', () => {
+  // a normal tab refuses a re-lock right after Esc too, so only blame the host page when it never let us lock
+  if (game.state !== 'playing' || !IN_FRAME || lockedOnce) return;
+  game.state = 'paused'; mouseDown = rightDown = false;
+  setOverlay(`<h1 style="font-size:clamp(26px,4.5vw,50px)">MYŠ NELZE ZAMKNOUT</h1><p>Stránka, do které je hra vložená, nedovoluje zamknout kurzor myši, takže se nedá rozhlížet. Otevři hru ve vlastním okně – hraje se stejně a postup zůstane uložený.</p>`,
+    [{ label: 'OTEVŘÍT V NOVÉM OKNĚ', fn: openStandalone }, { label: 'ZKUSIT ZNOVU', cls: 'sm', fn: startPlaying }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]);
+});
 const KEYS_HTML = `<div class="keys"><span><b>WASD</b> pohyb · <b>SPACE</b> skok</span><span><b>LMB</b> střelba · <b>RMB</b> mířidla / puškohled</span><span><b>R</b> přebít · <b>F</b> použít / dveře</span><span><b>Q / E</b> vyklonit se</span><span><b>SHIFT</b> sprint · <b>C</b> přikrčit / plížit</span><span><b>1–8 / kolečko</b> zbraně</span><span><b>TAB</b> (držet) mapa a cíle mise</span><span><b>M</b> zvuk · <b>ESC</b> pauza</span></div>`;
 function setOverlay(html, buttons) {
   menuScreen(false);
@@ -6138,10 +6154,11 @@ function showMainMenu() {
       <button class="btn" data-go="missions">VÝBĚR MISE</button>
       <button class="btn" data-go="settings">NASTAVENÍ</button>
       <button class="btn" data-go="keys">OVLÁDÁNÍ</button>
+      ${IN_FRAME ? '<button class="btn sm" data-go="full">CELÁ OBRAZOVKA</button><button class="btn sm" data-go="tab">OTEVŘÍT V NOVÉM OKNĚ</button>' : ''}
     </div>
     <p class="mfoot">v1.3 · agent B. J. z Londýna proti operaci Finsternis · 1943<br>Dabing: Piper TTS · Zbraně: CC0 z OpenGameArt · vojáci: nisu (CC0), three.js / Mixamo · ${Object.keys(FBX).length}/6 FBX načteno${soldierTpl ? '' : ' · náhradní postavy'}</p><div id="load"></div>`;
   overlay.style.display = 'flex'; $('hud').style.display = 'none';
-  const go = { start: () => startMission(menuLevel, true), missions: showMissionSelect, settings: () => showSettings(showMainMenu), keys: showControls };
+  const go = { start: () => startMission(menuLevel, true), missions: showMissionSelect, settings: () => showSettings(showMainMenu), keys: showControls, full: goFullscreen, tab: openStandalone };
   overlay.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { sfx.play && sfx.ctx && sfx.play('switch'); go[b.dataset.go](); });
 }
 function showMissionSelect() {
