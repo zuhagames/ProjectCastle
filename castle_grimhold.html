@@ -509,6 +509,15 @@ TX.radio = tex(labelCanvas(256, 128, '#2a2c26', (g, w, h) => {
   g.fillStyle = '#d8c48a'; g.fillRect(16, 72, 150, 26); g.fillStyle = '#222'; for (let i = 0; i < 20; i++) g.fillRect(20 + i * 7, 74, 1, 10 + (i % 4) * 3);
   g.fillStyle = '#ff9a30'; g.fillRect(190, 76, 10, 10); g.fillStyle = '#5aff6a'; g.fillRect(210, 76, 10, 10); g.fillStyle = '#ccc'; for (let i = 0; i < 4; i++) g.fillRect(180 + i * 16, 100, 8, 16);
 }), false);
+// prop textures: tyres, tarpaulin, field-grey vehicle paint, radiator grille, MG 42 jacket, ammo box, blankets, stencils
+TX.tire = tex(paint(128, (x, y) => { const tread = ((x >> 2) % 3) ? 1 : .62, n = fbm(x / 128 * 8, y / 128 * 8, 8, 201, 3), k = (.75 + .35 * n) * tread; return [30 * k, 29 * k, 28 * k, tread * .5 + n * .2]; }, 1.4));
+TX.canvas = tex(paint(TS, (x, y) => { const u = x / TS, v = y / TS, n = fbm(u * 6, v * 6, 6, 211, 4), w = ((x + y) & 1) ? .93 : 1, fold = .86 + .14 * Math.sin((u * 7 + n * .8) * Math.PI * 2), st = fbm(u * 2, v * 2, 2, 212, 3); let k = w * (.72 + .36 * n) * fold; if (st > .6) k *= 1 - (st - .6) * .8; return [92 * k, 90 * k, 66 * k, n * .6 + fold * .4]; }, .9));
+TX.truckpaint = tex(paint(TS, (x, y) => { const u = x / TS, v = y / TS, n = fbm(u * 10, v * 10, 10, 221, 5), g = fbm(u * 3, v * 3, 3, 222, 3), sc = vnoise(u * 64, v * 64, 64, 223) > .97 ? .55 : 1; const k = (.8 + .28 * n) * sc; let r = 88 * k, gg = 94 * k, b = 84 * k; if (g > .6) { const t = Math.min(1, (g - .6) * 3); r = lerp(r, 88, t); gg = lerp(gg, 72, t); b = lerp(b, 52, t); } return [r, gg, b, n]; }, .6));
+TX.grille = tex(labelCanvas(128, 96, '#151614', (g, w, h) => { g.fillStyle = '#4a4d48'; for (let i = 0; i < 15; i++) g.fillRect(4 + i * 8, 6, 4, h - 12); g.fillStyle = '#5c5f58'; g.fillRect(0, 0, w, 5); g.fillRect(0, h - 5, w, 5); g.fillRect(w / 2 - 3, 0, 6, h); }), false);
+TX.mgjacket = tex(labelCanvas(64, 64, '#2f3134', (g, w, h) => { g.fillStyle = '#060607'; for (const [x, y] of [[16, 16], [48, 16], [32, 48], [0, 48], [64, 48]]) { g.beginPath(); g.ellipse(x, y, 9, 6, 0, 0, 7); g.fill(); } }));
+TX.ammobox = tex(labelCanvas(128, 128, '#4c5134', (g, w, h) => { g.fillStyle = '#3a3e28'; g.fillRect(0, 0, w, 10); g.fillRect(0, h - 10, w, 10); g.fillStyle = '#d6cfa0'; g.font = 'bold 22px Impact'; g.textAlign = 'center'; g.fillText('7,92', w / 2, h / 2 + 2); g.font = '13px Impact'; g.fillText('300 Patr.', w / 2, h / 2 + 22); }));
+TX.blanket = tex(paint(128, (x, y) => { const n = fbm(x / 128 * 8, y / 128 * 8, 8, 231, 4), w = ((x + y) & 1) ? .92 : 1, stripe = (y > 14 && y < 22) || (y > 106 && y < 114) ? .55 : 1, k = w * (.75 + .3 * n) * stripe; return [92 * k, 92 * k, 88 * k, n]; }, .8));
+TX.stencil = tex(labelCanvas(256, 128, 'rgba(0,0,0,0)', (g, w, h) => { g.fillStyle = 'rgba(28,24,18,.85)'; g.font = 'bold 44px Impact'; g.textAlign = 'center'; g.fillText('WH 1943', w / 2, 58); g.font = 'bold 26px Impact'; g.fillText('Nr. 4711 · 38 kg', w / 2, 98); }), false);
 TX.liquid = tex(paint(64, (x, y) => { const v = y / 128, n = fbm(x / 64 * 4, y / 128 * 8, 4, 91, 3), b = vnoise(x / 3, y / 3, 64, 92) > .93 ? 1.6 : 1; return [40 * b + 20 * n, (150 + 60 * n) * b * (1 - v * .3), 70 * b + 30 * n, 0]; }, 0, 128), false);
 TX.alarm = tex(labelCanvas(64, 96, '#5a0d08', (g, w, h) => { g.fillStyle = '#ddd'; g.font = 'bold 13px Impact'; g.textAlign = 'center'; g.fillText('ALARM', w / 2, 18); g.fillStyle = '#111'; g.beginPath(); g.arc(w / 2, 52, 18, 0, 7); g.fill(); g.fillStyle = '#e8c23a'; g.beginPath(); g.arc(w / 2, 52, 12, 0, 7); g.fill(); g.fillStyle = '#222'; g.fillRect(w / 2 - 3, 72, 6, 18); }), false);
 
@@ -1227,6 +1236,354 @@ const P_ = {
   safe(pos, rot = 0) { box('iron', pos, rot, .8, 1.0, .7, 0, .5, 0, {}); cyl('metal', L(V(0, .6, .36), pos, rot), rot, .1, .1, .04, 0, 0, 0, 10, Math.PI / 2); },
   flag(pos, rot = 0) { cyl('darkwood', pos, rot, .03, .03, 2.6, 0, 1.3, 0, 6); addVC('banner', new THREE.PlaneGeometry(.9, 1.3, 1, 2), L(V(.47, 1.8, 0), pos, rot), rot * Math.PI / 2); cyl('iron', pos, rot, .25, .3, .06, 0, .03, 0, 8); }
 };
+/* ---------- detailed props: RTCW-style low poly — bevelled edges, turned legs, real silhouettes ---------- */
+const RB = (w, h, d, r = .015, seg = 1) => new RoundedBoxGeometry(w, h, d, seg, Math.max(.001, Math.min(r, w / 2 - .001, h / 2 - .001, d / 2 - .001)));
+const tileUV = (g, su, sv = su) => { const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * su, uv.getY(i) * sv); return g; };
+const lathe = (pts, seg = 12) => new THREE.LatheGeometry(pts.map(([r, y]) => new THREE.Vector2(r, y)), seg);
+const turnedLeg = (h, r = .035, seg = 8) => lathe([[0, 0], [r * .75, 0], [r * .85, h * .06], [r * .55, h * .14], [r * .7, h * .45], [r * .5, h * .7], [r * .95, h * .78], [r, h * .8], [r, h], [0, h]], seg);
+function shapeGeo(pts, depth, opt = {}) {
+  const s = new THREE.Shape(); pts.forEach(([x, y], i) => i ? s.lineTo(x, y) : s.moveTo(x, y));
+  const g = new THREE.ExtrudeGeometry(s, { depth, bevelEnabled: !!opt.bevel, bevelThickness: opt.bevel || 0, bevelSize: opt.bevel || 0, bevelSegments: 1, curveSegments: 6 });
+  g.translate(0, 0, -depth / 2); return g;
+}
+const _pe = new THREE.Euler(), _pm4 = new THREE.Matrix4();
+// a part in prop space: local offset, local rotation (XYZ), then the prop's quarter-turn yaw
+function put(key, geo, pos, rot, lx, ly, lz, rx = 0, ry = 0, rz = 0) {
+  if (rx || ry || rz) geo.applyMatrix4(_pm4.makeRotationFromEuler(_pe.set(rx, ry, rz)));
+  addVC(key, geo, L(V(lx, ly, lz), pos, rot), rot * Math.PI / 2);
+}
+const Cy = (r1, r2, h, seg = 10, open = false) => new THREE.CylinderGeometry(r1, r2, h, seg, 1, open);
+Object.assign(P_, {
+  crate(pos, rot = 0, s = 1.2) {
+    const t = .07, i = s - 2 * t;
+    put('crate', RB(s - .03, s - .03, s - .03, .01, 1), pos, rot, 0, s / 2, 0);
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) put('darkwood', RB(t, s, t, .012, 1), pos, rot, sx * (s - t) / 2, s / 2, sz * (s - t) / 2);
+    for (const y of [t / 2, s - t / 2]) {
+      for (const sz of [-1, 1]) put('darkwood', RB(i, t, t, .01, 1), pos, rot, 0, y, sz * (s - t) / 2);
+      for (const sx of [-1, 1]) put('darkwood', RB(t, t, i, .01, 1), pos, rot, sx * (s - t) / 2, y, 0);
+    }
+    for (const sz of [-1, 1]) put('darkwood', RB(i * 1.36, t * .8, .025, .008, 1), pos, rot, 0, s / 2, sz * (s / 2 - .005), 0, 0, Math.PI / 4 * sz);
+    put('stencil', new THREE.PlaneGeometry(i * .8, i * .4), pos, rot, s / 2 - .005, s / 2, 0, 0, Math.PI / 2, 0);
+    addOccLocal(pos, rot, 0, s / 2, 0, s / 2, s / 2, s / 2, {});
+  },
+  crates(pos, rot = 0) { this.crate(pos, rot, 1.3); this.crate(L(V(.1, 1.3, -.05), pos, rot), rot, .9); this.crate(L(V(1.35, 0, .1), pos, rot), rot, 1.1); },
+  cask(pos) {
+    put('beam', tileUV(lathe([[0, 0], [.34, 0], [.385, .2], [.415, .52], [.385, .85], [.34, 1.05], [0, 1.05]], 16), 4, 1), pos, 0, 0, 0, 0);
+    for (const [y, r] of [[.08, .352], [.3, .4], [.75, .4], [.97, .352]]) put('metal', Cy(r, r, .05, 16, true), pos, 0, 0, y, 0);
+    addOcc(pos.x - .4, pos.y, pos.z - .4, pos.x + .4, pos.y + 1.05, pos.z + .4);
+  },
+  table(pos, rot = 0, w = 2, d = 1, tex = 'beam') {
+    put(tex, tileUV(RB(w, .07, d, .02), w / 1.4, d / 1.4), pos, rot, 0, .765, 0);
+    for (const sz of [-1, 1]) put('beam', RB(w - .3, .11, .035, .008, 1), pos, rot, 0, .675, sz * (d / 2 - .1));
+    for (const sx of [-1, 1]) put('beam', RB(.035, .11, d - .3, .008, 1), pos, rot, sx * (w / 2 - .1), .675, 0);
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) put('beam', turnedLeg(.73, .042), pos, rot, sx * (w / 2 - .1), 0, sz * (d / 2 - .1));
+    addOccLocal(pos, rot, 0, .765, 0, w / 2, .035, d / 2, { solid: false });
+    addOccLocal(pos, rot, 0, .4, 0, w / 2, .4, d / 2, { bake: false, bullet: false });
+  },
+  chair(pos, rot = 0, tex = 'beam') {
+    put(tex, RB(.46, .045, .44, .012), pos, rot, 0, .46, .02);
+    for (const sx of [-1, 1]) {
+      put(tex, turnedLeg(.44, .024), pos, rot, sx * .19, 0, .19);
+      put(tex, RB(.038, .98, .038, .01, 1), pos, rot, sx * .19, .49, -.19);           // back legs run up into the back posts
+      put(tex, RB(.025, .035, .36, .006, 1), pos, rot, sx * .19, .15, 0);            // side stretchers
+      put(tex, lathe([[0, 0], [.03, 0], [.034, .02], [0, .05]], 8), pos, rot, sx * .19, .98, -.19);
+    }
+    put(tex, RB(.36, .08, .03, .01, 1), pos, rot, 0, .9, -.19);
+    for (let i = -1; i <= 1; i++) put(tex, RB(.05, .3, .018, .006, 1), pos, rot, i * .1, .7, -.19);
+    put(tex, RB(.36, .035, .025, .006, 1), pos, rot, 0, .53, -.19);
+  },
+  bench(pos, rot = 0, len = 3) {
+    put('beam', tileUV(RB(len, .055, .34, .015), len / 1.2, 1), pos, rot, 0, .455, 0);
+    for (const sx of [-1, 1]) put('beam', shapeGeo([[-.16, 0], [-.06, 0], [0, .06], [.06, 0], [.16, 0], [.1, .43], [-.1, .43]], .05), pos, rot, sx * (len / 2 - .25), 0, 0, 0, Math.PI / 2, 0);
+    put('beam', RB(len - .45, .06, .04, .008, 1), pos, rot, 0, .2, 0);
+  },
+  shelf(pos, rot = 0, tex = 'books', w = 2.0, h = 2.4) {
+    const d = .42, t = .05, n = 4, sh = (h - .12) / n;
+    for (const sx of [-1, 1]) put('darkwood', RB(t, h, d, .01, 1), pos, rot, sx * (w - t) / 2, h / 2, 0);
+    put('darkwood', RB(w + .1, .08, d + .07, .02), pos, rot, 0, h + .04, .015);
+    put('darkwood', RB(w, .12, d, .01, 1), pos, rot, 0, .06, 0);
+    put('darkwood', RB(w - .02, h, .02, .005, 1), pos, rot, 0, h / 2, -d / 2 + .01);
+    for (let i = 1; i < n; i++) put('darkwood', RB(w - 2 * t, .03, d - .03, .005, 1), pos, rot, 0, .12 + i * sh, .01);
+    for (let i = 0; i < n; i++) {
+      const g = new THREE.PlaneGeometry(w - 2 * t - .02, sh - .04), uv = g.attributes.uv;
+      for (let k = 0; k < uv.count; k++) uv.setY(k, (uv.getY(k) + i) / n);
+      put(tex, g, pos, rot, 0, .12 + i * sh + (sh - .01) / 2, .05);
+    }
+    addOccLocal(pos, rot, 0, h / 2, 0, w / 2, h / 2, d / 2, {});
+  },
+  locker(pos, rot = 0) {
+    put('metal', RB(.65, 1.88, .5, .02), pos, rot, 0, .96, 0);
+    put('metal', RB(.68, .04, .53, .01, 1), pos, rot, 0, 1.92, 0);
+    put('iron', RB(.67, .06, .52, .01, 1), pos, rot, 0, .03, 0);
+    put('iron', RB(.008, 1.75, .01, .003, 1), pos, rot, 0, .97, .252);
+    for (const sx of [-1, 1]) {
+      for (let i = 0; i < 5; i++) put('iron', RB(.2, .012, .01, .003, 1), pos, rot, sx * .16, 1.62 + i * .045, .253);
+      put('iron', RB(.02, .16, .03, .006, 1), pos, rot, sx * .045, 1.0, .262);
+      put('stencil', new THREE.PlaneGeometry(.12, .05), pos, rot, sx * .16, 1.42, .2535);
+    }
+    addOccLocal(pos, rot, 0, .95, 0, .325, .95, .25, {});
+  },
+  bunk(pos, rot = 0) {
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) put('beam', RB(.07, 1.8, .07, .012, 1), pos, rot, sx * .46, .9, sz * .99);
+    for (const y of [.42, 1.37]) {
+      for (const sx of [-1, 1]) put('beam', RB(.05, .1, 1.92, .01, 1), pos, rot, sx * .46, y - .04, 0);
+      for (const sz of [-1, 1]) put('beam', RB(.86, .1, .05, .01, 1), pos, rot, 0, y - .04, sz * .99);
+      put('mattress', tileUV(RB(.86, .14, 1.9, .05), 1, 2), pos, rot, 0, y + .08, 0);
+      put('white', RB(.5, .09, .3, .04), pos, rot, 0, y + .195, -.74);
+      put('blanket', RB(.9, .035, .95, .015), pos, rot, 0, y + .17, .45);
+    }
+    for (const sz of [-1, 1]) put('beam', RB(.86, .22, .03, .008, 1), pos, rot, 0, 1.66, sz * .99);
+    for (let i = 0; i < 4; i++) put('beam', RB(.04, .04, .07, .006, 1), pos, rot, .46, .6 + i * .3, 1.04);
+    addOccLocal(pos, rot, 0, .9, 0, .5, .9, 1.02);
+  },
+  bed(pos, rot = 0) {
+    put('darkwood', RB(1.4, .26, 2.1, .03), pos, rot, 0, .3, 0);
+    for (const sx of [-1, 1]) put('darkwood', turnedLeg(.2, .045), pos, rot, sx * .63, 0, .98);
+    put('mattress', tileUV(RB(1.32, .2, 2.0, .07), 1, 2), pos, rot, 0, .53, 0);
+    put('white', RB(1.1, .13, .42, .055), pos, rot, 0, .69, -.74);
+    put('carpet', RB(1.38, .04, 1.25, .015), pos, rot, 0, .64, .35);
+    put('darkwood', shapeGeo([[-.75, 0], [.75, 0], [.75, 1.0], [.45, 1.1], [0, 1.18], [-.45, 1.1], [-.75, 1.0]], .07, { bevel: .01 }), pos, rot, 0, 0, -1.07);
+    for (const sx of [-1, 1]) put('darkwood', lathe([[0, 0], [.05, 0], [.05, .02], [.03, .05], [0, .09]], 8), pos, rot, sx * .75, 1.0, -1.07);
+    put('darkwood', RB(1.5, .52, .06, .02), pos, rot, 0, .3, 1.07);
+    addOccLocal(pos, rot, 0, .3, 0, .7, .3, 1.05, {});
+  },
+  desk(pos, rot = 0, radio = false) {
+    const w = 1.8, d = .9;
+    put('panel', tileUV(RB(w, .05, d, .015), 1.3, .7), pos, rot, 0, .775, 0);
+    put('panel', RB(.55, .72, d - .06, .015), pos, rot, .6, .37, 0);
+    for (let i = 0; i < 3; i++) {
+      put('darkwood', RB(.47, .19, .02, .008, 1), pos, rot, .6, .14 + i * .23, d / 2 - .025);
+      put('brass', lathe([[0, 0], [.016, 0], [.018, .012], [0, .024]], 8), pos, rot, .6, .14 + i * .23, d / 2 - .02, Math.PI / 2, 0, 0);
+    }
+    for (const sz of [-1, 1]) put('panel', turnedLeg(.75, .035), pos, rot, -.8, 0, sz * (d / 2 - .07));
+    put('panel', RB(1.0, .12, .03, .008, 1), pos, rot, -.25, .68, -d / 2 + .05);
+    if (radio) { put('radio', RB(.6, .35, .35, .02), pos, rot, -.4, .975, -.15); put('iron', Cy(.006, .006, .5, 4), pos, rot, -.62, 1.4, -.25); }
+    else { put('iron', RB(.42, .16, .34, .025), pos, rot, -.35, .88, -.05); for (let i = 0; i < 4; i++) put('white', RB(.3, .004, .02, .001, 1), pos, rot, -.35, .97, -.12 + i * .03); put('white', RB(.21, .005, .3, .002, 1), pos, rot, .25, .805, .05); }
+    addOccLocal(pos, rot, 0, .775, 0, w / 2, .03, d / 2, { solid: false });
+    addOccLocal(pos, rot, 0, .4, 0, w / 2, .4, d / 2, { bake: false, bullet: false });
+  },
+  sandbags(pos, rot = 0, n = 4) {
+    for (let r = 0; r < 3; r++) for (let i = 0; i < n - (r & 1); i++) {
+      const g = RB(.6, .22, .38, .09, 2), j = rndL(); g.scale(1 + (j - .5) * .08, 1, 1 + (rndL() - .5) * .1);
+      put('bag', g, pos, rot, (i - (n - 1) / 2 + (r & 1) * .5) * .6, .11 + r * .205, (j - .5) * .05, 0, (j - .5) * .16, 0);
+    }
+    addOccLocal(pos, rot, 0, .38, 0, n * .3, .38, .22, {});
+  },
+  mg(pos, rot = 0) { // MG 42 on a Lafette tripod
+    const y = 1.05;
+    put('gunmetal', RB(.075, .11, .42, .012), pos, rot, 0, y, .05);
+    put('mgjacket', tileUV(Cy(.034, .034, .48, 12, true), 2, 3), pos, rot, 0, y + .012, .5, Math.PI / 2, 0, 0);
+    put('gunmetal', Cy(.037, .037, .03, 12), pos, rot, 0, y + .012, .27, Math.PI / 2, 0, 0);
+    put('gunmetal', Cy(.024, .03, .09, 10), pos, rot, 0, y + .012, .78, Math.PI / 2, 0, 0);
+    put('gunmetal', RB(.012, .06, .012, .003, 1), pos, rot, 0, y + .075, .72);
+    put('gunmetal', RB(.05, .035, .12, .008, 1), pos, rot, 0, y + .07, .0);
+    put('bakelite', shapeGeo([[0, 0], [.34, -.03], [.37, -.14], [.3, -.15], [.06, -.065], [0, -.055]], .05, { bevel: .006 }), pos, rot, 0, y + .035, -.15, 0, Math.PI / 2, 0);
+    put('bakelite', RB(.035, .11, .045, .01, 1), pos, rot, 0, y - .09, -.06, -.3, 0, 0);
+    put('ammobox', RB(.11, .17, .26, .015), pos, rot, -.14, y - .07, .06);
+    for (let i = 0; i < 9; i++) put('brass', Cy(.0065, .0065, .065, 5), pos, rot, -.075, y - .005 - i * .013, .06 + (i % 2) * .012, 0, 0, Math.PI / 2);
+    put('iron', RB(.09, .05, .32, .01, 1), pos, rot, 0, y - .1, .05);
+    for (const a of [-.62, .62, Math.PI]) {
+      const lx = Math.sin(a), lz = Math.cos(a), f = .48;
+      put('iron', Cy(.02, .024, 1.08, 6), pos, rot, lx * .26, (y - .1) / 2, lz * .26 + .05, -lz * f, 0, lx * f);
+      put('iron', RB(.13, .02, .08, .006, 1), pos, rot, lx * .52, .01, lz * .52 + .05, 0, a, 0);
+    }
+  },
+  armor(pos, rot = 0) { // suit of armour on a plinth
+    put('trim', RB(.62, .18, .62, .03), pos, rot, 0, .09, 0);
+    for (const s of [-1, 1]) {
+      put('iron', lathe([[0, 0], [.07, 0], [.08, .05], [.06, .33], [.08, .4], [.07, .47], [.085, .78], [0, .8]], 10), pos, rot, s * .11, .18, 0);
+      put('iron', RB(.13, .07, .26, .03), pos, rot, s * .11, .215, .05);
+      put('iron', new THREE.SphereGeometry(.11, 10, 6, 0, Math.PI * 2, 0, 1.7), pos, rot, s * .3, 1.45, 0);
+      put('iron', lathe([[0, 0], [.045, 0], [.06, .2], [.07, .27], [.055, .5], [0, .52]], 8), pos, rot, s * .32, .86, 0);
+      put('iron', RB(.09, .1, .06, .03), pos, rot, s * .32, .82, .02);
+    }
+    put('iron', lathe([[0, 0], [.17, .0], [.21, .07], [.2, .16], [0, .17]], 12), pos, rot, 0, .9, 0);
+    put('iron', lathe([[0, 0], [.2, 0], [.245, .12], [.255, .34], [.22, .48], [.13, .56], [0, .58]], 12), pos, rot, 0, 1.02, 0);
+    put('iron', lathe([[0, 0], [.11, 0], [.135, .08], [.14, .2], [.12, .3], [.06, .36], [0, .37]], 12), pos, rot, 0, 1.6, 0);
+    put('iron', RB(.2, .025, .05, .008, 1), pos, rot, 0, 1.78, .12);
+    put('darkwood', Cy(.018, .018, 2.3, 6), pos, rot, .42, 1.15, .05);
+    put('iron', shapeGeo([[0, 0], [.18, .08], [.2, .2], [.05, .12], [0, .32], [-.04, .1], [-.12, .06]], .01), pos, rot, .42, 2.2, .05);
+    addOccLocal(pos, rot, 0, .95, 0, .3, .95, .3, {});
+  },
+  pew(pos, rot = 0, len = 3.2) {
+    put('darkwood', tileUV(RB(len, .06, .45, .015), len, 1), pos, rot, 0, .45, 0);
+    put('darkwood', tileUV(RB(len, .5, .05, .015), len, 1), pos, rot, 0, .76, -.22, -.12, 0, 0);
+    for (const s of [-1, 1]) put('darkwood', shapeGeo([[.27, 0], [-.27, 0], [-.27, .55], [-.2, .62], [-.1, .62], [-.05, .55], [.2, 1.0], [.27, 1.0]], .07, { bevel: .01 }), pos, rot, s * len / 2, 0, 0, 0, Math.PI / 2, 0);
+    put('darkwood', RB(len, .04, .04, .01, 1), pos, rot, 0, .2, .1);
+    addOccLocal(pos, rot, 0, .5, 0, len / 2, .5, .28, { bake: false, bullet: false });
+  },
+  sarcophagus(pos, rot = 0) {
+    put('bigstone', RB(1.1, .8, 2.3, .05), pos, rot, 0, .4, 0);
+    put('trim', RB(1.3, .12, 2.5, .03), pos, rot, 0, .06, 0);
+    put('trim', RB(1.25, .14, 2.45, .05), pos, rot, 0, .87, 0);
+    put('trim', RB(.75, .1, 1.8, .05), pos, rot, 0, .99, 0);
+    put('trim', RB(.12, .05, 1.3, .02), pos, rot, 0, 1.06, 0); put('trim', RB(.6, .05, .12, .02), pos, rot, 0, 1.06, -.35);
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) put('trim', RB(.13, .82, .13, .02), pos, rot, sx * .56, .41, sz * 1.16);
+    addOccLocal(pos, rot, 0, .4, 0, .55, .45, 1.15, {});
+  },
+  coffin(pos, rot = 0) {
+    const pts = [[-.2, -1], [.2, -1], [.37, .5], [.27, 1], [-.27, 1], [-.37, .5]];
+    put('darkwood', shapeGeo(pts, .44), pos, rot, 0, .22, 0, -Math.PI / 2, 0, 0);
+    put('darkwood', shapeGeo(pts.map(([x, y]) => [x * 1.06, y * 1.03]), .05, { bevel: .015 }), pos, rot, 0, .47, 0, -Math.PI / 2, 0, 0);
+    for (const sz of [-.55, .1, .65]) for (const sx of [-1, 1]) put('brass', RB(.02, .03, .1, .006, 1), pos, rot, sx * .36, .26, sz);
+    addOccLocal(pos, rot, 0, .25, 0, .38, .25, 1.0, {});
+  },
+  console(pos, rot = 0) {
+    put('metal', RB(1.6, 1.05, .7, .03), pos, rot, 0, .525, 0);
+    put('metal', RB(1.6, .6, .38, .03), pos, rot, 0, 1.38, -.16);
+    put('radio', new THREE.PlaneGeometry(1.4, .45), pos, rot, 0, 1.38, .035);
+    put('radio', new THREE.PlaneGeometry(1.4, .35), pos, rot, 0, .82, .352);
+    for (let i = 0; i < 6; i++) put('iron', lathe([[0, 0], [.025, 0], [.025, .02], [.015, .035], [0, .035]], 8), pos, rot, -.6 + i * .24, 1.07, .2);
+    for (const sx of [-1, 1]) put('iron', RB(.08, .9, .05, .01, 1), pos, rot, sx * .75, .5, .36);
+    addOccLocal(pos, rot, 0, .55, 0, .8, .55, .35, {});
+  },
+  generator(pos, rot = 0) {
+    put('iron', RB(3.0, .3, 1.6, .04), pos, rot, 0, .15, 0);
+    put('metal', Cy(.7, .7, 1.9, 16), pos, rot, -.2, 1.05, 0, 0, 0, Math.PI / 2);
+    for (const s of [-1, 1]) put('metal', lathe([[0, .25], [.4, .2], [.62, .1], [.7, 0], [0, 0]], 16), pos, rot, -.2 + s * .95, 1.05, 0, 0, 0, -s * Math.PI / 2);
+    for (let i = 0; i < 5; i++) put('iron', Cy(.72, .72, .05, 16, true), pos, rot, -.95 + i * .38, 1.05, 0, 0, 0, Math.PI / 2);
+    put('metal', RB(.9, 1.5, 1.25, .04), pos, rot, 1.25, 1.05, 0);
+    for (let i = 0; i < 6; i++) put('iron', RB(.6, .03, .01, .004, 1), pos, rot, 1.25, .7 + i * .12, .63);
+    put('iron', Cy(.45, .45, .12, 16), pos, rot, 1.76, 1.05, 0, 0, 0, Math.PI / 2);
+    put('iron', Cy(.06, .06, .9, 8), pos, rot, 1.0, 2.1, -.3);
+    addOccLocal(pos, rot, 0, .9, 0, 1.6, .9, .8, {});
+  },
+  cabinet(pos, rot = 0) {
+    put('metal', RB(.55, 1.35, .62, .02), pos, rot, 0, .675, 0);
+    for (let i = 0; i < 4; i++) { put('metal', RB(.49, .29, .015, .006, 1), pos, rot, 0, .2 + i * .32, .31); put('iron', RB(.16, .025, .03, .008, 1), pos, rot, 0, .26 + i * .32, .325); put('white', RB(.08, .04, .003, .001, 1), pos, rot, 0, .31 + i * .32, .319); }
+    addOccLocal(pos, rot, 0, .675, 0, .275, .675, .31, {});
+  },
+  safe(pos, rot = 0) {
+    put('iron', RB(.8, 1.0, .7, .04), pos, rot, 0, .5, 0);
+    put('iron', RB(.66, .86, .04, .02), pos, rot, 0, .5, .36);
+    put('brass', lathe([[0, 0], [.085, 0], [.09, .02], [.06, .035], [0, .04]], 16), pos, rot, 0, .62, .38, Math.PI / 2, 0, 0);
+    put('brass', RB(.04, .2, .04, .015, 1), pos, rot, .2, .45, .4);
+    for (const y of [.2, .8]) put('iron', Cy(.025, .025, .12, 8), pos, rot, -.34, y, .36);
+    for (const sx of [-1, 1]) put('iron', RB(.12, .06, .62, .02, 1), pos, rot, sx * .3, .03, 0);
+    addOccLocal(pos, rot, 0, .5, 0, .4, .5, .35, {});
+  },
+  truck(pos, rot = 0) { // Opel Blitz 3 t, cab towards +Z
+    const P = 'truckpaint';
+    for (const sx of [-1, 1]) put('iron', RB(.12, .2, 5.9, .02, 1), pos, rot, sx * .46, .62, .45);
+    put('iron', RB(2.05, .14, .12, .035), pos, rot, 0, .6, 4.02);
+    put('iron', RB(2.1, .12, .1, .02), pos, rot, 0, .62, -3.32);
+    const wheel = (x, z, out) => {
+      put('tire', tileUV(new THREE.TorusGeometry(.38, .14, 8, 20), 4, 1), pos, rot, x, .52, z, 0, Math.PI / 2, 0);
+      put(P, lathe([[0, -.1], [.27, -.1], [.28, -.06], [.19, .02], [.12, .07], [.05, .09], [0, .09]], 14), pos, rot, x, .52, z, 0, 0, out * -Math.PI / 2);
+      put('iron', Cy(.24, .24, .2, 12), pos, rot, x, .52, z, 0, 0, Math.PI / 2);
+    };
+    for (const sx of [-1, 1]) { wheel(sx * .94, 3.0, sx); wheel(sx * .8, -1.75, sx); wheel(sx * 1.05, -1.75, sx); }
+    for (const sx of [-1, 1]) {
+      put('truckpaint2', Cy(.62, .62, .38, 14, true), pos, rot, sx * .94, .5, 3.0, 0, 0, Math.PI / 2);
+      put(P, RB(.4, .045, 1.35, .012, 1), pos, rot, sx * .94, .63, 1.75);
+      put('truckpaint2', Cy(.62, .62, .66, 14, true), pos, rot, sx * .93, .5, -1.75, 0, 0, Math.PI / 2);
+    }
+    // engine hood with louvres, radiator grille, headlights
+    put(P, shapeGeo([[-.62, 0], [.62, 0], [.6, .5], [.48, .62], [-.48, .62], [-.6, .5]], 1.3, { bevel: .02 }), pos, rot, 0, .78, 3.3);
+    for (const sx of [-1, 1]) for (let i = 0; i < 6; i++) put('iron', RB(.012, .14, .035, .004, 1), pos, rot, sx * .635, 1.08, 2.85 + i * .12);
+    put('grille', RB(1.0, .66, .05, .02), pos, rot, 0, 1.1, 3.97);
+    put(P, RB(1.06, .08, .07, .02), pos, rot, 0, 1.46, 3.97);
+    for (const sx of [-1, 1]) {
+      put('iron', Cy(.11, .085, .17, 12), pos, rot, sx * .83, 1.2, 3.55, Math.PI / 2, 0, 0);
+      put('lens', new THREE.CircleGeometry(.095, 12), pos, rot, sx * .83, 1.2, 3.64);
+      put('iron', RB(.04, .25, .04, .01, 1), pos, rot, sx * .8, 1.02, 3.5);
+    }
+    // cab: body, roof, split windscreen, side windows, doors
+    put(P, RB(2.0, 1.15, 1.45, .07), pos, rot, 0, 1.45, 2.0);
+    put(P, RB(2.06, .08, 1.56, .04), pos, rot, 0, 2.06, 1.98);
+    for (const sx of [-1, 1]) put('window', new THREE.PlaneGeometry(.84, .5), pos, rot, sx * .46, 1.76, 2.73);
+    put(P, RB(.06, .55, .03, .01, 1), pos, rot, 0, 1.76, 2.735);
+    for (const sx of [-1, 1]) {
+      put('window', new THREE.PlaneGeometry(.62, .44), pos, rot, sx * 1.006, 1.76, 1.95, 0, sx * Math.PI / 2, 0);
+      put('iron', RB(.008, .95, .012, .003, 1), pos, rot, sx * 1.004, 1.35, 1.32);
+      put('iron', RB(.008, .95, .012, .003, 1), pos, rot, sx * 1.004, 1.35, 2.62);
+      put('iron', RB(.025, .03, .15, .008, 1), pos, rot, sx * 1.02, 1.42, 1.5);
+      put('iron', Cy(.012, .012, .25, 5), pos, rot, sx * 1.1, 1.85, 2.6, 0, 0, Math.PI / 2);
+      put('glass2', RB(.14, .1, .015, .005, 1), pos, rot, sx * 1.24, 1.85, 2.6);
+    }
+    // cargo bed with drop sides and a canvas tarp on bows
+    put('beam', tileUV(RB(2.2, .1, 3.9, .02), 2, 3), pos, rot, 0, .95, -1.35);
+    for (const sx of [-1, 1]) { put('beam', tileUV(RB(.06, .5, 3.9, .015), 3, 1), pos, rot, sx * 1.07, 1.25, -1.35); for (let i = 0; i < 4; i++) put('iron', RB(.07, .5, .05, .01, 1), pos, rot, sx * 1.075, 1.25, -3.1 + i * 1.15); }
+    put('beam', RB(2.2, .5, .06, .015), pos, rot, 0, 1.25, -3.27); put('beam', RB(2.2, .5, .06, .015), pos, rot, 0, 1.25, .57);
+    const W2 = 1.1, Ht = 1.15, rr = .45, tarp = [[-W2, 0], [W2, 0]];
+    for (let i = 0; i <= 8; i++) { const a = i / 8 * Math.PI / 2; tarp.push([W2 - rr + Math.cos(a) * rr, Ht - rr + Math.sin(a) * rr]); }
+    for (let i = 0; i <= 8; i++) { const a = Math.PI / 2 + i / 8 * Math.PI / 2; tarp.push([-W2 + rr + Math.cos(a) * rr, Ht - rr + Math.sin(a) * rr]); }
+    put('canvas', tileUV(shapeGeo(tarp, 3.8), .55), pos, rot, 0, 1.47, -1.35);
+    for (let i = 0; i < 4; i++) put('canvas2', tileUV(shapeGeo(tarp.map(([x, y]) => [x * 1.01, y * 1.01]), .05), .55), pos, rot, 0, 1.465, -3.0 + i * 1.12);
+    put(P, Cy(.2, .2, .75, 12), pos, rot, -.72, .7, .95, Math.PI / 2, 0, 0);
+    put('iron', Cy(.04, .04, .5, 6), pos, rot, .85, .45, -3.3, Math.PI / 2, 0, 0);
+    addOccLocal(pos, rot, 0, 1.3, .2, 1.15, 1.3, 3.2, {});
+  }
+});
+Object.assign(P_, {
+  rack(pos, rot = 0) { // open rifle rack: uprights, butt rest, notched barrel bar
+    for (const sx of [-1, 1]) put('beam', RB(.08, 1.9, .3, .015), pos, rot, sx * 1.1, .95, 0);
+    put('beam', RB(2.3, .1, .34, .02), pos, rot, 0, .05, 0);
+    put('beam', RB(2.2, .1, .14, .015), pos, rot, 0, .34, .06);
+    put('beam', RB(2.2, .09, .12, .015), pos, rot, 0, 1.55, .04);
+    put('beam', RB(2.34, .06, .36, .02), pos, rot, 0, 1.92, 0);
+    put('beam', RB(2.2, .9, .02, .005, 1), pos, rot, 0, 1.45, -.14);
+    for (let i = 0; i < 6; i++) put('iron', RB(.02, .1, .05, .005, 1), pos, rot, -1 + i * .4, 1.62, .1);
+    for (let i = 0; i < 5; i++) {
+      if (FBX.rifle) addFBXProp('rifle', L(V(-.8 + i * .4, .97, .06), pos, rot), rot * Math.PI / 2);
+      else { put('metal', RB(.05, 1.3, .07, .01, 1), pos, rot, -.8 + i * .4, 1.05, .02); put('beam', RB(.09, .5, .1, .015, 1), pos, rot, -.8 + i * .4, .5, .03); }
+    }
+    addOccLocal(pos, rot, 0, 1, 0, 1.15, 1, .2, {});
+  },
+  stove(pos, rot = 0, top = 4) { // cast-iron kitchen range under a plastered hood
+    put('iron', RB(3.0, .78, 1.0, .03), pos, rot, 0, .52, 0);
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) put('iron', lathe([[0, 0], [.055, 0], [.04, .06], [.035, .13], [0, .13]], 8), pos, rot, sx * 1.4, 0, sz * .42);
+    put('metal', RB(3.1, .06, 1.08, .02), pos, rot, 0, .94, 0);
+    for (let i = 0; i < 3; i++) {
+      put('iron', RB(.72, .48, .03, .015), pos, rot, -1 + i, .5, .51);
+      put('metal', RB(.42, .025, .04, .01, 1), pos, rot, -1 + i, .7, .54);
+      for (const sx of [-1, 1]) put('metal', Cy(.02, .02, .05, 6), pos, rot, -1 + i + sx * .3, .3, .53, Math.PI / 2, 0, 0);
+    }
+    put('glow', RB(.34, .14, .01, .003, 1), pos, rot, -1, .44, .53); put('glow', RB(.34, .14, .01, .003, 1), pos, rot, 1, .44, .53);
+    put('metal', Cy(.016, .016, 3.0, 6), pos, rot, 0, .84, .6, 0, 0, Math.PI / 2);
+    for (const [x, r, h] of [[-.9, .26, .4], [-.1, .2, .3], [.8, .3, .5]]) put('iron', lathe([[0, 0], [r * .95, 0], [r, .03], [r * 1.02, h * .92], [r * 1.08, h], [r * .98, h], [0, h * .15]], 12), pos, rot, x, .97, 0);
+    put('plaster', shapeGeo([[-1.65, 0], [1.65, 0], [1.25, .55], [-1.25, .55]], 1.3), pos, rot, 0, 2.05, .1);
+    put('plaster', RB(3.4, .1, 1.4, .03), pos, rot, 0, 2.05, .1);
+    const ch = Math.max(.2, top - pos.y - 2.6); put('plaster', RB(1.0, ch, .8, .02, 1), pos, rot, 0, 2.6 + ch / 2, -.1);
+    addOccLocal(pos, rot, 0, .45, 0, 1.5, .45, .5, {});
+    lights.push({ pos: L(V(0, .7, 1.1), pos, rot), col: [1, .55, .22], rad: 9, int: 1.3, flick: true });
+    sprites.push(mkGlow(L(V(-1, .4, .6), pos, rot), .8, [1.2, .5, .15])); sprites.push(mkGlow(L(V(1, .4, .6), pos, rot), .8, [1.2, .5, .15]));
+  },
+  fireplace(pos, rot = 0) { // stone hearth: jambs, lintel, mantel shelf, sooty firebox, andirons and logs
+    for (const sx of [-1, 1]) put('bigstone', RB(.55, 1.55, .7, .03), pos, rot, sx * 1.025, .775, 0);
+    put('bigstone', RB(2.6, .65, .7, .03), pos, rot, 0, 1.875, 0);
+    put('trim', RB(3.0, .14, .9, .03), pos, rot, 0, 2.27, .06);
+    put('trim', RB(3.0, .1, 1.3, .03), pos, rot, 0, .05, .25);
+    put('iron', RB(1.5, 1.55, .08, .01, 1), pos, rot, 0, .775, -.31);
+    for (const sx of [-1, 1]) put('iron', RB(.04, 1.5, .62, .01, 1), pos, rot, sx * .74, .775, 0);
+    put('glow', new THREE.PlaneGeometry(1.3, .7), pos, rot, 0, .5, -.26);
+    for (const sx of [-1, 1]) { put('iron', RB(.04, .3, .04, .01, 1), pos, rot, sx * .45, .25, .2); put('iron', RB(.04, .04, .5, .01, 1), pos, rot, sx * .45, .12, 0); }
+    for (let i = 0; i < 3; i++) put('beam', Cy(.07, .07, .9, 7), pos, rot, -.3 + i * .3, .17 + (i === 1 ? .1 : 0), 0, 0, 0, Math.PI / 2);
+    addOccLocal(pos, rot, 0, 1.1, 0, 1.3, 1.1, .35, {});
+    addFlame(L(V(0, .55, .1), pos, rot), .35); lights.push({ pos: L(V(0, .9, 1.3), pos, rot), col: [1, .55, .25], rad: 11, int: 1.4, flick: true });
+  },
+  altar(pos, rot = 0) {
+    put('trim', RB(3.0, .14, 1.6, .03), pos, rot, 0, .07, .1);
+    put('bigstone', RB(2.4, .9, 1.1, .03), pos, rot, 0, .59, 0);
+    put('trim', RB(2.62, .1, 1.3, .03), pos, rot, 0, 1.08, 0);
+    put('white', RB(2.1, .02, .95, .005, 1), pos, rot, 0, 1.14, .02);
+    put('carpet', new THREE.PlaneGeometry(1.0, .75), pos, rot, 0, .62, .556);
+    for (const sx of [-1, 1]) put('trim', RB(.16, .9, .16, .02), pos, rot, sx * 1.1, .59, .5);
+    for (const x of [-.9, -.5, .5, .9]) { const p = L(V(x, 1.13, -.3), pos, rot); put('brass', lathe([[0, 0], [.07, 0], [.03, .04], [.02, .12], [.045, .14], [0, .15]], 8), p, 0, 0, 0, 0); put('wax', Cy(.035, .035, .25, 6), p, 0, 0, .27, 0); addFlame(V(p.x, p.y + .45, p.z), .12, 'candle'); }
+    put('frame', RB(.07, 1.1, .07, .015), pos, rot, 0, 1.68, -.35); put('frame', RB(.6, .07, .07, .015), pos, rot, 0, 1.93, -.35);
+    put('frame', lathe([[0, 0], [.14, 0], [.08, .05], [.05, .1], [0, .12]], 8), pos, rot, 0, 1.13, -.35);
+    addOccLocal(pos, rot, 0, .55, 0, 1.2, .55, .55, {});
+    lights.push({ pos: L(V(0, 1.9, .6), pos, rot), col: [1, .7, .4], rad: 8, int: .95, flick: true });
+  },
+  bones(pos) { // long bones with knuckled ends and a skull
+    const bone = len => lathe([[0, 0], [.03, 0], [.038, .02], [.022, .06], [.016, len * .5], [.022, len - .06], [.038, len - .02], [.03, len], [0, len]], 7);
+    for (let i = 0; i < 6; i++) put('bone', bone(.3 + rndL() * .15), V(pos.x + (rndL() - .5) * .7, pos.y + .03 + i * .012, pos.z + (rndL() - .5) * .7), 0, 0, 0, 0, 0, rndL() * 6, Math.PI / 2);
+    const sk = V(pos.x + .1, pos.y, pos.z);
+    put('bone', new THREE.SphereGeometry(.1, 10, 7), sk, 0, 0, .12, 0, 0, 0, 0);
+    put('bone', RB(.12, .06, .1, .025), sk, 0, 0, .05, .05);
+    put('iron', new THREE.SphereGeometry(.025, 6, 4), sk, 0, -.035, .13, .085); put('iron', new THREE.SphereGeometry(.025, 6, 4), sk, 0, .035, .13, .085);
+  }
+});
 // FBX meshes used as static vertex-lit props (rifles in racks ...)
 function addFBXProp(name, pos, ry, mode = 'stand') {
   const src = FBX[name]; if (!src) return;
@@ -1656,7 +2013,11 @@ function segBlocked(ax, ay, az, bx, by, bz, mode = 0) {
       if (y0 < f0 - .003 || y1 < f1 - .003 || y0 > top + .003 || y1 > top + .003) return true;
       if (mode === 1 && ri === -2) { const d = doorAt.get(i); if (d && d.open < .5) { const tc = d.alongX ? (adz > 1e-9 ? (d.c.z - az) / dz : -1) : (adx > 1e-9 ? (d.c.x - ax) / dx : -1); if (tc >= t0 && tc <= t1) { const across = d.alongX ? Math.abs(ax + dx * tc - d.c.x) : Math.abs(az + dz * tc - d.c.z); if (across < 1) return true; } } }
       const bk = occBucket[i];
-      for (let k = 0; k < bk.length; k++) { const o = bk[k]; if (o.stamp === stamp || !o.active || (mode === 0 ? !o.bake : !o.bullet)) continue; o.stamp = stamp; if (segAABB(ax, ay, az, dx, dy, dz, o.min, o.max)) return true; }
+      for (let k = 0; k < bk.length; k++) {
+        const o = bk[k]; if (o.stamp === stamp || !o.active || (mode === 0 ? !o.bake : !o.bullet)) continue; o.stamp = stamp;
+        if (mode === 0 && ax > o.min.x && ax < o.max.x && ay > o.min.y && ay < o.max.y && az > o.min.z && az < o.max.z) continue; // a prop's coarse box never shadows the detail inside it
+        if (segAABB(ax, ay, az, dx, dy, dz, o.min, o.max)) return true;
+      }
     }
     if (t1 >= 1) return false;
     if (tmx < tmz) { t0 = tmx; tmx += tdx; cx += sx; } else { t0 = tmz; tmz += tdz; cz += sz; }
@@ -1797,6 +2158,11 @@ const VC_DEF = {
   glow: { map: W1, tint: [1, .6, .25], emissive: 1.6 }, meat: { map: W1, tint: [.75, .32, .28] }, bread: { map: W1, tint: [.8, .55, .3] }, cabbage: { map: W1, tint: [.45, .62, .32] }, mug: { map: W1, tint: [.5, .48, .45] }, figure: { map: W1, tint: [.7, .15, .1] },
   glass2: { map: W1, tint: [.5, .75, .6], emissive: .5 }, bone: { map: W1, tint: [.85, .8, .68] }, liquid: { map: TX.liquid, emissive: 1.2 }, truck: { map: TX.metal, tint: [.55, .6, .5] }
 };
+Object.assign(VC_DEF, {
+  tire: { map: TX.tire }, canvas: { map: TX.canvas }, canvas2: { map: TX.canvas, tint: [.72, .7, .62] }, truckpaint: { map: TX.truckpaint }, truckpaint2: { map: TX.truckpaint, side: THREE.DoubleSide },
+  grille: { map: TX.grille }, lens: { map: W1, tint: [.95, .9, .7], emissive: .45 }, mgjacket: { map: TX.mgjacket }, ammobox: { map: TX.ammobox }, bakelite: { map: TX.darkwood, tint: [.45, .33, .26] },
+  brass: { map: W1, tint: [.82, .62, .3] }, blanket: { map: TX.blanket }, stencil: { map: TX.stencil, alpha: true }
+});
 async function buildWorldMeshes(progress) {
   const per = await bakeLightmaps(p => progress(p * .85));
   for (const [key, B] of Object.entries(lmB)) {
@@ -1830,7 +2196,8 @@ async function buildWorldMeshes(progress) {
 function buildBarrels() {
   for (const [cx, cz, ox = 0, oz = 0] of LV.barrels || []) {
     const p = C(cx, cz, ox, oz);
-    const parts = [[Cyl(.42, .42, 1.25, 12, 3), .625, TX.barrel], [Cyl(.43, .43, .06, 12), .2, TX.metal], [Cyl(.43, .43, .06, 12), 1.05, TX.metal]];
+    const ring = (r, h) => Cyl(r, r, h, 16), bung = Cyl(.045, .045, .03, 8); bung.translate(.22, 0, .1); // steel drum: rolling hoops, chimes, bung
+    const parts = [[Cyl(.42, .42, 1.25, 16, 3), .625, TX.barrel], [ring(.44, .04), .42, TX.metal], [ring(.44, .04), .83, TX.metal], [ring(.435, .05), .03, TX.metal], [ring(.435, .05), 1.22, TX.metal], [bung, 1.265, TX.metal]];
     const group = new THREE.Group(); levelRoot.add(group);
     for (const [geo, y, map] of parts) {
       const g = geo.toNonIndexed(); g.translate(p.x, p.y + y, p.z);
@@ -3872,7 +4239,7 @@ function tick(dt) {
 window.__errs = [];
 addEventListener('error', e => window.__errs.push(String(e.message) + ' @' + e.lineno));
 addEventListener('unhandledrejection', e => window.__errs.push('rejection: ' + (e.reason && e.reason.message || e.reason)));
-window.__castle = { step(n = 1, dt = 1 / 60) { for (let i = 0; i < n; i++) tick(dt); }, THREE, ARMS, GRIPS, RIGS, FBX, sfx, SET, get pickups() { return pickups; }, damageEnemy, aim(v) { rightDown = v; }, player, enemies, WEAPONS, VMCFG, POSES, game, renderer, scene, camera, vmScene, vmCamera, get LV() { return LV; }, get lmB() { return lmB; }, get doors() { return doors; }, get patches() { return patches; }, get wallFaces() { return wallFaces; }, get ROOMS() { return ROOMS; }, get roomAt() { return roomAt; }, get wallTop() { return wallTop; }, floorAt, topAt, tp(x, z) { const p = C(x, z); player.pos.copy(p); player.viewY = p.y; }, give() { WEAPONS.forEach(w => { w.owned = true; if (w.mag) w.clip = w.mag; }); Object.assign(player.ammo, AMMO_MAX); }, loadLevel, startMission, buildViewModels, async quick(i = 0) { await startMission(i, true); startPlaying(); } };
+window.__castle = { step(n = 1, dt = 1 / 60) { for (let i = 0; i < n; i++) tick(dt); }, THREE, ARMS, GRIPS, RIGS, FBX, sfx, SET, P_, get pickups() { return pickups; }, damageEnemy, aim(v) { rightDown = v; }, player, enemies, WEAPONS, VMCFG, POSES, game, renderer, scene, camera, vmScene, vmCamera, get LV() { return LV; }, get lmB() { return lmB; }, get doors() { return doors; }, get patches() { return patches; }, get wallFaces() { return wallFaces; }, get ROOMS() { return ROOMS; }, get roomAt() { return roomAt; }, get wallTop() { return wallTop; }, floorAt, topAt, tp(x, z) { const p = C(x, z); player.pos.copy(p); player.viewY = p.y; }, give() { WEAPONS.forEach(w => { w.owned = true; if (w.mag) w.clip = w.mag; }); Object.assign(player.ammo, AMMO_MAX); }, loadLevel, startMission, buildViewModels, async quick(i = 0) { await startMission(i, true); startPlaying(); } };
 frame();
 boot().catch(err => { console.error(err); setLoad('Chyba při načítání: ' + err.message); });
 </script>
