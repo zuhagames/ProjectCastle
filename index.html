@@ -837,7 +837,7 @@ const LEVELS = [
       ['a', 1, 1, -1, -1], ['h', 4, 3, 1, 1],
       ['g', 14, 1, 1, -1], ['g', 14, 6, 1, 1], ['h', 8, 6, -1, 1], ['n', 8, 1, -1, -1],
       ['g', 8, 9, -1, -1], ['g', 14, 13, 1, 1], ['g', 8, 13, -1, 1], ['g', 14, 9, 1, -1], ['H', 11, 13, 0, 1.2],
-      ['W:flamer', 10, 16, 0, 0], ['q', 9, 16, -1, 0], ['q', 26, 21, 0, 1], ['u', 8, 17, -1, 1], ['u', 12, 15, 1, -1], ['a', 9, 15, -1, -1],
+      ['W:flamer', 10, 16, 0, 0], ['W:thompson', 12, 16, 0, -1], ['q', 9, 16, -1, 0], ['q', 12, 17, 1, 1], ['q', 26, 21, 0, 1], ['u', 8, 17, -1, 1], ['u', 12, 15, 1, -1], ['a', 9, 15, -1, -1],
       ['h', 22, 10, 1, 0],
       ['d:diary', 23, 17, .6, .6], ['v', 16, 12, -1, -1], ['h', 23, 12, 1, -1], ['u', 16, 15, -1, 0],
       ['a', 16, 21, -1, 1], ['h', 21, 19, 1, -1],
@@ -926,7 +926,7 @@ LEVELS.push(asciiLevel({
     ['g', 27, 10, 1, -1], ['a', 23, 12, -1, 1], ['h', 27, 16, 1, 1], ['q', 23, 14, -1, -1],
     ['h', 13, 11, -1, -1], ['n', 16, 11, 1, -1], ['s', 13, 13, -1, 1],
     ['f', 12, 22, -1, 1], ['a', 17, 21, 1, -1],
-    ['d:mapa', 4, 1, 0, 2], ['g', 2, 1, -1, -1], ['g', 6, 1, 1, -1], ['H', 2, 2, -1, 1], ['q', 6, 2, 1, 1],
+    ['d:mapa', 4, 1, 0, 2], ['g', 2, 1, -1, -1], ['g', 6, 1, 1, -1], ['H', 2, 2, -1, 1], ['q', 6, 2, 1, 1], ['W:garand', 5, 2, 0, 0], ['m', 3, 2, 0, 1],
     ['g', 25, 2, 1, -1], ['g', 2, 22, -1, 1], ['h', 21, 9, 1, -1], ['r', 8, 14, .5, .5], ['v', 9, 0, 0, .5], ['p', 18, 21, 0, 1], ['q', 11, 7, 0, 0], ['f', 5, 16, -1, 0]
   ]
 }));
@@ -1089,7 +1089,7 @@ LEVELS.push(asciiLevel({
   ],
   pickups: [
     ['d:list', 16, 2, 0, 2], ['g', 9, 2, -1, -1], ['h', 13, 2, 1, -1], ['a', 17, 5, 1, 0], ['g', 15, 3, -1, 1],
-    ['n', 22, 2, -1, -1], ['a', 27, 5, 1, 1], ['g', 27, 2, 1, -1], ['H', 22, 5, -1, 1], ['f', 5, 18, -.6, .6],
+    ['n', 22, 2, -1, -1], ['a', 27, 5, 1, 1], ['W:bar', 26, 5, 0, 0], ['m', 28, 5, 0, 0], ['g', 27, 2, 1, -1], ['H', 22, 5, -1, 1], ['f', 5, 18, -.6, .6],
     ['g', 30, 1, 0, 0], ['g', 3, 21, 0, 0], ['h', 20, 20, 0, 0], ['q', 12, 19, 0, 0], ['s', 30, 20, 0, 0], ['r', 2, 9, 0, 0], ['q', 29, 5, 0, 0], ['v', 3, 1, 0, 0], ['f', 19, 4, 0, 0]
   ]
 }));
@@ -1251,7 +1251,7 @@ LEVELS.push(asciiLevel({
   ],
   pickups: [
     ['k:laborator', 21, 2, 2, 0], ['g', 20, 1, -1, -1], ['h', 23, 1, 1, -1],
-    ['a', 26, 3, 0, 1], ['n', 25, 1, -1, -1], ['n', 27, 1, 1, -1], ['v', 27, 3, 1, 1],
+    ['a', 26, 3, 0, 1], ['n', 25, 1, -1, -1], ['n', 27, 1, 1, -1], ['v', 27, 3, 1, 1], ['W:bazooka', 24, 3, 0, 0], ['b', 25, 3, 0, 1],
     ['f', 14, 1, -1, -1], ['f', 18, 3, 1, 1], ['h', 8, 3, -1, 1], ['s', 12, 1, 1, -1],
     ['g', 2, 8, -1, -1], ['q', 6, 8, 1, -1], ['h', 2, 16, -1, 1],
     ['g', 8, 8, -1, -1], ['a', 21, 16, 1, 1], ['q', 9, 13, -1, 0], ['g', 21, 11, 1, 0],
@@ -1319,7 +1319,7 @@ LEVELS.push(asciiLevel({
   pickups: [
     ['d:vzorky', 5, 14, 0, 2], ['g', 2, 13, -1, -1], ['g', 8, 16, 1, 1], ['H', 8, 13, 1, -1],
     ['a', 2, 7, -1, -1], ['h', 8, 11, 1, 1], ['u', 3, 11, -1, 1], ['q', 7, 7, 1, -1],
-    ['a', 23, 7, 1, -1], ['n', 17, 11, -1, 1], ['g', 23, 11, 1, 1],
+    ['a', 23, 7, 1, -1], ['n', 17, 11, -1, 1], ['g', 23, 11, 1, 1], ['b', 23, 7, 0, 1], ['b', 17, 16, 0, 1], ['m', 2, 7, 0, 1],
     ['H', 23, 16, 1, 1], ['a', 17, 16, -1, 1], ['v', 23, 13, 1, -1], ['u', 17, 13, -1, -1], ['n', 20, 16, 0, 1],
     ['h', 11, 2, -1, -1], ['a', 14, 2, 1, -1], ['g', 2, 5, -1, 1], ['g', 23, 4, 1, -1], ['q', 12, 19, 0, 0]
   ]
@@ -3817,6 +3817,11 @@ const sfx = {
     switch (name) {
       case 'welrod': this.nb(o, .04, 'lowpass', 800, 160, 1, .55); this.tn(o, 'sine', 125, 45, .06, .35); this.click(o, 0, 3200, .22); this.click(o, .3, 2400, .25); this.click(o, .52, 2900, .3); break;
       case 'delisle': this.nb(o, .06, 'lowpass', 1000, 170, 1, .75); this.tn(o, 'sine', 140, 45, .09, .5); this.click(o, 0, 3000, .3); this.click(o, .45, 2200, .5); this.click(o, .62, 1800, .5); break;
+      case 'thompson': this.nb(o, .04, 'bandpass', 2400, 1300, .9, 1.05); this.nb(o, .16, 'lowpass', 1500, 120, 1, .95); this.tn(o, 'sine', 120, 45, .1, .8); this.click(o, .03, 2000, .2); break;
+      case 'garand': this.nb(o, .07, 'bandpass', 2400, 1100, .7, 1.35); this.nb(o, .5, 'lowpass', 2000, 70, 1, 1.35); this.tn(o, 'sine', 105, 32, .26, 1.15); break;
+      case 'ping': this.tn(o, 'sine', 2950, 2900, .5, .3); this.tn(o, 'sine', 4400, 4350, .3, .12); break;
+      case 'bar': this.nb(o, .06, 'bandpass', 2300, 1100, .8, 1.25); this.nb(o, .3, 'lowpass', 1800, 80, 1, 1.15); this.tn(o, 'sine', 100, 34, .16, 1); break;
+      case 'bazooka': this.nb(o, .9, 'lowpass', 900, 120, 1, 1.4); this.nb(o, .5, 'bandpass', 2600, 600, .7, .8); this.tn(o, 'sine', 70, 30, .5, 1.2); break;
       case 'supp': this.nb(o, .05, 'lowpass', 1100, 180, 1, .8); this.tn(o, 'sine', 170, 55, .07, .55); this.click(o, 0, 3400, .35); this.click(o, .045, 2300, .3); this.nb(o, .03, 'bandpass', 2600, 1800, 2, .25, .02); break;
       case 'revolver': this.nb(o, .06, 'bandpass', 2600, 1300, .8, 1.3); this.nb(o, .36, 'lowpass', 2100, 90, 1, 1.25); this.tn(o, 'sine', 130, 38, .2, 1.1); break;
       case 'sten': this.nb(o, .035, 'bandpass', 3200, 1700, .9, .9); this.nb(o, .13, 'lowpass', 1700, 160, 1, .8); this.tn(o, 'sine', 150, 55, .08, .6); this.click(o, .03, 2400, .25); break;
@@ -4005,7 +4010,62 @@ function buildDeLisle() {
   for (let i = 1; i < 4; i++) part(can, Cz(.0255, .0255, .003, 18), supRing, 0, 0, -len * i / 4);
   return g;
 }
-const FALLBACK = { machete: buildKnife, revolver: buildPistol, sten: buildSMG, rifle: buildRifle, grenade: buildGrenade, flamer: buildFlamer, welrod: buildWelrod, delisle: buildDeLisle };
+/* ---------- American weapons: a Thompson from an SOE drop, and US small arms the Germans took apart in their test labs ---------- */
+const olive = new THREE.MeshLambertMaterial({ color: new THREE.Color(.27, .3, .2) }), parker = new THREE.MeshLambertMaterial({ color: new THREE.Color(.22, .23, .22) });
+function buildThompson() {   // M1A1: flat-topped receiver, finned-free barrel, walnut stock/grip/handguard, 30-round stick
+  const g = new THREE.Group(), w = gm.wood, b = gm.blued;
+  part(g, new RoundedBoxGeometry(.044, .056, .27, 2, .006), parker, 0, .04, .0);                // receiver
+  part(g, Cz(.013, .013, .29, 12), b, 0, .046, -.27);                                            // barrel
+  part(g, Bx(.006, .016, .012), b, 0, .062, -.4); part(g, Bx(.016, .02, .02), b, 0, .07, .11); // sights
+  part(g, Cz(.006, .006, .02, 6), b, .026, .05, -.04, 0, 0, Math.PI / 2);                       // cocking knob
+  part(g, new RoundedBoxGeometry(.036, .03, .17, 2, .008), w, -.004, .028, -.2);                 // horizontal handguard
+  const grip = new THREE.Group(); grip.position.set(0, -.02, .15); grip.rotation.x = -.25; g.add(grip);
+  part(grip, new RoundedBoxGeometry(.03, .11, .045, 2, .01), w, 0, -.03, 0);                     // pistol grip
+  part(g, Bx(.008, .03, .07), b, 0, -.004, .09);                                                 // trigger guard
+  const st = new THREE.Mesh(new RoundedBoxGeometry(.04, .085, .3, 2, .012), w); st.position.set(0, .0, .3); st.rotation.x = .12; g.add(st);
+  part(g, Bx(.044, .1, .012), parker, 0, -.01, .45, .12);                                        // butt plate
+  const mag = part(g, Bx(.03, .19, .052), b, 0, -.075, -.045); mag.name = 'Magazine'; g.userData.mag = mag;
+  return g;
+}
+function rifleStock(g) {      // long walnut stock shared by the Garand and the BAR
+  const st = new THREE.Mesh(new RoundedBoxGeometry(.042, .06, .78, 2, .012), gm.wood); st.position.set(0, .03, -.08); g.add(st);   // fore-end + wrist
+  const bt = new THREE.Mesh(new RoundedBoxGeometry(.044, .11, .3, 2, .015), gm.wood); bt.position.set(0, -.005, .42); bt.rotation.x = .1; g.add(bt);
+  part(g, Bx(.006, .028, .06), parker, 0, -.01, .2);                                             // trigger guard
+}
+function buildGarand() {     // M1: long walnut stock, op-rod on the right, en-bloc clip showing in the receiver
+  const g = new THREE.Group(), w = gm.wood, b = parker; rifleStock(g);
+  part(g, new RoundedBoxGeometry(.036, .04, .2, 2, .006), b, 0, .068, .08);                     // receiver
+  part(g, Bx(.03, .012, .07), gm.metal, 0, .093, .08);                                           // the clip of 8
+  part(g, Cz(.011, .011, .56, 10), b, 0, .07, -.36); part(g, Cz(.014, .014, .02, 10), b, 0, .07, -.63);
+  part(g, Bx(.008, .01, .4), b, .021, .06, -.15);                                                // operating rod
+  part(g, new RoundedBoxGeometry(.03, .022, .2, 2, .005), w, 0, .07, -.3);                       // upper handguard
+  part(g, Bx(.006, .02, .01), b, 0, .088, -.62); part(g, Bx(.018, .02, .02), b, 0, .095, .17);   // sights
+  for (const z of [-.47, -.23]) part(g, Cz(.024, .024, .012, 10), b, 0, .045, z);              // bands
+  return g;
+}
+function buildBAR() {        // M1918A2: heavy receiver, 20-round box underneath, long barrel with gas cylinder and folded bipod
+  const g = new THREE.Group(), b = parker; rifleStock(g);
+  part(g, new RoundedBoxGeometry(.05, .07, .3, 2, .006), b, 0, .06, .02);
+  part(g, Cz(.013, .013, .66, 10), b, 0, .075, -.42); part(g, Cz(.008, .008, .4, 8), b, 0, .045, -.38);
+  part(g, Cz(.02, .016, .06, 10), b, 0, .075, -.77);                                             // flash hider
+  const mag = part(g, Bx(.036, .12, .085), b, 0, -.035, -.03); mag.name = 'Magazine'; g.userData.mag = mag;
+  for (const s of [-1, 1]) part(g, Cz(.005, .005, .32, 6), b, s * .02, .03, -.55, .05 * s, 0, 0); // bipod legs, folded
+  part(g, Bx(.008, .03, .012), b, 0, .1, -.76); part(g, Bx(.02, .03, .03), b, 0, .105, .14);
+  return g;
+}
+function buildBazooka() {    // M1 "bazooka": smoothbore tube, wooden shoulder stock, two grips, battery box, blast deflector
+  const g = new THREE.Group(), b = olive;
+  part(g, Cz(.043, .043, 1.38, 18), b, 0, .1, -.2);
+  part(g, Cz(.05, .05, .05, 18), b, 0, .1, .47); part(g, Cz(.058, .05, .07, 18), b, 0, .1, -.88);
+  part(g, new RoundedBoxGeometry(.05, .07, .3, 2, .015), gm.wood, 0, .055, .3);                  // shoulder stock
+  const r = new THREE.Group(); r.position.set(0, -.02, .15); r.rotation.x = -.15; g.add(r); part(r, new RoundedBoxGeometry(.03, .1, .04, 2, .008), gm.wood, 0, -.02, 0);
+  const l = new THREE.Group(); l.position.set(-.004, .03, -.18); l.rotation.x = -.1; g.add(l); part(l, new RoundedBoxGeometry(.03, .09, .04, 2, .008), gm.wood, 0, -.02, 0);
+  part(g, Bx(.04, .05, .1), b, -.048, .09, .1);                                                  // battery box
+  part(g, Bx(.01, .06, .012), gm.blued, .045, .15, -.35); part(g, Bx(.01, .03, .012), gm.blued, .045, .14, .2);   // sights
+  part(g, Cz(.03, .03, .2, 10), gm.gren, 0, .1, -.95);                                           // rocket nose showing at the muzzle
+  return g;
+}
+const FALLBACK = { thompson: buildThompson, garand: buildGarand, bar: buildBAR, bazooka: buildBazooka, machete: buildKnife, revolver: buildPistol, sten: buildSMG, rifle: buildRifle, grenade: buildGrenade, flamer: buildFlamer, welrod: buildWelrod, delisle: buildDeLisle };
 // view-model layout per weapon (camera space): FBX models are real size, barrel along -Z
 const VMCFG = {
   machete: { pos: [.16, -.16, -.5], rot: [-.1, .2, -.3], muzzle: [0, 0, -.27], rh: { p: [0, -.005, .2], r: [0, 0, 0], e: [.08, -.25, .62] } },
@@ -4015,6 +4075,10 @@ const VMCFG = {
   grenade: { pos: [.17, -.15, -.42], rot: [-.4, .25, -.15], muzzle: [0, 0, -.15], rh: { p: [0, 0, .06], r: [0, 0, 0], e: [.08, -.28, .45] } },
   welrod: { pos: [.14, -.13, -.42], rot: [.02, .1, -.03], ads: { pos: [0, -.021, -.46], rot: [0, 0, 0] }, muzzle: [0, 0, -.258] },
   delisle: { pos: [.12, -.14, -.36], rot: [0, .03, 0], muzzle: [0, .069, -.635] },
+  thompson: { pos: [.14, -.185, -.47], rot: [0, .03, 0], muzzle: [0, .046, -.42] },
+  garand: { pos: [.13, -.175, -.43], rot: [0, .03, 0], muzzle: [0, .07, -.64] },
+  bar: { pos: [.13, -.18, -.43], rot: [0, .03, 0], muzzle: [0, .075, -.8] },
+  bazooka: { pos: [.2, -.25, -.34], rot: [0, .06, 0], muzzle: [0, .1, -.92] },
   flamer: { pos: [.11, -.19, -.45], rot: [0, .03, 0], muzzle: [0, .07, -.5], rh: { p: [0, -.06, .1], r: [-.3, 0, 0], e: [.13, -.3, .5] }, lh: { p: [-.01, -.03, -.16], r: [.1, 0, .3], e: [-.24, -.3, .25], left: true } }
 };
 const WEAPONS = [
@@ -4026,9 +4090,14 @@ const WEAPONS = [
   { id: 'flamer', name: 'PLAMENOMET', ammo: 'fuel', flame: true, rate: .06, dmg: 5, fbx: 'flamer', owned: false },
   // silent weapons: no muzzle flash, only guards right next to you hear the shot
   { id: 'welrod', name: 'WELROD Mk I', ammo: 'smg', mag: 6, clip: 0, reload: 2.6, dmg: 60, rate: .85, auto: false, spread: .008, kick: .035, snd: 'welrod', fbx: 'welrod', owned: false, sup: true, quiet: 3 },
-  { id: 'delisle', name: 'DE LISLE (T)', ammo: 'acp', mag: 8, clip: 0, reload: 2.8, dmg: 110, rate: 1.2, auto: false, spread: .002, kick: .07, snd: 'delisle', fbx: 'delisle', owned: false, scope: true, sup: true, quiet: 4 }
+  { id: 'delisle', name: 'DE LISLE (T)', ammo: 'acp', mag: 8, clip: 0, reload: 2.8, dmg: 110, rate: 1.2, auto: false, spread: .002, kick: .07, snd: 'delisle', fbx: 'delisle', owned: false, scope: true, sup: true, quiet: 4 },
+  // American: a Thompson from an SOE container, and US arms the Wehrmacht tested at Wolfsgrund
+  { id: 'thompson', name: 'THOMPSON M1A1', ammo: 'acp', mag: 30, clip: 0, reload: 2.4, dmg: 19, rate: .086, auto: true, spread: .026, kick: .03, snd: 'thompson', fbx: 'thompson', owned: false, us: true },
+  { id: 'garand', name: 'M1 GARAND', ammo: 'g30', mag: 8, clip: 0, reload: 2.1, dmg: 72, rate: .2, auto: false, spread: .006, kick: .11, snd: 'garand', fbx: 'garand', owned: false, us: true, ping: true },
+  { id: 'bar', name: 'BAR M1918A2', ammo: 'g30', mag: 20, clip: 0, reload: 2.9, dmg: 44, rate: .12, auto: true, spread: .02, kick: .055, snd: 'bar', fbx: 'bar', owned: false, us: true },
+  { id: 'bazooka', name: 'BAZUKA M1 (prototyp)', ammo: 'rocket', mag: 1, clip: 0, reload: 3.1, dmg: 170, rate: 1, auto: false, spread: .004, kick: .22, snd: 'bazooka', fbx: 'bazooka', owned: false, us: true, rocket: true }
 ];
-const AMMO_MAX = { pistol: 72, smg: 256, rifle: 60, gren: 8, fuel: 300, acp: 48 };
+const AMMO_MAX = { pistol: 72, smg: 256, rifle: 60, gren: 8, fuel: 300, acp: 180, g30: 120, rocket: 8 };
 const vmRoot = new THREE.Group(); vmScene.add(vmRoot);
 let vmMats = [];
 // screw-on suppressors (revolver: Nagant-style can, Sten Mk IIS-style sleeve, rifle: De Lisle-style can)
@@ -4088,7 +4157,7 @@ const GRIPS = {
   welrod: { R: { p: [0, -.064, .036], r: .016, t: [0, -.043, -.012], a: [0, 1, -.2], f: [-.05, .2, -1], c: { fingers: TRIG.fingers, th: [.02, .0, .07] } } },
   flamer: { R: { p: [0, -.024, .25], r: .015, a: [0, 1, -.35], f: [-.05, .3, -1], c: TRIG }, L: { p: [0, .046, -.11], r: .016, a: [0, .05, -1], f: [1, .45, .1], c: SUPPORT } }
 };
-GRIPS.delisle = GRIPS.rifle; // same Lee-Enfield stock and fore-end under the can
+GRIPS.delisle = GRIPS.rifle; GRIPS.garand = GRIPS.bar = { R: { ...GRIPS.rifle.R, p: [0, .02, .23] }, L: { ...GRIPS.rifle.L, p: [0, .04, -.24] } }; GRIPS.thompson = GRIPS.bazooka = GRIPS.sten; // same Lee-Enfield stock and fore-end under the can
 const ARM_ROOT = [0, -.165, .06], ARM_SCALE = 1.2, ARM_YAW = -.4; // bladed shooting stance: left shoulder forward; long arms to reach the fore-ends
 const HAND_K = .8; // ...but real-sized hands (1.2 × .8 ≈ 0.96)
 let PALM_F = .09;
@@ -4248,13 +4317,13 @@ pilotSprite.visible = false; pilotSprite.scale.set(.02, .04, 1); vmScene.add(pil
 const goldMat = new THREE.MeshLambertMaterial({ color: new THREE.Color(1, .78, .3), emissive: new THREE.Color(.18, .12, 0) });
 const chaliceG = new THREE.LatheGeometry([[0, 0], [.13, 0], [.13, .02], [.05, .045], [.03, .1], [.055, .13], [.028, .16], [.035, .2], [.11, .25], [.14, .36], [.13, .365], [.1, .27], [0, .24]].map(([x, y]) => new THREE.Vector2(x, y)), 10);
 const DOC_NAMES = { plans: 'Plány operace Finsternis jsou tvoje', diary: 'Deník dr. Zemana', mapa: 'Mapa spojky – cesta k trati', jizdni: 'Jízdní řád transportů do Wolfsgrundu', list: 'Nákladní list zvláštního vlaku', propustka: 'Propustka do podzemí', vzorky: 'Zemanovy vzorky séra' };
-const PICK_NAMES = { q: 'Náboje .45 ACP', h: 'Lékárnička +25', H: 'Velká lékárnička +50', f: 'Jídlo +10', v: 'Neprůstřelná vesta', a: 'Bedna munice', p: 'Náboje do revolveru', s: 'Zásobníky 9 mm', r: 'Náboje .303', n: 'Stielhandgranate ×2', u: 'Palivo do plamenometu' };
+const PICK_NAMES = { q: 'Náboje .45 ACP', h: 'Lékárnička +25', H: 'Velká lékárnička +50', f: 'Jídlo +10', v: 'Neprůstřelná vesta', a: 'Bedna munice', p: 'Náboje do revolveru', s: 'Zásobníky 9 mm', r: 'Náboje .303', n: 'Stielhandgranate ×2', u: 'Palivo do plamenometu', m: 'Klipy .30-06', b: 'Rakety do bazuky ×2' };
 function makePickupMesh(kind) {
   const g = new THREE.Group(), mats = [];
   const M = (opts) => { const m = new THREE.MeshLambertMaterial(opts); mats.push(m); return m; };
   const k0 = kind[0];
   if (kind.startsWith('W:')) {
-    const name = { sten: 'sten', rifle: 'rifle', flamer: 'flamer', welrod: 'welrod', delisle: 'delisle' }[kind.slice(2)];
+    const name = { sten: 'sten', rifle: 'rifle', flamer: 'flamer', welrod: 'welrod', delisle: 'delisle', thompson: 'thompson', garand: 'garand', bar: 'bar', bazooka: 'bazooka' }[kind.slice(2)];
     const w = fbxClone(name, mats) || (() => { const f = FALLBACK[name](); f.traverse(o => { if (o.isMesh) { o.material = o.material.clone(); mats.push(o.material); } }); return f; })();
     w.rotation.set(0, Math.PI / 2, Math.PI / 2 * .0); w.position.y = .12; g.add(w);
   }
@@ -4263,7 +4332,8 @@ function makePickupMesh(kind) {
   else if (k0 === 'h' || k0 === 'H') { const s = k0 === 'H' ? 1.4 : 1; part(g, Bx(.5 * s, .28 * s, .35 * s), M({ map: TX.medkit }), 0, .14 * s, 0); }
   else if (k0 === 'f') { const r = Math.random(); const plate = M({ color: new THREE.Color(.75, .72, .66) }); part(g, Cyl(.2, .17, .03, 14), plate, 0, .015, 0); if (r < .33) part(g, new THREE.SphereGeometry(.12, 8, 6), M({ color: new THREE.Color(.75, .5, .25) }), 0, .09, 0).scale.set(1.5, .7, 1); else if (r < .66) { const s = M({ color: new THREE.Color(.55, .2, .14) }); for (let i = 0; i < 2; i++) part(g, new THREE.CapsuleGeometry(.03, .16, 3, 6), s, i * .07 - .035, .05, 0, 0, 0, Math.PI / 2); } else part(g, new THREE.CylinderGeometry(.11, .11, .09, 3), M({ color: new THREE.Color(.95, .8, .35) }), 0, .07, 0); }
   else if (k0 === 'v') { const m = M({ map: TX.cloth, color: new THREE.Color(.55, .58, .45) }); part(g, Bx(.46, .06, .36), m, 0, .04, 0); part(g, Bx(.3, .06, .2), m, 0, .09, -.05); }
-  else if ('aprsq'.includes(k0)) { const m = M({ map: TX.ammo }); part(g, Bx(.46, .26, .28), m, 0, .13, 0); if (k0 === 'a') part(g, Bx(.3, .18, .2), m, .05, .35, 0, 0, .5); }
+  else if (k0 === 'b') { const m = M({ color: new THREE.Color(.3, .34, .26) }); for (let i = 0; i < 2; i++) { part(g, Cyl(.03, .03, .4, 8), m, i * .09 - .045, .05, 0, Math.PI / 2, 0, 0); part(g, new THREE.ConeGeometry(.03, .1, 8), m, i * .09 - .045, .05, -.25, -Math.PI / 2, 0, 0); } }
+  else if ('aprsqm'.includes(k0)) { const m = M({ map: TX.ammo }); part(g, Bx(.46, .26, .28), m, 0, .13, 0); if (k0 === 'a') part(g, Bx(.3, .18, .2), m, .05, .35, 0, 0, .5); }
   else if (k0 === 'u') { const m = M({ map: TX.fuel }); part(g, Bx(.34, .46, .16), m, 0, .23, 0); part(g, Cyl(.03, .03, .08, 6), M({ color: new THREE.Color(.3, .3, .3) }), .1, .49, 0); }
   else if (k0 === 'n') { const w = M({ map: TX.floorwood, color: new THREE.Color(.9, .7, .5) }), mt = M({ color: new THREE.Color(.3, .34, .26) }); for (let i = 0; i < 2; i++) { part(g, new THREE.CylinderGeometry(.012, .012, .22, 6), w, i * .12 - .06, .03, 0, 0, 0, Math.PI / 2); part(g, new THREE.CylinderGeometry(.034, .034, .09, 8), mt, i * .12 - .06 + .14, .034, 0, 0, 0, Math.PI / 2); } }
   else if (k0 === 'g') {
@@ -4725,10 +4795,10 @@ const vm = { recoil: 0, swayX: 0, swayY: 0, switchT: 0, pending: -1, flashT: 0, 
 const after = (t, fn) => timers.push({ t, fn });
 function newLoadout() {
   WEAPONS.forEach((w, i) => { w.owned = i === 0 || i === 1 || i === 4; if (w.mag) w.clip = i === 1 ? w.mag : 0; });
-  player.ammo = { pistol: 30, smg: 0, rifle: 0, gren: 3, fuel: 0, acp: 0 }; player.armor = 0; player.score = 0; player.weapon = 1; player.keys = new Set(); player.supKit = false;
+  player.ammo = { pistol: 30, smg: 0, rifle: 0, gren: 3, fuel: 0, acp: 0, g30: 0, rocket: 0 }; player.armor = 0; player.score = 0; player.weapon = 1; player.keys = new Set(); player.supKit = false;
 }
 function snapshotLoadout() { game.snapshot = { owned: WEAPONS.map(w => w.owned), clip: WEAPONS.map(w => w.clip || 0), sup: WEAPONS.map(w => !!w.sup), ammo: { ...player.ammo }, armor: player.armor, score: player.score, weapon: player.weapon, supKit: !!player.supKit }; }
-function restoreLoadout() { const s = game.snapshot; if (!s) return newLoadout(); WEAPONS.forEach((w, i) => { w.owned = !!s.owned[i]; if (w.mag) w.clip = s.clip[i] || 0; }); player.ammo = { acp: 0, ...s.ammo }; player.armor = s.armor; player.score = s.score; player.supKit = !!s.supKit; player.weapon = WEAPONS[s.weapon].owned ? s.weapon : 1; }
+function restoreLoadout() { const s = game.snapshot; if (!s) return newLoadout(); WEAPONS.forEach((w, i) => { w.owned = !!s.owned[i]; if (w.mag) w.clip = s.clip[i] || 0; }); player.ammo = { acp: 0, g30: 0, rocket: 0, ...s.ammo }; player.armor = s.armor; player.score = s.score; player.supKit = !!s.supKit; player.weapon = WEAPONS[s.weapon].owned ? s.weapon : 1; }
 function placePlayerAtStart() {
   const [sx, sz, syaw] = LV.start, p = C(sx, sz);
   Object.assign(player, { yaw: syaw, pitch: 0, recoilPitch: 0, vy: 0, onGround: true, hp: 100, stamina: 100, crouch: 0, crouchOn: false, lean: 0, kills: 0, treasure: 0, fireT: 0, reloadT: 0, shake: 0, dmgFlash: 0, burn: 0, dead: false, time: 0, queued: false, zoom: false, fallV: 0 });
@@ -4893,6 +4963,7 @@ function fire() {
   if (w.scope) { vm.act = 'bolt'; vm.actT = .9; }
   if (w.id === 'welrod') { vm.act = 'cycle'; vm.actT = .8; }
   if (w.id === 'revolver') { vm.act = 'hammer'; vm.actT = .25; }
+  if (w.ping && w.clip === 0) after(.12, () => sfx.play('ping'));   // the en-bloc clip flies out
   muzzleSprite.material.rotation = Math.random() * 6.28;
   const d0 = camFwd(), right = V(1, 0, 0).applyQuaternion(camera.quaternion), up = V(0, 1, 0).applyQuaternion(camera.quaternion);
   if (!sup) { DL.pos[0].copy(camera.position).addScaledVector(d0, .8); DL.col[0].setRGB(1.6, 1.15, .55); DL.rad[0] = 9; dynFlash.position.copy(DL.pos[0]); dynFlash.intensity = 6; }
@@ -4903,6 +4974,13 @@ function fire() {
   const hit = rayWorld(o, d, 140);
   let best = null, bt = hit.t;
   for (const e of enemies) { if (e.state === 'dead') continue; const r = rayEnemy(o, d, e); if (r && r.t < bt) { bt = r.t; best = { e, head: r.head }; } }
+  if (w.rocket) {   // the rocket flies (fast) and bursts on whatever it meets
+    const pt = o.clone().addScaledVector(d, Math.min(bt, 140) - .25), dist = o.distanceTo(pt), from = vmMuzzleWorld();
+    for (let i = 0; i < 26; i++) { const k = i / 26; smoke.spawn(from.clone().lerp(pt, k), rand(-.2, .2), .3, rand(-.2, .2), .5, .48, .45, .5, 1.6 + Math.random(), -.2, 1, 1.4); }
+    for (let i = 0; i < 14; i++) smoke.spawn(camera.position.clone().addScaledVector(d, -1.2), rand(-1, 1), rand(0, 1), rand(-1, 1), .55, .52, .5, .8, 1.2, -.3, 1, 1.6);   // back-blast
+    after(Math.min(.6, dist / 85), () => { if (best && best.e.state !== 'dead') damageEnemy(best.e, w.dmg, _v2.set(d.x, 0, d.z).normalize()); explosion(pt, 5.5, 150); });
+    wakeNearby(45); return;
+  }
   if (best) {
     const pt = o.clone().addScaledVector(d, bt);
     damageEnemy(best.e, w.dmg * (sup ? .92 : 1) * (best.head ? (best.e.T.boss ? 1.4 : 2.6) : 1) * (.85 + Math.random() * .3), _v2.set(d.x, 0, d.z).normalize(), { silent: sup });
@@ -5279,6 +5357,8 @@ function updatePickups(dt) {
       if (!w.owned) { w.owned = true; if (w.mag) w.clip = w.mag; log(`Máš novou zbraň: ${w.name}`); sfx.play('weapon'); switchWeapon(wi); }
       else log(`${w.name}: munice`);
       if (id === 'welrod') A.smg = Math.min(AMMO_MAX.smg, A.smg + 18); if (id === 'delisle') A.acp = Math.min(AMMO_MAX.acp, A.acp + 16);
+      if (w.us && !w.seen) { w.seen = true; log(id === 'thompson' ? 'Americký samopal z kontejneru SOE' : 'Ukořistěná americká zbraň z výzkumu Wolfsgrund'); }
+      if (id === 'thompson') A.acp = Math.min(AMMO_MAX.acp, A.acp + 60); if (id === 'garand') A.g30 = Math.min(AMMO_MAX.g30, A.g30 + 24); if (id === 'bar') A.g30 = Math.min(AMMO_MAX.g30, A.g30 + 40); if (id === 'bazooka') A.rocket = Math.min(AMMO_MAX.rocket, A.rocket + 3);
       if (id === 'sten') A.smg = Math.min(AMMO_MAX.smg, A.smg + 64); if (id === 'rifle') A.rifle = Math.min(AMMO_MAX.rifle, A.rifle + 20); if (id === 'flamer') A.fuel = Math.min(AMMO_MAX.fuel, A.fuel + 150);
       took = true;
     }
@@ -5289,8 +5369,10 @@ function updatePickups(dt) {
       case 'H': if (player.hp < 100) { player.hp = Math.min(100, player.hp + 50); log(PICK_NAMES.H); took = true; } break;
       case 'f': if (player.hp < 100) { player.hp = Math.min(100, player.hp + 10); log(PICK_NAMES.f); sfx.play('eat'); took = true; } break;
       case 'v': if (player.armor < 100) { player.armor = Math.min(100, player.armor + 50); log(PICK_NAMES.v); took = true; } break;
-      case 'q': if (A.acp < AMMO_MAX.acp) { A.acp = Math.min(AMMO_MAX.acp, A.acp + 8); log(PICK_NAMES.q); took = true; } break;
-      case 'a': if (WEAPONS[7].owned) A.acp = Math.min(AMMO_MAX.acp, A.acp + 8); A.pistol = Math.min(AMMO_MAX.pistol, A.pistol + 12); A.smg = Math.min(AMMO_MAX.smg, A.smg + 32); if (WEAPONS[3].owned) A.rifle = Math.min(AMMO_MAX.rifle, A.rifle + 10); if (WEAPONS[5].owned) A.fuel = Math.min(AMMO_MAX.fuel, A.fuel + 40); log(PICK_NAMES.a); took = true; break;
+      case 'q': if (A.acp < AMMO_MAX.acp) { A.acp = Math.min(AMMO_MAX.acp, A.acp + (WEAPONS[8].owned ? 30 : 8)); log(PICK_NAMES.q); took = true; } break;
+      case 'm': if (A.g30 < AMMO_MAX.g30) { A.g30 = Math.min(AMMO_MAX.g30, A.g30 + 16); log(PICK_NAMES.m); took = true; } break;
+      case 'b': if (A.rocket < AMMO_MAX.rocket) { A.rocket = Math.min(AMMO_MAX.rocket, A.rocket + 2); log(PICK_NAMES.b); took = true; } break;
+      case 'a': if (WEAPONS[7].owned || WEAPONS[8].owned) A.acp = Math.min(AMMO_MAX.acp, A.acp + (WEAPONS[8].owned ? 30 : 8)); if (WEAPONS[9].owned || WEAPONS[10].owned) A.g30 = Math.min(AMMO_MAX.g30, A.g30 + 16); if (WEAPONS[11].owned) A.rocket = Math.min(AMMO_MAX.rocket, A.rocket + 1); A.pistol = Math.min(AMMO_MAX.pistol, A.pistol + 12); A.smg = Math.min(AMMO_MAX.smg, A.smg + 32); if (WEAPONS[3].owned) A.rifle = Math.min(AMMO_MAX.rifle, A.rifle + 10); if (WEAPONS[5].owned) A.fuel = Math.min(AMMO_MAX.fuel, A.fuel + 40); log(PICK_NAMES.a); took = true; break;
       case 'p': if (A.pistol < AMMO_MAX.pistol) { A.pistol = Math.min(AMMO_MAX.pistol, A.pistol + 12); log(PICK_NAMES.p); took = true; } break;
       case 's': if (A.smg < AMMO_MAX.smg) { A.smg = Math.min(AMMO_MAX.smg, A.smg + 24); log(PICK_NAMES.s); took = true; } break;
       case 'r': if (A.rifle < AMMO_MAX.rifle) { A.rifle = Math.min(AMMO_MAX.rifle, A.rifle + 8); log(PICK_NAMES.r); took = true; } break;
@@ -5964,7 +6046,7 @@ addEventListener('keydown', e => {
   if (game.state === 'playing' && !e.repeat) { if (e.code === 'KeyC' && SET.crouchToggle) player.crouchOn = !player.crouchOn; }
   if (e.code === 'Tab') { e.preventDefault(); if (game.state === 'playing' && !e.repeat) tabMap(true); return; }
   if (game.state !== 'playing') return;
-  const n = { Digit1: 0, Digit2: 1, Digit3: 2, Digit4: 3, Digit5: 4, Digit6: 5, Digit7: 6, Digit8: 7 }[e.code]; if (n !== undefined) switchWeapon(n);
+  const n = { Digit1: 0, Digit2: 1, Digit3: 2, Digit4: 3, Digit5: 4, Digit6: 5, Digit7: 6, Digit8: 7, Digit9: 8, Digit0: 9, Minus: 10, Equal: 11 }[e.code]; if (n !== undefined) switchWeapon(n);
   if (e.code === 'KeyR') startReload();
   if (e.code === 'KeyF' && !e.repeat) useAction();
   if (e.code === 'KeyM') { sfx.muted = !sfx.muted; if (sfx.master) sfx.master.gain.value = sfx.muted ? 0 : sfx.vol; log(sfx.muted ? 'Zvuk vypnut' : 'Zvuk zapnut'); }
@@ -6004,7 +6086,7 @@ document.addEventListener('pointerlockerror', () => {
   setOverlay(`<h1 style="font-size:clamp(26px,4.5vw,50px)">MYŠ NELZE ZAMKNOUT</h1><p>Stránka, do které je hra vložená, nedovoluje zamknout kurzor myši, takže se nedá rozhlížet. Otevři hru ve vlastním okně – hraje se stejně a postup zůstane uložený.</p>`,
     [{ label: 'OTEVŘÍT V NOVÉM OKNĚ', fn: openStandalone }, { label: 'ZKUSIT ZNOVU', cls: 'sm', fn: startPlaying }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]);
 });
-const KEYS_HTML = `<div class="keys"><span><b>WASD</b> pohyb · <b>SPACE</b> skok</span><span><b>LMB</b> střelba · <b>RMB</b> mířidla / puškohled</span><span><b>R</b> přebít · <b>F</b> použít / dveře</span><span><b>Q / E</b> vyklonit se</span><span><b>SHIFT</b> sprint · <b>C</b> přikrčit / plížit</span><span><b>1–8 / kolečko</b> zbraně</span><span><b>TAB</b> (držet) mapa a cíle mise</span><span><b>M</b> zvuk · <b>ESC</b> pauza</span></div>`;
+const KEYS_HTML = `<div class="keys"><span><b>WASD</b> pohyb · <b>SPACE</b> skok</span><span><b>LMB</b> střelba · <b>RMB</b> mířidla / puškohled</span><span><b>R</b> přebít · <b>F</b> použít / dveře</span><span><b>Q / E</b> vyklonit se</span><span><b>SHIFT</b> sprint · <b>C</b> přikrčit / plížit</span><span><b>1–9, 0, −, = / kolečko</b> zbraně</span><span><b>TAB</b> (držet) mapa a cíle mise</span><span><b>M</b> zvuk · <b>ESC</b> pauza</span></div>`;
 function setOverlay(html, buttons) {
   menuScreen(false);
   overlay.innerHTML = html + '<div>' + buttons.map((b, i) => `<button class="btn ${b.cls || ''}" data-i="${i}" ${b.disabled ? 'disabled' : ''}>${b.label}</button>`).join('') + '</div><div id="load"></div>';
@@ -6221,10 +6303,13 @@ async function startMission(i, fresh) {
   for (const e of enemies) { e.maxHp = Math.round(e.T.hp * DIFF.hp); e.hp = e.maxHp; }
   if (fresh) {   // starting a later mission from the menu: hand out the weapons found earlier
     newLoadout();
-    if (i >= 1) { WEAPONS[2].owned = true; WEAPONS[2].clip = WEAPONS[2].mag; WEAPONS[6].owned = true; WEAPONS[6].clip = 6; WEAPONS[7].owned = true; WEAPONS[7].clip = 8; player.ammo.smg = 96; player.ammo.acp = 16; player.ammo.gren = 4; }
-    if (i >= 2) { WEAPONS[3].owned = true; WEAPONS[3].clip = 10; player.ammo.rifle = 20; player.ammo.acp = 24; player.armor = 50; }
-    if (i >= 3) { WEAPONS[5].owned = true; player.ammo.fuel = 100; player.ammo.gren = 5; player.ammo.acp = 32; player.ammo.rifle = 30; player.ammo.smg = 128; player.ammo.pistol = 36; }
-    if (i >= 6) { player.armor = 100; player.ammo.gren = 6; player.ammo.fuel = 150; }
+    const past = id => i > LEVELS.findIndex(L => L.id === id);   // by mission id, so inserting missions never shifts the loadouts
+    if (past('m1')) { WEAPONS[2].owned = true; WEAPONS[2].clip = WEAPONS[2].mag; WEAPONS[6].owned = true; WEAPONS[6].clip = 6; WEAPONS[7].owned = true; WEAPONS[7].clip = 8; player.ammo.smg = 96; player.ammo.acp = 16; player.ammo.gren = 4; }
+    if (past('m2')) { WEAPONS[3].owned = true; WEAPONS[3].clip = 10; player.ammo.rifle = 20; player.ammo.acp = 24; player.armor = 50; }
+    if (past('m3')) { WEAPONS[5].owned = true; player.ammo.fuel = 100; player.ammo.gren = 5; player.ammo.acp = 32; player.ammo.rifle = 30; player.ammo.smg = 128; player.ammo.pistol = 36; }
+    if (past('e2m3')) { player.armor = 100; player.ammo.gren = 6; player.ammo.fuel = 150; }
+    const give = (wi, ammo, n) => { WEAPONS[wi].owned = true; WEAPONS[wi].clip = WEAPONS[wi].mag; WEAPONS[wi].seen = true; player.ammo[ammo] += n; };
+    if (past('m3')) give(8, 'acp', 90); if (past('e2m1')) give(9, 'g30', 24); if (past('e2m3')) give(10, 'g30', 40); if (past('e3m2')) give(11, 'rocket', 3);
     snapshotLoadout();
   } else if (!game.snapshot) snapshotLoadout();
   restoreLoadout(); placePlayerAtStart();

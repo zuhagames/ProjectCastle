@@ -65,6 +65,8 @@ Fotografické textury (Poly Haven) jsou volitelné – když nejsou dostupné, h
 
 Lee-Enfield No.4 (T) s puškohledem, revolver, Sten Mk II, plamenomet, mačeta, granát (Stielhandgranate) a dvě tiché zbraně SOE: pistole **Welrod Mk I** (9 mm, integrovaný tlumič) a tlumená karabina **De Lisle (T)** s puškohledem (.45 ACP). Když začneš pozdější misi z menu, dostaneš zbraně, které bys měl touto dobou mít.
 
+Americké zbraně: samopal **Thompson M1A1** z kontejneru SOE (mise 1.3) a zbraně, které Němci ukořistili a zkoumali ve Wolfsgrundu – puška **M1 Garand** (mise 2.1, prázdný klip po posledním náboji cinkne), kulomet **BAR M1918A2** (mise 2.3) a prototyp **bazuky M1** (mise 3.2) s raketami, které vybuchují. Klávesy `9`, `0`, `-`, `=` nebo kolečko.
+
 ## Nastavení
 
 V menu i v pauze: citlivost a obrácení myši, FOV, hlasitost, velikost rozhraní, rozlišení vykreslování, způsob přikrčení, minimapa a pohupování kamery. Nastavení se ukládá v prohlížeči. Minimapa ve stylu Wolfensteinu odkrývá místnosti, jak jimi procházíš (les je zelený, budovy hnědé).
