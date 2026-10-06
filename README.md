@@ -1,6 +1,6 @@
-# Castle Grimhold
+# Blázen z Londýna: Tajná Akce
 
-**Operation Iron Wolf · 1943** – 3D FPS z druhé světové války běžící přímo v prohlížeči, postavený na [three.js](https://threejs.org/) (r160).
+**1943** – 3D FPS z druhé světové války běžící přímo v prohlížeči, postavený na [three.js](https://threejs.org/) (r160).
 
 ![Polní tábor wehrmachtu v noci – stany, věž s reflektorem, ohniště](docs/screenshot-camp.jpg)
 
@@ -59,7 +59,7 @@ Three.js se načítá z CDN (jsDelivr), takže je potřeba připojení k interne
 | `Shift` | sprint |
 | `C` | přikrčit / plížit (přepínač, v nastavení lze změnit na držení) |
 | `1`–`8` / kolečko | výběr zbraně |
-| `Tab` | úkoly mise |
+| `Tab` (držet) | mapa celé úrovně s vyznačenými cíli mise |
 | `M` | zvuk on/off |
 | `Esc` | pauza |
 
@@ -70,6 +70,13 @@ Lee-Enfield No.4 (T) s puškohledem, revolver, Sten Mk II, plamenomet, mačeta, 
 ## Nastavení
 
 V menu i v pauze: citlivost a obrácení myši, FOV, hlasitost, velikost rozhraní, rozlišení vykreslování, způsob přikrčení, minimapa a pohupování kamery. Nastavení se ukládá v prohlížeči. Minimapa ve stylu Wolfensteinu odkrývá místnosti, jak jimi procházíš (les je zelený, budovy hnědé).
+
+## Novinky ve verzi 1.3
+
+- Hra se jmenuje **Blázen z Londýna: Tajná Akce**.
+- Nové hlavní menu: animovaný obraz – vlevo německé linie a hrad, vpravo válečný Londýn (Big Ben, balóny, reflektory) – a pochodová hudba ve stylu starého Wolfensteinu, syntetizovaná přímo v prohlížeči (hlasitost v nastavení).
+- Podržením `Tab` se zobrazí mapa úrovně s očíslovanými cíli, východem a seznamem úkolů. Úkoly mise jsou na obrazovce pořád.
+- Hrad má zvenku střechy a vnější zdi – z nádvoří, hradeb a stanice lanovky už není vidět dovnitř místností. Hradní kaple je zvenku skutečný kostel se sedlovou břidlicovou střechou, opěrnými pilíři, vitrážemi, rozetou a zvonicí s měděnou věží.
 
 ## Novinky ve verzi 1.2
 

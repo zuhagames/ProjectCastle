@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Castle Grimhold</title>
+<title>Blázen z Londýna: Tajná Akce</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Oswald:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -12,6 +12,15 @@
   canvas { display:block; }
   #hud { position:fixed; inset:0; pointer-events:none; display:none; zoom:var(--ui,1); }
   #mmap { position:absolute; top:14px; left:22px; width:168px; height:168px; border-radius:4px; background:#070a10; border:2px solid #3a3d33; box-shadow:0 0 0 1px #8f7d4b, 0 6px 16px rgba(0,0,0,.65); display:none; }
+  #tabmap { position:absolute; inset:0; display:none; align-items:center; justify-content:center; gap:26px; background:radial-gradient(ellipse at center, rgba(8,11,18,.86), rgba(0,0,0,.93)); z-index:3; padding:20px; box-sizing:border-box; }
+  #tabmap.on { display:flex; }
+  #tabmap .tmw { text-align:center; } #tabmap h4 { margin:0 0 8px; font:600 15px 'Oswald',sans-serif; letter-spacing:5px; color:var(--gold); text-shadow:0 2px 2px #000; }
+  #tmc { border:2px solid #3a3d33; box-shadow:0 0 0 1px #8f7d4b, 0 10px 30px rgba(0,0,0,.8); border-radius:4px; background:#070a10; }
+  #tml { font-family:'Special Elite',monospace; font-size:16px; line-height:1.7; color:#e8dcb8; text-shadow:0 1px 2px #000; max-width:340px; }
+  #tml h5 { margin:0 0 6px; font:600 13px 'Oswald',sans-serif; letter-spacing:4px; color:var(--gold); }
+  #tml .n { display:inline-block; width:22px; height:22px; line-height:22px; border-radius:50%; background:#f2c53d; color:#1a1408; font:700 13px 'Oswald',sans-serif; text-align:center; margin-right:8px; }
+  #tml .done { color:#7f9a6a; text-decoration:line-through; } #tml .done .n { background:#55663f; } #tml .opt { color:#a99c80; }
+  #tml .leg { margin-top:14px; font-size:13px; color:#a99c80; line-height:1.6; }
   #hud.mm #mmap { display:block; } #hud.mm #obj { top:202px; }
   #cross { position:absolute; left:50%; top:50%; width:4px; height:4px; margin:-2px 0 0 -2px; background:#fff; box-shadow:0 0 0 1px #000; border-radius:50%; }
   #cross i { position:absolute; background:#fff; box-shadow:0 0 0 1px rgba(0,0,0,.6); }
@@ -51,6 +60,18 @@
   #burn { position:absolute; inset:0; background:radial-gradient(ellipse at center, transparent 35%, rgba(255,120,20,.6)); opacity:0; }
   #overlay > * { zoom:var(--ui,1); }
   #overlay { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:radial-gradient(ellipse at center, rgba(30,10,6,.55), rgba(0,0,0,.94) 70%); z-index:5; text-align:center; padding:16px; box-sizing:border-box; overflow:auto; }
+  #menubg { position:fixed; inset:0; width:100%; height:100%; display:none; z-index:4; }
+  #overlay.menu { background:radial-gradient(ellipse at 50% 45%, rgba(0,0,0,.55), rgba(0,0,0,.08) 60%, rgba(0,0,0,0)); justify-content:flex-start; padding-top:5vh; }
+  .gtitle { text-align:center; margin-bottom:2.2vh; filter:drop-shadow(0 6px 0 #000) drop-shadow(0 0 26px rgba(0,0,0,.9)); }
+  .gt1 { font-family:'Special Elite',monospace; font-size:clamp(38px,7.4vw,104px); line-height:.95; letter-spacing:4px; color:#f0e3bd; text-shadow:0 0 30px rgba(190,30,15,.7), 3px 3px 0 #5a0d07; }
+  .gt2 { margin-top:10px; } .gt2 span { display:inline-block; padding:6px 22px; font:600 clamp(16px,2.4vw,30px) 'Oswald',sans-serif; letter-spacing:12px; color:#f4e6c0; background:linear-gradient(90deg,#7a120b,#1b2f6b); border:2px solid var(--gold); transform:rotate(-2deg); }
+  .gtitle.sm .gt1 { font-size:clamp(26px,4vw,52px); } .gtitle.sm .gt2 span { font-size:clamp(12px,1.4vw,18px); letter-spacing:8px; }
+  .mmenu { display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:1vh; }
+  .mmenu .btn { width:min(340px,80vw); margin:4px 0 0; } .btn.big { font-size:30px; padding:14px 30px; letter-spacing:8px; animation:pulse 2.4s ease-in-out infinite; }
+  @keyframes pulse { 50% { box-shadow:0 0 22px rgba(230,190,90,.55), 0 0 0 2px #e6c36a inset; } }
+  .mnote { font-family:'Special Elite',monospace; font-size:13px; color:#cfc4a8; text-shadow:0 1px 2px #000; margin-bottom:6px; }
+  .mfoot { position:absolute; bottom:10px; left:0; right:0; margin:0 auto !important; font-size:11px !important; color:#8d8571 !important; text-shadow:0 1px 2px #000; }
+  .mpanel { background:rgba(10,8,6,.72); border:1px solid rgba(201,162,76,.4); padding:10px 22px 16px; box-shadow:0 10px 40px rgba(0,0,0,.7); max-width:900px; }
   #overlay h1 { font-family:'Special Elite',monospace; font-size:clamp(34px,7vw,84px); margin:0; color:#e6d6aa; letter-spacing:3px; text-shadow:0 0 24px rgba(160,20,10,.6), 0 4px 0 #000; }
   #overlay h2 { margin:6px 0 18px; font-weight:400; letter-spacing:8px; color:#b52519; font-size:clamp(13px,2vw,18px); }
   #overlay h3 { margin:12px 0 4px; font-weight:600; letter-spacing:3px; color:var(--gold); font-size:15px; }
@@ -101,6 +122,7 @@
   <div id="scope"></div><div id="dmg"></div><div id="burn"></div>
   <div id="cross"><i></i><i></i><i></i><i></i></div><div id="hitm"></div>
   <canvas id="mmap"></canvas>
+  <div id="tabmap"><div class="tmw"><h4 id="tmt"></h4><canvas id="tmc"></canvas></div><div id="tml"></div></div>
   <div id="obj"></div>
   <div id="top">SKÓRE <b id="score">0</b><br>ZABITO <b id="kills">0</b> · POKLADY <b id="treas">0</b></div>
   <div id="intro"><div id="introT"></div><div id="introS"></div></div>
@@ -117,9 +139,10 @@
 </div>
 <div id="cine"><div class="lb t"></div><div class="lb b"></div><div id="ctitle"></div><div id="csub"></div><div id="cskip">MEZERNÍK · PŘESKOČIT</div></div>
 <div id="fade"></div>
+<canvas id="menubg"></canvas>
 <div id="overlay">
-  <h1>CASTLE GRIMHOLD</h1>
-  <h2>OPERATION IRON WOLF · 1943</h2>
+  <h1>BLÁZEN Z LONDÝNA</h1>
+  <h2>TAJNÁ AKCE · 1943</h2>
   <div id="load">Načítám engine…</div>
 </div>
 <script type="module">
@@ -1586,6 +1609,114 @@ function buildRoomSurfaces() {
   }
 }
 
+/* ---------- castle exterior: roofs + outer walls seen from yards, ramparts and the cable-car station ----------
+   Interiors are only built from the inside, so from an open-sky room you used to look straight into roofless
+   rooms and a chapel floating in the air. This wraps every castle level that has open sky in solid masonry,
+   moonlit only (no bake), and gives the chapel a real church exterior: pitched slate roof, buttresses,
+   lancet windows and a bell tower with a spire. */
+// fish-scale slates for the church roof and spire (bright base: the moonlight is dim)
+TX.slate = tex(paint(TS, (x, y) => {
+  const r = Math.floor(y / 24), off = (r % 2) * 16, sx = Math.floor((x + off) / 32), lx = ((x + off) % 32) - 16, yy = (y % 24) / 24, tone = hash2(sx, r, 611), n = fbm(x / TS * 8, y / TS * 8, 8, 612, 3);
+  const edge = Math.hypot(lx / 16, (1 - yy) * 1.1) > 1 ? .45 : 1; // rounded lower edge of each slate
+  const k = (.72 + .3 * tone) * (.75 + .3 * yy) * (.85 + .25 * n) * edge;
+  return [150 * k, 158 * k, 172 * k, yy];
+}, 1.3));
+const EXT_DEF = { extWall: { map: TX.bigstone, tint: [.92, .9, .88], k: 1, s: 3.2 }, extRock: { map: TX.rock, tint: [.8, .8, .82], k: .9, s: 6 }, extRoof: { map: TX.stone, tint: [.7, .7, .72], k: 1, s: 3 }, slate: { map: TX.slate, tint: [1, 1, 1], k: 1.6, s: 2.4 }, copper: { map: TX.slate, tint: [.62, 1.05, .86], k: 1.7, s: 1.6 }, extTrim: { map: TX.stone, tint: [.85, .82, .78], k: 1.1, s: 2 }, extGlass: { map: TX.glass, k: 1, s: 0, emissive: 1.05, alpha: true }, extDark: { map: TX.white, tint: [.05, .05, .06], k: 1, s: 0 }, extGold: { map: TX.white, tint: [.9, .72, .32], k: 1.3, s: 0 } };
+function buildExterior() {
+  if (OUT.on || !ROOMS.some(r => r.sky)) return;
+  const B = {}, push = (key, g) => {
+    const b = B[key] || (B[key] = { p: [], n: [], uv: [] }), d = EXT_DEF[key], P = g.attributes.position.array, Nn = g.attributes.normal.array, U = g.attributes.uv.array;
+    for (let i = 0; i < P.length / 3; i++) {
+      const x = P[i * 3], y = P[i * 3 + 1], z = P[i * 3 + 2], nx = Nn[i * 3], ny = Nn[i * 3 + 1], nz = Nn[i * 3 + 2];
+      b.p.push(x, y, z); b.n.push(nx, ny, nz);
+      if (!d.s) { b.uv.push(U[i * 2], U[i * 2 + 1]); continue; }  // keep the geometry's own uv (glass, gold)
+      const ax = Math.abs(nx), ay = Math.abs(ny); // world-space planar uv, so every face tiles like the interior walls
+      if (ay > .7) b.uv.push(x / d.s, z / d.s); else if (ax > Math.abs(nz)) b.uv.push(z / d.s, y / d.s); else b.uv.push(x / d.s, y / d.s);
+    }
+    g.dispose();
+  };
+  const add = (key, geo, pos, ry = 0, rx = 0, rz = 0) => { const g = geo.index ? geo.toNonIndexed() : geo; _e.set(rx, ry, rz, 'YXZ'); _q.setFromEuler(_e); _m4.compose(pos, _q, _s1); g.applyMatrix4(_m4); push(key, g); if (g !== geo) geo.dispose(); };
+  const quad = (key, cx, cy, cz, w, h, ry, rx = 0) => add(key, new THREE.PlaneGeometry(w, h), V(cx, cy, cz), ry, rx);
+  let minY = Infinity; for (const r of ROOMS) minY = Math.min(minY, r.y);
+  const BASE = minY - 16, N = MW * MH, H = new Float32Array(N).fill(NaN), capped = new Uint8Array(N), skyCell = new Uint8Array(N);
+  const nbRooms = (x, z) => DIR4.map(([dx, dz]) => roomOf(x + dx, z + dz)).filter(Boolean);
+  for (let z = 0; z < MH; z++) for (let x = 0; x < MW; x++) {
+    const i = cidx(x, z), r = roomAt[i];
+    if (r >= 0) { const rm = ROOMS[r]; if (rm.sky) skyCell[i] = 1; else H[i] = rm.st ? Math.max(rm.top, rm.st.y0, rm.st.y1) : rm.top; }
+    else if (r === -2) { const nb = nbRooms(x, z); H[i] = Math.max(...nb.map(q => q.high)); if (nb.some(q => q.sky)) capped[i] = 1; }
+    else { if (wallTop[i] < 90) H[i] = wallTop[i]; if (nbRooms(x, z).some(q => q.sky)) capped[i] = 1; }
+  }
+  for (let pass = 0; pass < 6; pass++) for (let z = 0; z < MH; z++) for (let x = 0; x < MW; x++) { // solid rock between far-apart rooms
+    const i = cidx(x, z); if (!isNaN(H[i]) || skyCell[i]) continue; let m = -Infinity;
+    for (const [dx, dz] of DIR4) if (inside(x + dx, z + dz) && !isNaN(H[cidx(x + dx, z + dz)])) m = Math.max(m, H[cidx(x + dx, z + dz)]);
+    if (m > -Infinity) H[i] = m;
+  }
+  const church = ROOMS.filter(r => r.theme === 'chapel' && !r.sky), inChurch = (x, z) => church.some(c => x >= c.r[0] && x <= c.r[2] && z >= c.r[1] && z <= c.r[3]);
+  for (let z = 0; z < MH; z++) for (let x = 0; x < MW; x++) {
+    const i = cidx(x, z); if (skyCell[i] || isNaN(H[i])) continue;
+    const h = H[i], x0 = x * CELL, z0 = z * CELL;
+    if (!capped[i] && !inChurch(x, z)) quad('extRoof', x0 + CELL / 2, h, z0 + CELL / 2, CELL, CELL, 0, -Math.PI / 2);
+    for (const [dx, dz] of DIR4) {
+      const nx = x + dx, nz = z + dz, out = !inside(nx, nz);
+      if (!out && skyCell[cidx(nx, nz)]) continue;                 // faces towards open sky are built by the room itself
+      const hn = out || isNaN(H[cidx(nx, nz)]) ? BASE : H[cidx(nx, nz)]; if (h - hn < .05) continue;
+      const ry = Math.atan2(dx, dz), ex = x0 + CELL / 2 + dx * CELL / 2, ez = z0 + CELL / 2 + dz * CELL / 2;
+      const split = Math.max(hn, minY - 2);                          // masonry above the castle's lowest floor, the mountain's rock below
+      if (h > split) quad('extWall', ex, (split + h) / 2, ez, CELL, h - split, ry);
+      if (split > hn) quad('extRock', ex, (hn + split) / 2, ez, CELL, split - hn, ry);
+      if (!capped[i] && !inChurch(x, z) && h - hn > 1.2) add('extTrim', B3(CELL, .35, .5), V(ex - dx * .1, h + .17, ez - dz * .1), ry);  // parapet edge
+    }
+  }
+  for (const c of church) buildChurch(c, add, quad, H, BASE);
+  for (const [key, b] of Object.entries(B)) {
+    const d = EXT_DEF[key], n = b.p.length / 3, col = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) { const ndl = Math.max(0, b.n[i * 3] * MOON_DIR.x + b.n[i * 3 + 1] * MOON_DIR.y + b.n[i * 3 + 2] * MOON_DIR.z); for (let k = 0; k < 3; k++) col[i * 3 + k] = (SKY_AMB[k] * 1.25 + MOON_COL[k] * ndl * .75) * d.k; }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(b.p, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(b.uv, 2)); g.setAttribute('vcol', new THREE.BufferAttribute(col, 3)); g.computeBoundingSphere();
+    const m = new THREE.Mesh(g, worldMat(d.map, { tint: d.tint || [1, 1, 1], emissive: d.emissive || 0, alpha: !!d.alpha, side: d.alpha ? THREE.DoubleSide : THREE.FrontSide })); m.matrixAutoUpdate = false; levelRoot.add(m);
+  }
+}
+function buildChurch(c, add, quad, H, BASE) {
+  const lx = (c.x1 - c.x0) >= (c.z1 - c.z0), L0 = lx ? c.x0 : c.z0, L1 = lx ? c.x1 : c.z1, W0 = lx ? c.z0 : c.x0, W1 = lx ? c.z1 : c.x1;
+  const P = (u, y, w) => lx ? V(u, y, w) : V(w, y, u), ryA = lx ? 0 : Math.PI / 2;  // u = along the nave, w = across
+  const t = c.top, wm = (W0 + W1) / 2, half = (W1 - W0) / 2 + CELL + .8, rise = half * .8, len = L1 - L0 + 2 * CELL;
+  const um = (L0 + L1) / 2, slope = Math.hypot(half, rise), ang = Math.atan2(rise, half);
+  // nave roof: two slate planes over the walls, eaves overhanging the thick outer walls
+  for (const s of [-1, 1]) add('slate', new THREE.PlaneGeometry(len - CELL * 1.2, slope, 6, 2), P(um - CELL * .6, t + rise / 2, wm + s * half / 2), ryA + (s > 0 ? 0 : Math.PI), -(Math.PI / 2 - ang));
+  add('extTrim', B3(len - CELL * 1.2, .35, .35), P(um - CELL * .6, t + rise + .1, wm), ryA);               // ridge
+  // gable walls (triangles of masonry) at both ends of the nave
+  for (const e of [-1, 1]) {
+    const tri = new THREE.BufferGeometry(), u = e < 0 ? L0 - CELL : L1 + CELL * .2 - CELL * .8;
+    const a = P(u, t, wm - half), b = P(u, t, wm + half), d = P(u, t + rise, wm), pts = e < 0 ? [a, d, b] : [a, b, d];
+    tri.setAttribute('position', new THREE.Float32BufferAttribute(pts.flatMap(v => [v.x, v.y, v.z]), 3)); tri.setAttribute('uv', new THREE.Float32BufferAttribute([0, 0, 1, 0, .5, 1], 2)); tri.computeVertexNormals();
+    add('extWall', tri, V(0, 0, 0));
+    if (e < 0) { const r = P(u - .05, t + rise * .45, wm); add('extGlass', new THREE.CircleGeometry(1.6, 16), r, ryA - Math.PI / 2); add('extTrim', new THREE.TorusGeometry(1.7, .16, 6, 20), r, ryA - Math.PI / 2); } // rose window
+  }
+  // buttresses + lancet windows along both long walls, from the eaves down to where the walls meet lower roofs/rock
+  const outerW = [W0 - CELL, W1 + CELL];
+  for (const [k, w] of outerW.entries()) {
+    const s = k ? 1 : -1, ry = ryA + (s > 0 ? 0 : Math.PI) + (lx ? 0 : 0);
+    const cellW = toCell(w + s * .5 - (s > 0 ? 0 : 0) - (s > 0 ? .01 : -.01)), probe = (u) => { const cu = toCell(u); const i = lx ? cidx(cu, toCell(w + s * .5)) : cidx(toCell(w + s * .5), cu); return inside(lx ? cu : toCell(w + s * .5), lx ? toCell(w + s * .5) : cu) && !isNaN(H[i]) ? H[i] : BASE; };
+    for (let u = L0 + CELL / 2; u < L1; u += CELL) {
+      const low = Math.min(probe(u), t - 1); if (t - low < 3) continue;
+      add('extWall', B3(1.1, t - low + .2, 1.4), P(u - CELL / 2, (t + low) / 2, w + s * .7), ryA);   // buttress
+      add('extTrim', B3(1.3, .4, 1.6), P(u - CELL / 2, t - .1, w + s * .7), ryA, 0, 0);
+      const wy = Math.max(low + 2.4, t - 4.2); if (t - wy < 2) continue;
+      const wp = P(u, wy, w + s * .03);
+      add('extGlass', new THREE.PlaneGeometry(1.3, 3.6), wp.clone().setY(wy), ryA + (s > 0 ? (lx ? 0 : Math.PI / 2) : (lx ? Math.PI : -Math.PI / 2)) - ryA);
+      add('extGlass', new THREE.CircleGeometry(.65, 10, 0, Math.PI), wp.clone().setY(wy + 1.8), ryA + (s > 0 ? (lx ? 0 : Math.PI / 2) : (lx ? Math.PI : -Math.PI / 2)) - ryA);
+      add('extTrim', B3(lx ? 1.7 : .3, .25, lx ? .3 : 1.7), wp.clone().setY(wy - 1.9));
+    }
+  }
+  // bell tower on the altar end, rising through the roof; open belfry, copper spire, gilded cross
+  const tu = L1 - CELL * .2, ts = 6.2, tb = t + .02, th = rise + 7, top = tb + th;
+  add('extWall', B3(ts, th, ts), P(tu, tb + th / 2, wm));
+  for (const y of [tb + rise + .2, top - .2]) add('extTrim', B3(ts + .5, .4, ts + .5), P(tu, y, wm));
+  for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2, o = ts / 2 + .02; add('extDark', new THREE.PlaneGeometry(1.4, 2.8), V(0, 0, 0).add(P(tu, top - 2.2, wm)).add(V(Math.sin(a) * o, 0, Math.cos(a) * o)), a); add('extDark', new THREE.CircleGeometry(.7, 10, 0, Math.PI), V(0, 0, 0).add(P(tu, top - .8, wm)).add(V(Math.sin(a) * o, 0, Math.cos(a) * o)), a); add('extGold', new THREE.CircleGeometry(.75, 16), V(0, 0, 0).add(P(tu, top - 5, wm)).add(V(Math.sin(a) * (o + .01), 0, Math.cos(a) * (o + .01))), a); } // belfry openings + clock faces
+  add('copper', new THREE.ConeGeometry(ts * .74, 11, 4, 1, true), P(tu, top + 5.5, wm), Math.PI / 4);
+  for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 + Math.PI / 4, o = ts * .55; add('copper', new THREE.ConeGeometry(.45, 2.6, 4), P(tu, top + 1.3, wm).add(V(Math.sin(a) * o, 0, Math.cos(a) * o)), Math.PI / 4); } // corner pinnacles
+  add('extGold', B3(.18, 2.2, .18), P(tu, top + 12, wm)); add('extGold', B3(lx ? .18 : 1.1, .18, lx ? 1.1 : .18), P(tu, top + 12.3, wm)); add('extGold', new THREE.SphereGeometry(.22, 8, 6), P(tu, top + 11, wm));
+}
+
 /* ---------- doorways: thick castle walls with jambs + lintel, hinged doors ---------- */
 function buildDoors() {
   for (const [cx, cz, opt = {}] of LV.doors) {
@@ -2932,6 +3063,8 @@ const FURN = {
     P_.altar(L(V(along / 2 - 2.2, 0, 0), c, lx ? 0 : 1), lx ? 3 : 2);
     for (const o of [-along / 4, along / 4]) P_.chandelier(L(V(o, 0, 0), c, lx ? 0 : 1), rm.top);
     for (const s of [-1, 1]) P_.candles(L(V(along / 2 - 2.4, 0, s * 2.2), c, lx ? 0 : 1), 5, true);
+    const r = lx ? 0 : 1, e = along / 2 - .22, cy = Math.min(rm.top - 2.2, 5.6); // great rood cross on the altar wall
+    box('darkwood', c, r, .22, 3.6, .34, e, cy, 0); box('darkwood', c, r, .22, .34, 2.1, e, cy + .75, 0); box('frame', c, r, .06, .5, .5, e - .12, cy + .75, 0);
   },
   crypt(rm) {
     const c = V(rm.cx, rm.y, rm.cz), lx = longAxisX(rm);
@@ -4635,7 +4768,7 @@ function updateHud() {
   }
   const objHtml = LV ? `<h4>${LV.name}</h4>` + LV.objectives.map(o => `<div class="${o.done ? 'done' : o.optional ? 'opt' : ''}">${o.done ? '☑' : '☐'} ${o.text}${o.count ? ` (${o.n || 0}/${o.count})` : ''}</div>`).join('') : '';
   if (objHtml !== lastObj) { lastObj = objHtml; hud.obj.innerHTML = objHtml; }
-  hud.obj.style.opacity = (game.showObj || game.objT > 0) ? 1 : 0;
+  hud.obj.style.opacity = 1; // objectives stay on screen for the whole mission
   let st = 0, sus = 0;
   for (const e of enemies) { if (e.state === 'dead') continue; if (!calm(e)) { st = 2; break; } if (e.state !== 'idle' || e.sus > .06) { st = 1; sus = Math.max(sus, e.sus); } }
   const ss = st + '|' + Math.round(player.vis * 20) + '|' + Math.round(sus * 10);
@@ -5536,7 +5669,7 @@ const CUTSCENES = {
       [32, (A) => { const s = A.s[3]; s.walkTo = { x: A.c.x + 1.6, z: A.c.z + 2.8 }; s.speed = 1.6; s.aimTo = 0; }],
       [35.3, (A) => { const s = A.s[3]; s.walkTo = { x: A.c.x + 1.2, z: A.c.z + 2 }; s.speed = 5; }],
       [35.6, (A) => { sfx.play('hit', null, 1.2); sfx.play('stab', null, .8); CS.shake = .25; csFade(1, .12); }],
-      [36.6, (A) => csTitle('CASTLE GRIMHOLD', 'EPIZODA 1 · ÚTĚK Z GRIMHOLDU', 4)]
+      [36.6, (A) => csTitle('BLÁZEN Z LONDÝNA', 'TAJNÁ AKCE · EPIZODA 1 · ÚTĚK Z GRIMHOLDU', 4)]
     ]
   },
   // 2 · three days later in the cells under the castle
@@ -5673,7 +5806,7 @@ const MISSION_CS = { m1: { pre: 'capture', main: 'cell' }, e2m1: { main: 'cablec
    INPUT & SCREENS
    ===================================================================== */
 /* ---------- settings (saved in localStorage) ---------- */
-const SET_DEF = { sens: 1, invertY: false, fov: 80, vol: .8, ui: 1, res: 1, crouchToggle: true, minimap: true, bob: true };
+const SET_DEF = { sens: 1, invertY: false, fov: 80, vol: .8, music: .7, ui: 1, res: 1, crouchToggle: true, minimap: true, bob: true };
 const SET = Object.assign({}, SET_DEF, store.get('cg_settings', {}));
 // GUI scale: designed for 1920×1080, follows the window size, times the player's own factor
 const uiScale = () => clamp(Math.pow(Math.min(innerWidth / 1920, innerHeight / 1080), .8), .78, 2.4) * SET.ui;
@@ -5696,6 +5829,7 @@ function showSettings(back) {
     <label>Obrátit osu Y</label>${seg('invertY', [[false, 'NE'], [true, 'ANO']])}
     <label>Zorné pole (FOV)</label>${rng('fov', 65, 105, 1, 'deg')}
     <label>Hlasitost</label>${rng('vol', 0, 1, .05, '%')}
+    <label>Hudba v menu</label>${rng('music', 0, 1, .05, '%')}
     <label>Velikost rozhraní</label>${rng('ui', .6, 1.6, .05, '%')}
     <label>Rozlišení vykreslování</label>${seg('res', [[.5, '50 %'], [.75, '75 %'], [1, '100 %'], [0, 'NATIVNÍ']])}
     <label>Přikrčení [C]</label>${seg('crouchToggle', [[true, 'PŘEPÍNAT'], [false, 'DRŽET']])}
@@ -5704,7 +5838,7 @@ function showSettings(back) {
   </div><div><button class="btn" data-back="1">ZPĚT</button><button class="btn sm" data-def="1">VÝCHOZÍ</button></div>`;
   overlay.style.display = 'flex'; $('hud').style.display = 'none';
   const label = el => { const v = +el.value, f = el.dataset.f; el.nextElementSibling.textContent = f === '%' ? Math.round(v * 100) + ' %' : f === 'deg' ? v + '°' : v.toFixed(2) + '×'; };
-  overlay.querySelectorAll('input[type=range]').forEach(el => { label(el); el.oninput = () => { SET[el.dataset.k] = +el.value; label(el); saveSettings(); }; });
+  overlay.querySelectorAll('input[type=range]').forEach(el => { label(el); el.oninput = () => { SET[el.dataset.k] = +el.value; label(el); saveSettings(); MUSIC.vol(); }; });
   overlay.querySelectorAll('.seg button').forEach(b => b.onclick = () => { SET[b.dataset.k] = JSON.parse(b.dataset.v); saveSettings(); showSettings(back); game.state = prev; });
   overlay.querySelector('[data-def]').onclick = () => { Object.assign(SET, SET_DEF); saveSettings(); showSettings(back); game.state = prev; };
   overlay.querySelector('[data-back]').onclick = () => { game.state = prev; back(); };
@@ -5764,12 +5898,60 @@ function mmDraw() {
   g.font = `bold ${Math.round(11 * k)}px Oswald, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#c9a24c'; g.fillText('N', nx, ny);
   const vg = g.createRadialGradient(S / 2, S / 2, S * .3, S / 2, S / 2, S * .72); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.65)'); g.fillStyle = vg; g.fillRect(0, 0, S, S);
 }
+/* ---------- TAB: full level map with every open objective marked (hold TAB) ---------- */
+const TM = { on: false, el: $('tabmap'), cv: $('tmc'), list: $('tml'), title: $('tmt') };
+function tabMap(on) { if (TM.on === on) return; TM.on = on; TM.el.classList.toggle('on', on); if (on) { TM.listKey = ''; tmDraw(); } }
+const OBJ_KEYS = { key: 'brana', libkey: 'knihovna', propustka: 'propustka', labkey: 'laborator' };
+function objectiveSpots(o) {   // where in the level an objective can be done
+  const at = [], pk = p => at.push({ x: p.x, z: p.z });
+  for (const p of pickups) if (p.active && (p.kind === 'd:' + o.id || p.kind === 'W:' + o.id || (OBJ_KEYS[o.id] && p.kind === 'k:' + OBJ_KEYS[o.id]) || (o.id === 'tre' && p.kind === 'g'))) pk(p);
+  for (const d of destructibles) if (d.alive && d.obj === o.id && !(d.charge && d.planted)) pk(d.pos);
+  for (const e of enemies) if (e.state !== 'dead' && ((o.id === 'uber' && e.T.boss) || (o.id === 'zeman' && e.T.zeman))) pk(e);
+  if (o.id === 'exit') for (const ex of exits) pk(ex.pos);
+  return at;
+}
+function tmDraw() {
+  if (!LV || !MM.seen.length) return;
+  if (MM.dirty) { mmRebuild(); MM.dirty = false; }
+  const P = MM.P, dpr = Math.min(2, devicePixelRatio || 1), maxW = innerWidth * .62, maxH = innerHeight * .8, sc = Math.min(maxW / (MW * P), maxH / (MH * P));
+  const W = Math.round(MW * P * sc), Hh = Math.round(MH * P * sc), cv = TM.cv;
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(Hh * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(Hh * dpr); cv.style.width = W + 'px'; cv.style.height = Hh + 'px'; }
+  const g = cv.getContext('2d'), k = sc * dpr, wx = x => x / CELL * P * k, t = performance.now() / 1000;
+  g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#070a10'; g.fillRect(0, 0, cv.width, cv.height);
+  // unexplored rooms as faint outlines so the way to an objective is readable, explored ones in full
+  g.fillStyle = 'rgba(70,90,130,.16)';
+  for (let z = 0; z < MH; z++) for (let x = 0; x < MW; x++) { const r = roomAt[cidx(x, z)]; if (r === -1 || (r >= 0 && MM.seen[r])) continue; g.fillRect(x * P * k, z * P * k, P * k + .5, P * k + .5); }
+  g.imageSmoothingEnabled = false; g.drawImage(MM.base, 0, 0, MW * P * k, MH * P * k);
+  // objectives: numbered pulsing markers
+  const objs = LV.objectives.filter(o => !o.done); let n = 0; const fs = Math.max(11, Math.round(12 * dpr));
+  g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = `700 ${fs}px Oswald, sans-serif`;
+  LV.objectives.forEach((o, i) => {
+    if (o.done) return; const spots = objectiveSpots(o), opt = o.optional;
+    for (const s of spots) {
+      const x = wx(s.x), y = wx(s.z), R = (opt ? 5 : 9) * dpr;
+      if (!opt) { g.strokeStyle = `rgba(242,197,61,${.55 - .45 * ((t * 1.2) % 1)})`; g.lineWidth = 2 * dpr; g.beginPath(); g.arc(x, y, R + 10 * dpr * ((t * 1.2) % 1), 0, 7); g.stroke(); }
+      g.fillStyle = opt ? '#c9a24c' : o.id === 'exit' ? '#5fd36a' : '#f2c53d'; g.strokeStyle = '#000'; g.lineWidth = 2 * dpr; g.beginPath(); g.arc(x, y, R, 0, 7); g.fill(); g.stroke();
+      if (!opt) { g.fillStyle = '#1a1408'; g.fillText(String(i + 1), x, y + .5); }
+    }
+  });
+  // enemies you can currently see or that hunt you
+  for (const e of enemies) { if (e.state === 'dead') continue; const alert = !calm(e); if (!alert && !(e.los && Math.hypot(e.x - player.pos.x, e.z - player.pos.z) < 16)) continue; g.fillStyle = alert ? '#ff3b24' : '#e8d9a0'; g.beginPath(); g.arc(wx(e.x), wx(e.z), 3.2 * dpr, 0, 7); g.fill(); }
+  // player arrow
+  const px = wx(player.pos.x), pz = wx(player.pos.z), A = 9 * dpr; g.save(); g.translate(px, pz); g.rotate(-player.yaw); g.fillStyle = '#f4e6c0'; g.strokeStyle = '#000'; g.lineWidth = 2 * dpr; g.beginPath(); g.moveTo(0, -A); g.lineTo(A * .7, A * .7); g.lineTo(0, A * .3); g.lineTo(-A * .7, A * .7); g.closePath(); g.stroke(); g.fill(); g.restore();
+  // list
+  const key = LV.objectives.map(o => (o.done ? 1 : 0) + ':' + (o.n || 0)).join('|') + LV.id;
+  if (key !== TM.listKey) {
+    TM.listKey = key; TM.title.textContent = LV.name;
+    TM.list.innerHTML = '<h5>CÍLE MISE</h5>' + LV.objectives.map((o, i) => `<div class="${o.done ? 'done' : o.optional ? 'opt' : ''}"><span class="n">${o.done ? '✓' : o.optional ? '•' : i + 1}</span>${o.text}${o.count ? ` (${o.n || 0}/${o.count})` : ''}</div>`).join('')
+      + `<div class="leg">Žluté body = cíle · zelený = východ · <span style="color:#ff3b24">●</span> nepřítel na stopě<br>Prozkoumané místnosti jsou vybarvené.</div>`;
+  }
+}
 const canvas = renderer.domElement;
 addEventListener('keydown', e => {
   keys[e.code] = true;
   if (game.state === 'cutscene') { if (!e.repeat && (e.code === 'Space' || e.code === 'Enter' || e.code === 'Escape')) endCutscene(true); e.preventDefault(); return; }
   if (game.state === 'playing' && !e.repeat) { if (e.code === 'KeyC' && SET.crouchToggle) player.crouchOn = !player.crouchOn; }
-  if (e.code === 'Tab') { e.preventDefault(); if (game.state === 'playing') game.showObj = !game.showObj; return; }
+  if (e.code === 'Tab') { e.preventDefault(); if (game.state === 'playing' && !e.repeat) tabMap(true); return; }
   if (game.state !== 'playing') return;
   const n = { Digit1: 0, Digit2: 1, Digit3: 2, Digit4: 3, Digit5: 4, Digit6: 5, Digit7: 6, Digit8: 7 }[e.code]; if (n !== undefined) switchWeapon(n);
   if (e.code === 'KeyR') startReload();
@@ -5779,8 +5961,8 @@ addEventListener('keydown', e => {
 });
 // browsers never let a page swallow Ctrl+W, so at least ask before the tab closes mid-mission
 addEventListener('beforeunload', e => { if (game.state === 'playing' || game.state === 'paused') { e.preventDefault(); e.returnValue = ''; } });
-addEventListener('keyup', e => keys[e.code] = false);
-addEventListener('blur', () => { for (const k in keys) keys[k] = false; mouseDown = rightDown = false; });
+addEventListener('keyup', e => { keys[e.code] = false; if (e.code === 'Tab') tabMap(false); });
+addEventListener('blur', () => { for (const k in keys) keys[k] = false; mouseDown = rightDown = false; tabMap(false); });
 addEventListener('contextmenu', e => e.preventDefault());
 addEventListener('mousedown', e => {
   if (game.state !== 'playing' || document.pointerLockElement !== canvas) return;
@@ -5799,34 +5981,193 @@ addEventListener('wheel', e => {
 });
 canvas.addEventListener('click', () => { if (game.state === 'playing' && document.pointerLockElement !== canvas) { const p = canvas.requestPointerLock(); if (p && p.catch) p.catch(() => { }); } });
 document.addEventListener('pointerlockchange', () => { if (document.pointerLockElement !== canvas && game.state === 'playing') pauseGame(); });
-const KEYS_HTML = `<div class="keys"><span><b>WASD</b> pohyb · <b>SPACE</b> skok</span><span><b>LMB</b> střelba · <b>RMB</b> mířidla / puškohled</span><span><b>R</b> přebít · <b>F</b> použít / dveře</span><span><b>Q / E</b> vyklonit se</span><span><b>SHIFT</b> sprint · <b>C</b> přikrčit / plížit</span><span><b>1–8 / kolečko</b> zbraně</span><span><b>TAB</b> úkoly mise</span><span><b>M</b> zvuk · <b>ESC</b> pauza</span></div>`;
+const KEYS_HTML = `<div class="keys"><span><b>WASD</b> pohyb · <b>SPACE</b> skok</span><span><b>LMB</b> střelba · <b>RMB</b> mířidla / puškohled</span><span><b>R</b> přebít · <b>F</b> použít / dveře</span><span><b>Q / E</b> vyklonit se</span><span><b>SHIFT</b> sprint · <b>C</b> přikrčit / plížit</span><span><b>1–8 / kolečko</b> zbraně</span><span><b>TAB</b> (držet) mapa a cíle mise</span><span><b>M</b> zvuk · <b>ESC</b> pauza</span></div>`;
 function setOverlay(html, buttons) {
+  menuScreen(false);
   overlay.innerHTML = html + '<div>' + buttons.map((b, i) => `<button class="btn ${b.cls || ''}" data-i="${i}" ${b.disabled ? 'disabled' : ''}>${b.label}</button>`).join('') + '</div><div id="load"></div>';
   overlay.style.display = 'flex'; $('hud').style.display = 'none';
   overlay.querySelectorAll('button[data-i]').forEach(el => el.onclick = () => buttons[+el.dataset.i].fn());
 }
+/* ---------- main-menu music: a grim minor-key march in the spirit of the old Wolfenstein soundtrack ----------
+   Everything is synthesised with WebAudio (square lead, brass pads, bass, snare and kick), scheduled ahead in eighths. */
+const MUSIC = {
+  on: false, bpm: 112, step: 0, t: 0,
+  // [start eighth in the 8-bar phrase, midi note, length in eighths]
+  A: [[0, 74, 2], [2, 69, 1], [3, 69, 1], [4, 74, 2], [6, 77, 2], [8, 76, 3], [11, 74, 1], [12, 72, 2], [14, 69, 2], [16, 70, 2], [18, 74, 2], [20, 77, 2], [22, 82, 2], [24, 81, 6],
+    [32, 79, 2], [34, 77, 1], [35, 76, 1], [36, 77, 2], [38, 74, 2], [40, 76, 2], [42, 72, 1], [43, 69, 1], [44, 72, 2], [46, 76, 2], [48, 74, 2], [50, 76, 2], [52, 77, 2], [54, 76, 1], [55, 73, 1], [56, 74, 6]],
+  B: [[0, 65, 4], [4, 69, 4], [8, 64, 4], [12, 72, 4], [16, 74, 4], [20, 77, 4], [24, 76, 8], [32, 70, 4], [36, 67, 4], [40, 72, 4], [44, 76, 4], [48, 77, 2], [50, 76, 2], [52, 74, 2], [54, 73, 2], [56, 74, 8]],
+  CH: [[50, 53, 57], [45, 48, 52], [46, 50, 53], [45, 49, 52], [43, 46, 50], [48, 52, 55], [50, 53, 57], [50, 53, 57]],   // Dm Am Bb A Gm C Dm Dm
+  BASS: [38, 33, 34, 33, 31, 36, 38, 38],
+  start() {
+    if (this.on) return; sfx.init(); const C2 = sfx.ctx; if (!C2) return;
+    this.on = true; this.out = C2.createGain(); this.out.gain.value = 0; this.out.connect(sfx.master); this.vol();
+    this.ev = { A: new Map(this.A.map(n => [n[0], n])), B: new Map(this.B.map(n => [n[0], n])) };
+    this.step = 0; this.t = C2.currentTime + .15; this.timer = setInterval(() => this.pump(), 50);
+  },
+  vol() { if (this.on) this.out.gain.setTargetAtTime(.55 * SET.music, sfx.ctx.currentTime, .6); },
+  stop() { if (!this.on) return; this.on = false; clearInterval(this.timer); const o = this.out; o.gain.setTargetAtTime(0, sfx.ctx.currentTime, .25); setTimeout(() => o.disconnect(), 1500); },
+  pump() {
+    const C2 = sfx.ctx; if (C2.state !== 'running') { this.t = C2.currentTime + .1; return; }
+    const e8 = 60 / this.bpm / 2;
+    while (this.t < C2.currentTime + .3) { this.play(this.step, this.t, e8); this.step = (this.step + 1) % 128; this.t += e8; }
+  },
+  hz: m => 440 * Math.pow(2, (m - 69) / 12),
+  play(i, t, e8) {
+    const C2 = sfx.ctx, bar = i >> 3, pos = i & 7, b = bar & 7, phr = bar >> 3 ? 'B' : 'A', o = this.out;
+    const env = (g, t0, a, peak, d, sus, end) => { g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(peak, t0 + a); g.gain.setTargetAtTime(sus, t0 + a, d); g.gain.setTargetAtTime(0, end, .05); };
+    const osc = (type, f, t0, end, gain, filt) => { const os = C2.createOscillator(), g = C2.createGain(); os.type = type; os.frequency.value = f; let n = os; if (filt) { const lp = C2.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = filt; os.connect(lp); n = lp; } n.connect(g); g.connect(o); env(g, t0, .012, gain, .12, gain * .6, end); os.start(t0); os.stop(end + .3); return os; };
+    const nb = (t0, d, f, q, gain, type = 'bandpass') => { const s = C2.createBufferSource(), fl = C2.createBiquadFilter(), g = C2.createGain(); s.buffer = sfx.noise; fl.type = type; fl.frequency.value = f; fl.Q.value = q; s.connect(fl); fl.connect(g); g.connect(o); g.gain.setValueAtTime(gain, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + d); s.start(t0, Math.random()); s.stop(t0 + d + .05); };
+    // lead melody (two detuned squares, vibrato on long notes) – phrase B an octave lower, brassier
+    const n = this.ev[phr].get(b * 8 + pos);
+    if (n) {
+      const f = this.hz(n[1] - (phr === 'B' ? 12 : 0)), end = t + n[2] * e8 * .92;
+      for (const det of [-4, 4]) { const os = osc(phr === 'B' ? 'sawtooth' : 'square', f, t, end, phr === 'B' ? .05 : .045, phr === 'B' ? 1400 : 2600); os.detune.value = det; if (n[2] >= 3) { const lf = C2.createOscillator(), lg = C2.createGain(); lf.frequency.value = 5.5; lg.gain.setValueAtTime(0, t); lg.gain.linearRampToValueAtTime(f * .012, t + .35); lf.connect(lg); lg.connect(os.frequency); lf.start(t); lf.stop(end + .3); } }
+    }
+    // brass pad: the bar's chord, swelling
+    if (pos === 0) for (const m of this.CH[b]) osc('sawtooth', this.hz(m), t, t + 8 * e8 * .97, .022, 750);
+    // bass: root/octave eighths, the last bar of each phrase walks down
+    const root = this.BASS[b] + (b === 7 && pos >= 4 ? [0, -2, -3, -5][pos - 4] : 0);
+    osc('square', this.hz(root + (pos & 1 ? 12 : 0)), t, t + e8 * .8, .07, 520);
+    // drums: kick on 1 and 3, snare on 2 and 4, snare roll into every fourth bar
+    if (pos === 0 || pos === 4) { const os = C2.createOscillator(), g = C2.createGain(); os.frequency.setValueAtTime(140, t); os.frequency.exponentialRampToValueAtTime(42, t + .18); g.gain.setValueAtTime(.32, t); g.gain.exponentialRampToValueAtTime(.001, t + .28); os.connect(g); g.connect(o); os.start(t); os.stop(t + .3); }
+    if (pos === 2 || pos === 6) nb(t, .16, 1900, .8, .2);
+    if ((b === 3 || b === 7) && pos >= 4) { nb(t, .09, 2200, .9, .1); nb(t + e8 / 2, .09, 2200, .9, .12); }
+    if (pos % 2) nb(t, .04, 7000, 1, .03, 'highpass');   // hi-hat
+  }
+};
+addEventListener('pointerdown', () => { if (MUSIC.on && sfx.ctx && sfx.ctx.state !== 'running') sfx.ctx.resume(); });
+addEventListener('keydown', () => { if (MUSIC.on && sfx.ctx && sfx.ctx.state !== 'running') sfx.ctx.resume(); });
+
+/* ---------- animated menu backdrop: German lines on the left, wartime London on the right ---------- */
+const MB = { cv: $('menubg'), g: null, uk: null };
+MB.g = MB.cv.getContext('2d');
+function unionJack() {
+  const c = mkCanvas(120, 60), g = c.getContext('2d');
+  g.fillStyle = '#1b2f6b'; g.fillRect(0, 0, 120, 60);
+  const diag = (w, col) => { g.strokeStyle = col; g.lineWidth = w; g.beginPath(); g.moveTo(0, 0); g.lineTo(120, 60); g.moveTo(120, 0); g.lineTo(0, 60); g.stroke(); };
+  diag(12, '#f2efe6'); diag(4, '#b8202a');
+  g.fillStyle = '#f2efe6'; g.fillRect(50, 0, 20, 60); g.fillRect(0, 20, 120, 20); g.fillStyle = '#b8202a'; g.fillRect(54, 0, 12, 60); g.fillRect(0, 24, 120, 12);
+  return c;
+}
+function ironCrossFlag() {
+  const c = mkCanvas(120, 72), g = c.getContext('2d');
+  g.fillStyle = '#6e0f0c'; g.fillRect(0, 0, 120, 72); g.fillStyle = '#4a0a08'; g.fillRect(0, 0, 120, 6); g.fillRect(0, 66, 120, 6);
+  const cross = (w, col) => { g.fillStyle = col; g.fillRect(60 - w / 2, 12, w, 48); g.fillRect(36, 36 - w / 2, 48, w); };
+  cross(18, '#f2efe6'); cross(10, '#111');
+  return c;
+}
+function waveFlag(g, img, x, y, w, h, t, ph) {   // draw a flag as vertical strips on a sine wave (pole on the left)
+  const N = 24;
+  for (let i = 0; i < N; i++) { const u = i / N, a = u * 1.0, off = Math.sin(t * 3 + u * 7 + ph) * h * .09 * u, shade = .78 + .22 * Math.cos(t * 3 + u * 7 + ph);
+    g.globalAlpha = 1; g.drawImage(img, img.width * u, 0, img.width / N + 1, img.height, x + w * u, y + off, w / N + 1, h);
+    g.fillStyle = `rgba(0,0,0,${(1 - shade) * .9})`; g.fillRect(x + w * u, y + off, w / N + 1, h); }
+}
+function soldier(g, x, y, s, side, t, march, aim) {   // silhouette, side 'de' (Stahlhelm) or 'uk' (Brodie helmet)
+  const sw = march ? Math.sin(t * 6) * .35 : 0, bob = march ? Math.abs(Math.sin(t * 6)) * 2 * s : 0;
+  g.save(); g.translate(x, y - bob); g.scale(s, s); g.lineCap = 'round';
+  g.strokeStyle = g.fillStyle; g.lineWidth = 6;
+  g.beginPath(); g.moveTo(0, -30); g.lineTo(Math.sin(sw) * 18, 0); g.moveTo(0, -30); g.lineTo(-Math.sin(sw) * 18, 0); g.stroke();   // legs
+  g.beginPath(); g.moveTo(-7, -58); g.lineTo(7, -58); g.lineTo(8, -28); g.lineTo(-8, -28); g.closePath(); g.fill();                   // torso
+  g.lineWidth = 5; g.beginPath(); g.moveTo(0, -55); g.lineTo(aim ? 18 : 9, aim ? -50 : -38); g.stroke();                            // arm
+  g.lineWidth = 2.5; g.beginPath(); if (aim) { g.moveTo(4, -52); g.lineTo(34, -54); } else { g.moveTo(8, -36); g.lineTo(-6, -80); } g.stroke(); // rifle
+  g.beginPath(); g.arc(0, -64, 6, 0, 7); g.fill();                                                                               // head
+  g.beginPath();
+  if (side === 'de') { g.moveTo(-9, -63); g.quadraticCurveTo(-8, -76, 0, -76); g.quadraticCurveTo(8, -76, 9, -63); g.lineTo(11, -61); g.lineTo(-11, -61); }
+  else { g.ellipse(0, -66, 13, 2.6, 0, 0, 7); g.moveTo(-6, -66); g.quadraticCurveTo(0, -75, 6, -66); }
+  g.fill(); g.restore();
+}
+function menuBG(t) {
+  const cv = MB.cv, dpr = Math.min(1.5, devicePixelRatio || 1), W = Math.round(innerWidth * dpr), H = Math.round(innerHeight * dpr);
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const g = MB.g, mid = W / 2, gy = H * .82, u = H / 900;
+  if (!MB.uk) { MB.uk = unionJack(); MB.de = ironCrossFlag(); MB.stars = Array.from({ length: 140 }, () => [Math.random(), Math.random() * .6, Math.random()]); MB.snow = Array.from({ length: 160 }, () => [Math.random(), Math.random(), .4 + Math.random()]); }
+  const seam = y => mid + Math.sin(y / H * 9 + t * .7) * 14 * u + (y / H - .5) * 60 * u;   // wavering front line
+  const half = (left, fn) => { g.save(); g.beginPath(); if (left) { g.moveTo(0, 0); for (let y = 0; y <= H; y += 20) g.lineTo(seam(y), y); g.lineTo(0, H); } else { g.moveTo(W, 0); for (let y = 0; y <= H; y += 20) g.lineTo(seam(y), y); g.lineTo(W, H); } g.closePath(); g.clip(); fn(); g.restore(); };
+  // ---- left: the Reich – blood-red night, castle on the crag, searchlights, troops on the march
+  half(true, () => {
+    let gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#1a0302'); gr.addColorStop(.55, '#4a0c06'); gr.addColorStop(.82, '#7a2410'); gr.addColorStop(1, '#120302'); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+    for (const [k, a0] of [[0, .3], [1, 1.9]]) { const bx = W * (.08 + k * .3), by = gy - 10 * u, a = -Math.PI / 2 + Math.sin(t * .45 + a0) * .55, L = H * 1.1; const lg = g.createLinearGradient(bx, by, bx + Math.cos(a) * L, by + Math.sin(a) * L); lg.addColorStop(0, 'rgba(255,230,170,.35)'); lg.addColorStop(1, 'rgba(255,230,170,0)'); g.fillStyle = lg; g.beginPath(); g.moveTo(bx, by); g.lineTo(bx + Math.cos(a - .06) * L, by + Math.sin(a - .06) * L); g.lineTo(bx + Math.cos(a + .06) * L, by + Math.sin(a + .06) * L); g.closePath(); g.fill(); }
+    g.fillStyle = '#0d0201'; g.beginPath(); g.moveTo(0, gy - 210 * u); g.lineTo(W * .1, gy - 300 * u); g.lineTo(W * .2, gy - 250 * u); g.lineTo(W * .32, gy - 330 * u); g.lineTo(W * .45, gy - 180 * u); g.lineTo(W * .6, gy - 140 * u); g.lineTo(W * .6, H); g.lineTo(0, H); g.fill();   // the Alps
+    const cx = W * .2, cy = gy - 250 * u; g.fillStyle = '#080100';   // Grimhold on its crag
+    for (const [x, w, h, cap] of [[-90, 40, 130, 1], [-50, 120, 90, 0], [70, 34, 150, 1], [20, 30, 110, 1]]) { g.fillRect(cx + x * u, cy - h * u, w * u, h * u); if (cap) { g.beginPath(); g.moveTo(cx + (x - 6) * u, cy - h * u); g.lineTo(cx + (x + w / 2) * u, cy - (h + 46) * u); g.lineTo(cx + (x + w + 6) * u, cy - h * u); g.fill(); } else for (let i = 0; i < 6; i++) g.fillRect(cx + (x + i * 20) * u, cy - (h + 10) * u, 10 * u, 10 * u); }
+    g.fillStyle = `rgba(255,190,90,${.65 + .3 * Math.sin(t * 7)})`; for (const [x, y] of [[-80, 100], [-30, 70], [10, 60], [80, 120], [28, 85]]) g.fillRect(cx + x * u, cy - y * u, 5 * u, 8 * u);
+    g.fillStyle = '#0a0100'; g.fillRect(W * .37, gy - 230 * u, 4 * u, 230 * u); waveFlag(g, MB.de, W * .37 + 4 * u, gy - 228 * u, 120 * u, 72 * u, t, 0);
+    g.fillStyle = '#070100'; g.fillRect(0, gy, W, H - gy);
+    let fg = g.createLinearGradient(0, gy - 150 * u, 0, gy); fg.addColorStop(0, 'rgba(190,60,20,0)'); fg.addColorStop(1, 'rgba(210,80,30,.55)'); g.fillStyle = fg; g.fillRect(0, gy - 150 * u, W, 150 * u); // fires behind the column
+    g.fillStyle = '#050000'; for (let i = 0; i < 7; i++) soldier(g, ((t * 40 * u + i * 95 * u) % (W * .55)) - 40 * u, gy + 4 * u, 1.55 * u, 'de', t + i * .4, true);
+  });
+  // ---- right: London – navy sky, barrage balloons, Big Ben, St Paul's, Tower Bridge, the Tommies
+  half(false, () => {
+    let gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#02060f'); gr.addColorStop(.6, '#0d2246'); gr.addColorStop(.84, '#2b4a72'); gr.addColorStop(1, '#03070f'); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+    for (const [x, y, k] of MB.stars) { g.fillStyle = `rgba(230,236,255,${.3 + .5 * Math.abs(Math.sin(t * 1.3 + k * 9))})`; g.fillRect(mid + x * mid, y * H, 2 * u, 2 * u); }
+    g.fillStyle = '#e9e6d6'; g.beginPath(); g.arc(W * .86, H * .16, 34 * u, 0, 7); g.fill();
+    for (const [k, a0] of [[0, 0], [1, 2.4], [2, 4.1]]) { const bx = W * (.58 + k * .17), by = gy, a = -Math.PI / 2 + Math.sin(t * .38 + a0) * .5, L = H * 1.2; const lg = g.createLinearGradient(bx, by, bx + Math.cos(a) * L, by + Math.sin(a) * L); lg.addColorStop(0, 'rgba(190,215,255,.32)'); lg.addColorStop(1, 'rgba(190,215,255,0)'); g.fillStyle = lg; g.beginPath(); g.moveTo(bx, by); g.lineTo(bx + Math.cos(a - .05) * L, by + Math.sin(a - .05) * L); g.lineTo(bx + Math.cos(a + .05) * L, by + Math.sin(a + .05) * L); g.closePath(); g.fill(); }
+    g.fillStyle = '#5d6b80'; for (let k = 0; k < 3; k++) { const bx = W * (.62 + k * .13), by = H * (.2 + .06 * k) + Math.sin(t * .6 + k) * 8 * u; g.beginPath(); g.ellipse(bx, by, 34 * u, 13 * u, 0, 0, 7); g.fill(); g.beginPath(); g.moveTo(bx - 34 * u, by); g.lineTo(bx - 48 * u, by - 12 * u); g.lineTo(bx - 48 * u, by + 12 * u); g.fill(); g.strokeStyle = 'rgba(93,107,128,.5)'; g.lineWidth = 1; g.beginPath(); g.moveTo(bx, by + 13 * u); g.lineTo(bx + 10 * u, gy); g.stroke(); }
+    const sk = '#030810'; g.fillStyle = sk; const L0 = W * .53;
+    for (let x = L0; x < W; x += 26 * u) { const h = (40 + 50 * hash2(Math.round(x / u), 3, 7)) * u; g.fillRect(x, gy - h, 24 * u, h); }       // terraces
+    const bb = W * .66;  // Big Ben
+    g.fillRect(bb, gy - 330 * u, 44 * u, 330 * u); g.beginPath(); g.moveTo(bb - 4 * u, gy - 330 * u); g.lineTo(bb + 22 * u, gy - 410 * u); g.lineTo(bb + 48 * u, gy - 330 * u); g.fill(); g.fillRect(bb + 20 * u, gy - 440 * u, 4 * u, 40 * u);
+    g.fillStyle = '#f4dd9a'; g.beginPath(); g.arc(bb + 22 * u, gy - 290 * u, 15 * u, 0, 7); g.fill(); g.strokeStyle = sk; g.lineWidth = 2 * u; const hh = t * .05, mm = t * .6; g.beginPath(); g.moveTo(bb + 22 * u, gy - 290 * u); g.lineTo(bb + 22 * u + Math.sin(hh) * 8 * u, gy - 290 * u - Math.cos(hh) * 8 * u); g.moveTo(bb + 22 * u, gy - 290 * u); g.lineTo(bb + 22 * u + Math.sin(mm) * 12 * u, gy - 290 * u - Math.cos(mm) * 12 * u); g.stroke();
+    g.fillStyle = sk; g.fillRect(bb + 44 * u, gy - 140 * u, 160 * u, 140 * u); for (let i = 0; i < 9; i++) g.fillRect(bb + (48 + i * 18) * u, gy - 160 * u, 6 * u, 20 * u);       // Parliament
+    const sp = W * .86; g.fillRect(sp - 50 * u, gy - 120 * u, 100 * u, 120 * u); g.beginPath(); g.arc(sp, gy - 150 * u, 42 * u, Math.PI, 0); g.fill(); g.fillRect(sp - 46 * u, gy - 150 * u, 92 * u, 32 * u); g.fillRect(sp - 3 * u, gy - 215 * u, 6 * u, 30 * u); // St Paul's
+    const tb = W * .95; for (const o of [-40, 40]) { g.fillRect(tb + o * u - 12 * u, gy - 170 * u, 24 * u, 170 * u); g.beginPath(); g.moveTo(tb + o * u - 14 * u, gy - 170 * u); g.lineTo(tb + o * u, gy - 200 * u); g.lineTo(tb + o * u + 14 * u, gy - 170 * u); g.fill(); } g.fillRect(tb - 40 * u, gy - 150 * u, 80 * u, 8 * u); // Tower Bridge
+    g.fillStyle = `rgba(255,214,140,${.5 + .4 * Math.sin(t * 5)})`; for (let i = 0; i < 18; i++) { const x = L0 + hash2(i, 5, 9) * (W - L0), y = gy - hash2(i, 6, 9) * 60 * u; g.fillRect(x, y, 3 * u, 4 * u); }
+    g.fillStyle = '#030810'; g.fillRect(W * .58, gy - 240 * u, 4 * u, 240 * u); waveFlag(g, MB.uk, W * .58 + 4 * u, gy - 238 * u, 120 * u, 60 * u, t, 1.3);
+    g.fillStyle = '#020509'; g.fillRect(0, gy, W, H - gy);
+    let fg = g.createLinearGradient(0, gy - 130 * u, 0, gy); fg.addColorStop(0, 'rgba(120,160,220,0)'); fg.addColorStop(1, 'rgba(130,170,230,.4)'); g.fillStyle = fg; g.fillRect(0, gy - 130 * u, W, 130 * u); // mist on the Thames
+    g.fillStyle = '#01030a'; for (let i = 0; i < 4; i++) soldier(g, W * (.62 + i * .1), gy + 4 * u, 1.55 * u, 'uk', t + i, false, i % 2 === 0);
+  });
+  // bombers crossing the front, snow/ash, the seam itself
+  g.fillStyle = 'rgba(0,0,0,.85)'; for (let k = 0; k < 3; k++) { const x = ((t * 55 * u + k * 260 * u) % (W + 300 * u)) - 150 * u, y = H * (.12 + k * .05); g.fillRect(x - 22 * u, y - 2 * u, 44 * u, 5 * u); g.fillRect(x - 4 * u, y - 18 * u, 10 * u, 38 * u); g.fillRect(x - 20 * u, y - 6 * u, 6 * u, 12 * u); }
+  g.fillStyle = 'rgba(240,236,226,.6)'; for (const f of MB.snow) { f[1] += .0009 * f[2]; if (f[1] > 1) f[1] = 0; g.fillRect(((f[0] + Math.sin(t * .5 + f[2] * 6) * .01) % 1) * W, f[1] * H, 2.2 * u * f[2], 2.2 * u * f[2]); }
+  g.strokeStyle = `rgba(255,230,170,${.35 + .25 * Math.sin(t * 9) * Math.sin(t * 2.3)})`; g.lineWidth = 3 * u; g.beginPath(); for (let y = 0; y <= H; y += 20) y ? g.lineTo(seam(y), y) : g.moveTo(seam(y), y); g.stroke();
+  const vg = g.createRadialGradient(mid, H * .45, H * .2, mid, H * .5, H * .95); vg.addColorStop(0, 'rgba(0,0,0,.45)'); vg.addColorStop(.5, 'rgba(0,0,0,.15)'); vg.addColorStop(1, 'rgba(0,0,0,.75)'); g.fillStyle = vg; g.fillRect(0, 0, W, H);
+}
+function menuScreen(on) { MB.cv.style.display = on ? 'block' : 'none'; overlay.classList.toggle('menu', on); if (on) MUSIC.start(); else MUSIC.stop(); }
 function unlocked() { return clamp(store.get('cg_unlocked', 0), 0, LEVELS.length - 1); }
 let menuDiff = clamp(store.get('cg_diff', 1), 0, DIFFS.length - 1), menuLevel = 0;
+const TITLE = 'BLÁZEN Z LONDÝNA', SUBTITLE = 'TAJNÁ AKCE';
+const titleHtml = small => `<div class="gtitle${small ? ' sm' : ''}"><div class="gt1">${TITLE}</div><div class="gt2"><span>${SUBTITLE}</span></div></div>`;
 function showMainMenu() {
-  game.state = 'menu'; sfx.flame(false);
+  game.state = 'menu'; sfx.flame(false); menuScreen(true);
   const un = unlocked(); menuLevel = clamp(menuLevel, 0, un);
-  overlay.innerHTML = `<h1>CASTLE GRIMHOLD</h1><h2>OPERATION IRON WOLF · 1943</h2>
-    <p>Tři epizody, devět misí: útěk z hradu Grimhold, noční lesy, polní tábor a nádraží v údolí, a nakonec podzemní továrna Wolfsgrund, kde dr. Zeman dokončuje operaci Finsternis.</p>
-    <p style="font-size:13px;color:#a99c80">Plížení: drž se ve stínu a přikrč se (C). Stráže tě nejdřív jen tuší <b style="color:#f2c53d">?</b> – teprve pak spustí poplach <b style="color:#ff3b24">!</b>. Kroky a sprint jsou slyšet, mrtvá těla vzbudí podezření. Zezadu nožem = tichá likvidace.</p>
+  overlay.innerHTML = `${titleHtml()}
+    <div class="mmenu">
+      <button class="btn big" data-go="start">START</button>
+      <div class="mnote">${LEVELS[menuLevel].name} · obtížnost ${DIFFS[menuDiff].name}</div>
+      <button class="btn" data-go="missions">VÝBĚR MISE</button>
+      <button class="btn" data-go="settings">NASTAVENÍ</button>
+      <button class="btn" data-go="keys">OVLÁDÁNÍ</button>
+    </div>
+    <p class="mfoot">v1.3 · agent B. J. z Londýna proti operaci Finsternis · 1943<br>Dabing: Piper TTS · Zbraně: CC0 z OpenGameArt · vojáci: nisu (CC0), three.js / Mixamo · ${Object.keys(FBX).length}/6 FBX načteno${soldierTpl ? '' : ' · náhradní postavy'}</p><div id="load"></div>`;
+  overlay.style.display = 'flex'; $('hud').style.display = 'none';
+  const go = { start: () => startMission(menuLevel, true), missions: showMissionSelect, settings: () => showSettings(showMainMenu), keys: showControls };
+  overlay.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { sfx.play && sfx.ctx && sfx.play('switch'); go[b.dataset.go](); });
+}
+function showMissionSelect() {
+  game.state = 'menu'; menuScreen(true);
+  const un = unlocked(); menuLevel = clamp(menuLevel, 0, un);
+  overlay.innerHTML = `${titleHtml(true)}<div class="mpanel">
     <h3>OBTÍŽNOST</h3><div>${DIFFS.map((d, i) => `<button class="btn sm${i === menuDiff ? ' sel' : ''}" data-d="${i}">${d.name}</button>`).join('')}</div><p style="font-size:13px;color:#a99c80;margin:6px 0 0">${DIFFS[menuDiff].desc}</p>
     <h3>EPIZODY</h3><div class="eps">${EPISODES.map((E, k) => `<button class="ep${k === epOf(menuLevel) ? ' sel' : ''}" data-e="${k}" ${E.levels[0] > un ? 'disabled' : ''}><span>EPIZODA ${k + 1}</span><b>${E.title}</b><small>${E.sub}</small></button>`).join('')}</div>
     <h3>MISE</h3><div>${EPISODES[epOf(menuLevel)].levels.map(i => `<button class="btn sm${i === menuLevel ? ' sel' : ''}" data-l="${i}" ${i > un ? 'disabled' : ''}>${LEVELS[i].name.replace('MISE ', '').replace(' · ', ' ')}</button>`).join('')}</div>
-    <div><button class="btn" data-play="1">HRÁT</button><button class="btn sm" data-set="1">NASTAVENÍ</button></div>${KEYS_HTML}
-    <p style="font-size:12px;color:#777;margin-top:10px">v1.2 · Dabing: Piper TTS · Zbraně: CC0 z OpenGameArt (Lucian Pavel, ege, elmerenges) · ruce: para (CC0) · němečtí vojáci: nisu (CC0), animace three.js / Mixamo · ${Object.keys(FBX).length}/6 FBX načteno${soldierTpl ? '' : ' · servery s modely vojáků nedostupné – náhradní postavy'}</p><div id="load"></div>`;
+    <p style="font-size:13px;color:#a99c80">Plížení: drž se ve stínu a přikrč se (C). Stráže tě nejdřív jen tuší <b style="color:#f2c53d">?</b> – teprve pak spustí poplach <b style="color:#ff3b24">!</b>. Zezadu nožem = tichá likvidace.</p>
+    <div><button class="btn" data-play="1">HRÁT</button><button class="btn sm" data-back="1">ZPĚT</button></div></div><div id="load"></div>`;
   overlay.style.display = 'flex'; $('hud').style.display = 'none';
-  overlay.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { menuDiff = +b.dataset.d; store.set('cg_diff', menuDiff); showMainMenu(); });
-  overlay.querySelectorAll('[data-l]').forEach(b => b.onclick = () => { menuLevel = +b.dataset.l; showMainMenu(); });
-  overlay.querySelectorAll('[data-e]').forEach(b => b.onclick = () => { menuLevel = EPISODES[+b.dataset.e].levels[0]; showMainMenu(); });
+  overlay.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { menuDiff = +b.dataset.d; store.set('cg_diff', menuDiff); showMissionSelect(); });
+  overlay.querySelectorAll('[data-l]').forEach(b => b.onclick = () => { menuLevel = +b.dataset.l; showMissionSelect(); });
+  overlay.querySelectorAll('[data-e]').forEach(b => b.onclick = () => { menuLevel = EPISODES[+b.dataset.e].levels[0]; showMissionSelect(); });
   overlay.querySelector('[data-play]').onclick = () => startMission(menuLevel, true);
-  overlay.querySelector('[data-set]').onclick = () => showSettings(showMainMenu);
+  overlay.querySelector('[data-back]').onclick = showMainMenu;
+}
+function showControls() {
+  game.state = 'menu'; menuScreen(true);
+  overlay.innerHTML = `${titleHtml(true)}<div class="mpanel"><h3>OVLÁDÁNÍ</h3>${KEYS_HTML}<div><button class="btn sm" data-back="1">ZPĚT</button></div></div><div id="load"></div>`;
+  overlay.style.display = 'flex'; $('hud').style.display = 'none';
+  overlay.querySelector('[data-back]').onclick = showMainMenu;
 }
 async function startMission(i, fresh) {
-  DIFF = DIFFS[menuDiff]; sfx.init();
+  DIFF = DIFFS[menuDiff]; sfx.init(); menuScreen(false);
   const cs = game.noCS ? null : MISSION_CS[LEVELS[i].id];
   if (cs && cs.pre) { await loadLevel(-1, CS_FOREST); await playCutscene(CUTSCENES[cs.pre]); }
   if (game.level !== i || !LV || LV.id !== LEVELS[i].id) await loadLevel(i); else resetLevelState();
@@ -5928,7 +6269,7 @@ async function loadLevel(i, def = null) {
   setLoad('Stavím hrad…'); await nextFrame();
   clearLevel();
   LV = structuredClone(L0); rndL = mulberry32(1234 + i * 77);
-  initGrid(); applyAtmosphere(); buildRoomSurfaces(); buildDoors(); buildOutdoor(); buildDecor(); mmReset();
+  initGrid(); applyAtmosphere(); buildRoomSurfaces(); buildDoors(); buildOutdoor(); buildExterior(); buildDecor(); mmReset();
   await buildWorldMeshes(p => setLoad(`Zapékám světla a stíny… ${Math.round(p * 100)} %`));
   buildBarrels(); buildDoorLeaves(); buildPassability(); computeAlarmFlows();
   for (const d of destructibles) if (d.mats) tintMats(d.mats, d.pos.x, d.pos.z, 1.1);
@@ -6030,7 +6371,8 @@ function tick(dt) {
   if (Math.abs(dmgO - lastDmg) > .01) { hud.dmg.style.opacity = dmgO; lastDmg = dmgO; }
   if (Math.abs(player.burn - lastBurn) > .01) { hud.burn.style.opacity = player.burn; lastBurn = player.burn; }
   if (hitTimer > 0) { hitTimer -= dt; if (hitTimer <= 0) hud.hitm.style.opacity = 0; }
-  if (game.state === 'playing') { updateHud(); mmDraw(); }
+  if (game.state === 'playing') { updateHud(); mmDraw(); if (TM.on) tmDraw(); } else if (TM.on) tabMap(false);
+  if (MB.cv.style.display === 'block') menuBG(time);
   renderer.clear(); renderer.render(scene, camera);
   if (!player.zoom && game.state !== 'menu' && game.state !== 'loading' && game.state !== 'briefing' && game.state !== 'cutscene') { renderer.clearDepth(); renderer.render(vmScene, vmCamera); }
 }
