@@ -1,6 +1,6 @@
-# Castle Grimhold
+# Blázen z Londýna: Tajná Akce
 
-**Operation Iron Wolf · 1943** – 3D FPS z druhé světové války běžící přímo v prohlížeči, postavený na [three.js](https://threejs.org/) (r160).
+**1943** – 3D FPS z druhé světové války běžící přímo v prohlížeči, postavený na [three.js](https://threejs.org/) (r160).
 
 ![Polní tábor wehrmachtu v noci – stany, věž s reflektorem, ohniště](docs/screenshot-camp.jpg)
 
@@ -35,15 +35,13 @@ Epizoda 1 se odehrává v hradu. Epizoda 2 je venku, v noci a daleko od hradu: s
 
 ## Spuštění
 
-Hra je jeden HTML soubor, ale kvůli načítání assetů ji spusť přes lokální server (ne přes `file://`):
+Hra nepotřebuje žádný vlastní server, three.js i všechny modely, zvuky a dabing jsou přibalené v repozitáři (`assets/`).
 
-```bash
-python -m http.server 8765 --bind 127.0.0.1
-```
+- **Na webu (GitHub Pages):** v nastavení repozitáře zapni *Settings → Pages → Build and deployment → Source: Deploy from a branch*, vyber větev `main` a složku `/ (root)` a dej *Save*. Za minutu běží hra na <https://zuhagames.github.io/ProjectCastle/>.
+- **V Google Sites:** *Vložit → Vložit (Embed) → Podle adresy URL* a zadej adresu z GitHub Pages výš, pak rámeček roztáhni na celou šířku. Kdyby vložená stránka nedovolila zamknout myš, hra sama nabídne tlačítko **Otevřít v novém okně** (v menu jsou i tlačítka *Celá obrazovka* a *Otevřít v novém okně*).
+- **Z disku:** stačí otevřít `index.html` dvojklikem. Three.js se v tom případě stáhne z CDN (jsDelivr), takže je potřeba internet.
 
-Pak otevři <http://127.0.0.1:8765/castle_grimhold.html>.
-
-Three.js se načítá z CDN (jsDelivr), takže je potřeba připojení k internetu. Modely, zvuky a dabing jsou zabalené v `assets/*.js`. Fotografické textury (Poly Haven) jsou volitelné – když nejsou dostupné, hra si textury vygeneruje procedurálně.
+Fotografické textury (Poly Haven) jsou volitelné – když nejsou dostupné, hra si textury vygeneruje procedurálně.
 
 ## Ovládání
 
@@ -59,7 +57,7 @@ Three.js se načítá z CDN (jsDelivr), takže je potřeba připojení k interne
 | `Shift` | sprint |
 | `C` | přikrčit / plížit (přepínač, v nastavení lze změnit na držení) |
 | `1`–`8` / kolečko | výběr zbraně |
-| `Tab` | úkoly mise |
+| `Tab` (držet) | mapa celé úrovně s vyznačenými cíli mise |
 | `M` | zvuk on/off |
 | `Esc` | pauza |
 
@@ -70,6 +68,13 @@ Lee-Enfield No.4 (T) s puškohledem, revolver, Sten Mk II, plamenomet, mačeta, 
 ## Nastavení
 
 V menu i v pauze: citlivost a obrácení myši, FOV, hlasitost, velikost rozhraní, rozlišení vykreslování, způsob přikrčení, minimapa a pohupování kamery. Nastavení se ukládá v prohlížeči. Minimapa ve stylu Wolfensteinu odkrývá místnosti, jak jimi procházíš (les je zelený, budovy hnědé).
+
+## Novinky ve verzi 1.3
+
+- Hra se jmenuje **Blázen z Londýna: Tajná Akce**.
+- Nové hlavní menu: animovaný obraz – vlevo německé linie a hrad, vpravo válečný Londýn (Big Ben, balóny, reflektory) – a pochodová hudba ve stylu starého Wolfensteinu, syntetizovaná přímo v prohlížeči (hlasitost v nastavení).
+- Podržením `Tab` se zobrazí mapa úrovně s očíslovanými cíli, východem a seznamem úkolů. Úkoly mise jsou na obrazovce pořád.
+- Hrad má zvenku střechy a vnější zdi – z nádvoří, hradeb a stanice lanovky už není vidět dovnitř místností. Hradní kaple je zvenku skutečný kostel se sedlovou břidlicovou střechou, opěrnými pilíři, vitrážemi, rozetou a zvonicí s měděnou věží.
 
 ## Novinky ve verzi 1.2
 
@@ -82,7 +87,7 @@ V menu i v pauze: citlivost a obrácení myši, FOV, hlasitost, velikost rozhran
 ## Struktura projektu
 
 ```
-castle_grimhold.html   # celá hra (HTML + JS)
+index.html             # celá hra (HTML + JS); castle_grimhold.html jen přesměrovává na index.html
 assets/
   models.js            # zbraně, ruce a němečtí vojáci (FBX) zabalení do JS
   characters.js        # animace (Soldier.glb) a boss (Xbot.glb) zabalené do JS
