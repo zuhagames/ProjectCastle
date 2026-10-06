@@ -54,6 +54,15 @@
   #drive .dv { font-size:46px; line-height:1; color:#fff; } #drive .dv small { font-size:16px; color:#c9a24c; }
   #drive .dl { font:600 11px 'Oswald',sans-serif; letter-spacing:3px; color:var(--gold); margin-top:6px; } #drive .bar { width:100%; height:7px; }
   #drive .bar b { background:linear-gradient(90deg,#c98a2c,#f2c53d); } #drive .bar.br b { background:linear-gradient(90deg,#7a120b,#ff4a35); } #drive .dn { font-size:14px; margin-top:6px; }
+  #dev { position:absolute; inset:0; display:none; pointer-events:auto; z-index:6; background:rgba(4,6,10,.72); font-family:'Oswald',sans-serif; color:#d8d2c4; overflow:auto; }
+  #dev .box { max-width:980px; margin:4vh auto; padding:18px 24px 22px; background:rgba(12,14,18,.94); border-top:3px solid #2fbf71; box-shadow:0 20px 60px rgba(0,0,0,.7); }
+  #dev h2 { margin:0 0 4px; font:700 26px 'Oswald',sans-serif; letter-spacing:.15em; color:#fff; } #dev h2 small { font-size:13px; color:#2fbf71; letter-spacing:.3em; margin-left:10px; }
+  #dev h6 { margin:16px 0 6px; font:400 12px 'Oswald',sans-serif; letter-spacing:.35em; color:#2fbf71; }
+  #dev .row { display:flex; flex-wrap:wrap; gap:6px; }
+  #dev button { font:600 14px 'Oswald',sans-serif; letter-spacing:.06em; padding:6px 12px; color:#e6e1d6; background:#1d222a; border:1px solid #333b47; cursor:pointer; }
+  #dev button:hover { background:#27303b; border-color:#2fbf71; } #dev button.on { background:#1f6b45; border-color:#2fbf71; color:#fff; }
+  #dev select { font:14px 'Oswald',sans-serif; padding:5px; background:#1d222a; color:#e6e1d6; border:1px solid #333b47; }
+  #dev .info { font:13px monospace; color:#8a93a0; margin-top:14px; }
   #stealth { position:absolute; bottom:18px; left:50%; width:160px; margin-left:-80px; text-align:center; font:600 12px 'Oswald',sans-serif; letter-spacing:3px; text-shadow:0 2px 2px #000; }
   #stealth .bar { width:100%; height:5px; } #visb b { background:linear-gradient(90deg,#55606a,#e8e2c8); transition:width .15s; }
   #prompt { position:absolute; top:62%; width:100%; text-align:center; font-family:'Special Elite',monospace; font-size:19px; color:#fff; text-shadow:0 2px 3px #000; }
@@ -202,6 +211,7 @@
   <div id="log"></div>
   <div id="prompt"></div>
   <div id="drive"></div>
+  <div id="dev"></div>
   <div id="stealth"><div id="stl">SKRYT</div><div class="bar" id="visb"><b></b></div></div>
   <div id="hl" class="p">
     <div class="lbl">ZDRAVÍ</div><div class="num" id="hp">100</div><div class="bar" id="hpb"><b></b></div>
@@ -5173,7 +5183,7 @@ function damageEnemy(e, dmg, dir, opts = {}) {
   }
 }
 function damagePlayer(n, src) {
-  if (player.dead || game.state !== 'playing') return;
+  if (player.dead || game.state !== 'playing' || DEV.god) return;
   n *= DIFF.dmg;
   if (player.armor > 0) { const a = Math.min(player.armor, n * .6); player.armor -= a; n -= a; }
   player.hp -= n; player.dmgFlash = Math.min(1, player.dmgFlash + n / 25); player.shake = Math.min(.6, player.shake + n / 40); sfx.play('hurt');
@@ -5755,12 +5765,13 @@ function updatePlayer(dt) {
   const tx = l ? ix / l * spd : 0, tz = l ? iz / l * spd : 0, acc = player.onGround ? 12 : 2.2, k = 1 - Math.exp(-acc * dt);
   player.vel.x += (tx - player.vel.x) * k; player.vel.z += (tz - player.vel.z) * k;
   const P = player.pos, ph = lerp(P_HEIGHT, 1.15, player.crouch);
-  P.x += player.vel.x * dt; P.z += player.vel.z * dt; collide(P, .4, P.y, ph);
+  P.x += player.vel.x * dt; P.z += player.vel.z * dt; if (!DEV.noclip) collide(P, .4, P.y, ph);
   for (const e of enemies) if (e.state !== 'dead') { const ddx = P.x - e.x, ddz = P.z - e.z, d = Math.hypot(ddx, ddz), rr = e.r + .44; if (d < rr && d > 1e-4 && Math.abs(e.y - P.y) < 1.5) { P.x += ddx / d * (rr - d) * .5; P.z += ddz / d * (rr - d) * .5; } }
   // vertical: gravity, stairs, standing on props, falling off galleries
-  const gnd = groundAt(P.x, P.z, P.y, .4);
-  if (keys.Space && player.onGround && player.crouch < .3 && player.stamina > 8) { player.vy = 5.2; player.onGround = false; player.stamina -= 8; sfx.play('jump'); }
-  if (player.onGround && gnd < P.y - .6) player.onGround = false;
+  const gnd = DEV.noclip ? -999 : groundAt(P.x, P.z, P.y, .4);
+  if (DEV.noclip) { P.y += ((keys.Space ? 1 : 0) - (keys.KeyC ? 1 : 0)) * 7 * dt; player.vy = 0; player.onGround = true; }   // dev fly: Space up, C down
+  else if (keys.Space && player.onGround && player.crouch < .3 && player.stamina > 8) { player.vy = 5.2; player.onGround = false; player.stamina -= 8; sfx.play('jump'); }
+  if (!DEV.noclip && player.onGround && gnd < P.y - .6) player.onGround = false;
   if (!player.onGround) {
     player.vy -= 16 * dt; P.y += player.vy * dt;
     const top = topAt(P.x, P.z); if (P.y + ph > top) { P.y = top - ph; if (player.vy > 0) player.vy = 0; }
@@ -5768,7 +5779,7 @@ function updatePlayer(dt) {
       const v = -player.vy; P.y = gnd; player.vy = 0; player.onGround = true; sfx.play('step', null, 1.5); vm.recoil += .03; if (v > 4) makeNoise(P.x, P.y, P.z, 8);
       if (v > 11) { damagePlayer(Math.pow(v - 10, 1.6) * 2.2 / DIFF.dmg); player.shake = .5; }
     }
-  } else { P.y = gnd; player.vy = 0; }
+  } else if (!DEV.noclip) { P.y = gnd; player.vy = 0; }
   player.viewY = P.y > player.viewY ? lerp(player.viewY, P.y, 1 - Math.exp(-16 * dt)) : P.y;
   const hs = Math.hypot(player.vel.x, player.vel.z); if (player.onGround) player.bobT += dt * hs * 1.15;
   const sp = Math.floor(player.bobT / Math.PI); if (sp !== stepPhase) { stepPhase = sp; if (hs > 2 && player.crouch < .5) { sfx.play('step'); makeNoise(P.x, P.y, P.z, hs > 7 ? 13 : 5); } }
@@ -6334,6 +6345,7 @@ addEventListener('keydown', e => {
 });
 // browsers never let a page swallow Ctrl+W, so at least ask before the tab closes mid-mission
 addEventListener('beforeunload', e => { if (game.state === 'playing' || game.state === 'paused') { e.preventDefault(); e.returnValue = ''; } });
+addEventListener('keydown', e => { if ((e.code === 'F8' || e.code === 'Backquote') && !e.repeat && LV && (game.state === 'playing' || game.state === 'dev')) { e.preventDefault(); devMenu(game.state !== 'dev'); } });
 addEventListener('keyup', e => { keys[e.code] = false; if (e.code === 'Tab') tabMap(false); });
 addEventListener('blur', () => { for (const k in keys) keys[k] = false; mouseDown = rightDown = false; tabMap(false); });
 addEventListener('contextmenu', e => e.preventDefault());
@@ -6366,6 +6378,46 @@ document.addEventListener('pointerlockerror', () => {
   setOverlay(`<h1 style="font-size:clamp(26px,4.5vw,50px)">MYŠ NELZE ZAMKNOUT</h1><p>Stránka, do které je hra vložená, nedovoluje zamknout kurzor myši, takže se nedá rozhlížet. Otevři hru ve vlastním okně – hraje se stejně a postup zůstane uložený.</p>`,
     [{ label: 'OTEVŘÍT V NOVÉM OKNĚ', fn: openStandalone }, { label: 'ZKUSIT ZNOVU', cls: 'sm', fn: startPlaying }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]);
 });
+/* ---------- DEV MENU (F8 or ` during a mission): weapons, cheats, enemies, missions ---------- */
+const DEV = { god: false, ammo: false, noclip: false, freeze: false, spawnType: 'soldat' };
+function devMenu(open) {
+  const el = $('dev');
+  if (!open) { el.style.display = 'none'; startPlaying(); return; }
+  game.state = 'dev'; mouseDown = rightDown = false; document.exitPointerLock(); el.style.display = 'block'; devRender();
+}
+function devRender() {
+  const el = $('dev'), tg = (k, label) => `<button class="${DEV[k] ? 'on' : ''}" data-t="${k}">${label}: ${DEV[k] ? 'ZAP' : 'VYP'}</button>`;
+  el.innerHTML = `<div class="box"><h2>DEV MENU<small>F8 / \` ZAVŘÍT</small></h2>
+    <h6>ZBRANĚ</h6><div class="row"><button data-a="allw">VŠECHNY ZBRANĚ + MUNICE</button>${WEAPONS.map((w, i) => `<button data-w="${i}">${w.owned ? '✓ ' : ''}${w.name}</button>`).join('')}</div>
+    <div class="row" style="margin-top:6px"><button data-a="ammo">DOPLNIT MUNICI</button><button data-a="gren">+5 GRANÁTŮ</button><button data-a="sup">TLUMIČE</button><button data-a="keys">VŠECHNY KLÍČE</button></div>
+    <h6>HRÁČ</h6><div class="row">${tg('god', 'NESMRTELNOST')}${tg('ammo', 'NEKONEČNÁ MUNICE')}${tg('noclip', 'PRŮCHOD ZDMI (SPACE/C)')}<button data-a="heal">ZDRAVÍ + VESTA</button></div>
+    <h6>NEPŘÁTELÉ</h6><div class="row">${tg('freeze', 'ZMRAZIT AI')}<button data-a="kill">ZABÍT VŠECHNY</button><button data-a="calm">UKLIDNIT STRÁŽE</button>
+      <select data-s="1">${Object.keys(ETYPES).filter(k => !ETYPES[k].actor && k !== 'bj').map(k => `<option value="${k}" ${k === DEV.spawnType ? 'selected' : ''}>${ETYPES[k].name || k}</option>`).join('')}</select><button data-a="spawn">SPAWNOUT PŘED SEBE</button></div>
+    <h6>MISE</h6><div class="row"><button data-a="obj">SPLNIT ÚKOLY</button><button data-a="win">DOKONČIT MISI</button><button data-a="exit">TELEPORT K VÝCHODU</button>
+      <select data-m="1">${LEVELS.map((L, i) => `<option value="${i}" ${i === game.level ? 'selected' : ''}>${L.name}</option>`).join('')}</select><button data-a="go">SPUSTIT MISI</button><button data-a="unlock">ODEMKNOUT VŠE</button></div>
+    <div class="info">pozice ${player.pos.toArray().map(v => v.toFixed(1)).join(', ')} · buňka ${toCell(player.pos.x)}, ${toCell(player.pos.z)} · ${LV.id} · nepřátel živých ${enemies.filter(e => e.state !== 'dead').length}/${enemies.length}</div>
+    <div class="row" style="margin-top:14px"><button data-a="close">▶ POKRAČOVAT</button></div></div>`;
+  el.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { DEV[b.dataset.t] = !DEV[b.dataset.t]; devRender(); });
+  el.querySelectorAll('[data-w]').forEach(b => b.onclick = () => { const w = WEAPONS[+b.dataset.w]; w.owned = true; if (w.mag) w.clip = w.mag; if (w.ammo) player.ammo[w.ammo] = AMMO_MAX[w.ammo]; switchWeapon(+b.dataset.w); log('DEV: ' + w.name); devRender(); });
+  el.querySelector('[data-s]').onchange = e => DEV.spawnType = e.target.value;
+  const A = {
+    allw: () => { WEAPONS.forEach(w => { w.owned = true; if (w.mag) w.clip = w.mag; }); Object.assign(player.ammo, AMMO_MAX); },
+    ammo: () => { for (const w of WEAPONS) if (w.mag) w.clip = w.mag; Object.assign(player.ammo, AMMO_MAX); }, gren: () => { player.ammo.gren = Math.min(AMMO_MAX.gren, player.ammo.gren + 5); },
+    sup: () => { player.supKit = true; }, keys: () => { for (const k of ['brana', 'knihovna', 'strojovna', 'propustka', 'laborator']) player.keys.add(k); },
+    heal: () => { player.hp = 100; player.armor = 100; },
+    kill: () => { for (const e of enemies) if (e.state !== 'dead') damageEnemy(e, 99999, null); },
+    calm: () => { for (const e of enemies) if (e.state !== 'dead') { e.state = 'idle'; e.sus = 0; e.wary = false; } game.alarmed = false; },
+    spawn: () => { const f = V(-Math.sin(player.yaw), 0, -Math.cos(player.yaw)), p = player.pos.clone().addScaledVector(f, 4), cx = toCell(p.x), cz = toCell(p.z); if (!roomOf(cx, cz)) return log('DEV: tam nejde nikoho postavit');
+      const c = C(cx, cz), e = makeEnemy(DEV.spawnType, cx, cz, player.yaw + Math.PI, { ox: p.x - c.x, oz: p.z - c.z, reinforce: true }); game.totalEnemies++; tintMats(e.mats, e.x, e.z); },
+    obj: () => { for (const o of LV.objectives) if (o.id !== 'exit') completeObjective(o.id); },
+    win: () => { el.style.display = 'none'; game.state = 'playing'; for (const o of LV.objectives) o.done = true; win(); },
+    exit: () => { const ex = exits[0]; if (!ex) return log('DEV: mise nemá východ'); player.pos.set(ex.pos.x, floorAt(ex.pos.x, ex.pos.z), ex.pos.z); player.viewY = player.pos.y; },
+    go: () => { el.style.display = 'none'; const i = +el.querySelector('[data-m]').value; menuLevel = i; startMission(i, true); },
+    unlock: () => { store.set('cg_unlocked', LEVELS.length - 1); log('DEV: všechny mise odemčené'); },
+    close: () => devMenu(false)
+  };
+  el.querySelectorAll('[data-a]').forEach(b => b.onclick = () => { const r = A[b.dataset.a](); if (r !== false && ['go', 'win', 'close'].indexOf(b.dataset.a) < 0) devRender(); });
+}
 const KEYS_HTML = `<div class="keys"><span><b>WASD</b> pohyb · <b>SPACE</b> skok</span><span><b>LMB</b> střelba · <b>RMB</b> mířidla / puškohled</span><span><b>R</b> přebít · <b>F</b> použít / dveře</span><span><b>Q / E</b> vyklonit se</span><span><b>SHIFT</b> sprint · <b>C</b> přikrčit / plížit</span><span><b>1–9, 0, −, = / kolečko</b> zbraně</span><span><b>TAB</b> (držet) mapa a cíle mise</span><span><b>M</b> zvuk · <b>ESC</b> pauza</span></div>`;
 function setOverlay(html, buttons) {
   menuScreen(false);
@@ -6812,7 +6864,8 @@ function tick(dt) {
     camera.updateMatrixWorld(); _pm.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); _fr.setFromProjectionMatrix(_pm);
     if (game.state === 'playing') updateStealth(dt);
     if (TRAIN.on && game.state === 'playing') trainTick(dt);
-    for (const e of enemies) updateEnemy(e, dt, frameNo);
+    for (const e of enemies) { if (DEV.freeze && e.state !== 'dead') idleEnemy(e, dt); else updateEnemy(e, dt, frameNo); }
+    if (DEV.ammo) { for (const w of WEAPONS) if (w.owned && w.mag) w.clip = w.mag; for (const k in AMMO_MAX) player.ammo[k] = AMMO_MAX[k]; }
     for (let i = 0; i < enemies.length; i++) { const a = enemies[i]; if (a.state === 'dead') continue; for (let j = i + 1; j < enemies.length; j++) { const b = enemies[j]; if (b.state === 'dead' || Math.abs(a.y - b.y) > 1.5) continue; const dx = a.x - b.x, dz = a.z - b.z, d = Math.hypot(dx, dz), rr = a.r + b.r + .1; if (d < rr && d > 1e-4) { const p = (rr - d) * .5; a.x += dx / d * p; a.z += dz / d * p; b.x -= dx / d * p; b.z -= dz / d * p; } } }
     for (const e of enemies) if (e.state === 'chase' || e.state === 'alarm' || e.state === 'investigate' || e.state === 'search' || e.state === 'return') for (const d of doors) if (d.target === 0 && !doorLocked(d) && Math.abs(d.y - e.y) < 1.5 && Math.hypot(d.c.x - e.x, d.c.z - e.z) < 3) openDoor(d, e.x, e.z);
     updatePickups(dt); updateGrenades(dt);
