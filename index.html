@@ -50,6 +50,10 @@
   #introS { margin-top:6px; letter-spacing:6px; color:#c23b2c; font-size:clamp(12px,1.6vw,16px); text-shadow:0 2px 2px #000; }
   #boss { position:absolute; top:58px; left:50%; width:420px; margin-left:-210px; text-align:center; display:none; font:600 13px 'Oswald'; letter-spacing:4px; color:#e9c2b5; text-shadow:0 2px 2px #000; }
   #boss .bar { width:100%; height:9px; margin-top:4px; } #boss .bar b { background:linear-gradient(#b8231a,#5e0b06); }
+  #drive { position:absolute; right:22px; top:120px; width:230px; display:none; font-family:'Special Elite',monospace; color:#f0e2b6; background:rgba(10,8,6,.62); border:1px solid rgba(201,162,76,.5); padding:10px 14px; text-shadow:0 1px 2px #000; }
+  #drive .dv { font-size:46px; line-height:1; color:#fff; } #drive .dv small { font-size:16px; color:#c9a24c; }
+  #drive .dl { font:600 11px 'Oswald',sans-serif; letter-spacing:3px; color:var(--gold); margin-top:6px; } #drive .bar { width:100%; height:7px; }
+  #drive .bar b { background:linear-gradient(90deg,#c98a2c,#f2c53d); } #drive .bar.br b { background:linear-gradient(90deg,#7a120b,#ff4a35); } #drive .dn { font-size:14px; margin-top:6px; }
   #stealth { position:absolute; bottom:18px; left:50%; width:160px; margin-left:-80px; text-align:center; font:600 12px 'Oswald',sans-serif; letter-spacing:3px; text-shadow:0 2px 2px #000; }
   #stealth .bar { width:100%; height:5px; } #visb b { background:linear-gradient(90deg,#55606a,#e8e2c8); transition:width .15s; }
   #prompt { position:absolute; top:62%; width:100%; text-align:center; font-family:'Special Elite',monospace; font-size:19px; color:#fff; text-shadow:0 2px 3px #000; }
@@ -140,6 +144,7 @@
   <div id="boss"><span id="bossN">ÜBERSOLDAT</span><div class="bar"><b id="bossB"></b></div></div>
   <div id="log"></div>
   <div id="prompt"></div>
+  <div id="drive"></div>
   <div id="stealth"><div id="stl">SKRYT</div><div class="bar" id="visb"><b></b></div></div>
   <div id="hl" class="p">
     <div class="lbl">ZDRAVÍ</div><div class="num" id="hp">100</div><div class="bar" id="hpb"><b></b></div>
@@ -1095,6 +1100,64 @@ LEVELS.push(asciiLevel({
 }));
 
 // ---------- EPISODE 3 · OPERACE FINSTERNIS ----------
+// ---------- EPISODE 2 · mission 4: the special train – fight car by car to the engine, then drive it ----------
+LEVELS.push({
+  id: 'e2m4', ep: 2, train: true, name: 'MISE 2.4 · ZVLÁŠTNÍ VLAK', sub: 'Noční jízda do Wolfsgrundu', w: 34, h: 3,
+  brief: ['Schoval ses ve služebním voze na konci zvláštního vlaku. Souprava se řítí nocí do hor – a je plná vojáků.',
+    'Probojuj se vagon po vagonu dopředu: otevřené vozy, krytý vůz, plošina s raketou, municí a protiletadlovým kanonem, tendr.',
+    'V lokomotivě převezmi řízení. Regulátor [W] přidává páru, brzda [S] zpomaluje. Dodržuj rychlost v zatáčkách a na mostě – jinak vykolejíš.',
+    'Ve Wolfsgrundu zastav u vykládací rampy. Nedobrzdíš-li, skončíš na zarážedle.'],
+  rooms: [
+    R('brake', [1, 1, 2, 1], 'boxcar', 1.3, 4.3, 'Služební vůz'),
+    R('gon1', [4, 1, 6, 1], 'opencar', 1.3, 0, 'Otevřený vůz', { wallY: 2.45 }),
+    R('box1', [8, 1, 10, 1], 'boxcar', 1.3, 4.3, 'Krytý vůz'),
+    R('flat1', [12, 1, 14, 1], 'flatcar', 1.3, 0, 'Plošinový vůz s raketou', { wallY: 1.75 }),
+    R('box2', [16, 1, 18, 1], 'boxcar', 1.3, 4.3, 'Vůz s municí'),
+    R('flak', [20, 1, 22, 1], 'flatcar', 1.3, 0, 'Protiletadlový vůz', { wallY: 1.75 }),
+    R('box3', [24, 1, 26, 1], 'boxcar', 1.3, 4.3, 'Vůz zvláštního nákladu'),
+    R('tender', [28, 1, 29, 1], 'tender', 1.3, 0, 'Tendr', { wallY: 2.7 }),
+    R('cab', [31, 1, 32, 1], 'cab', 1.3, 0, 'Kabina lokomotivy', { wallY: 2.45 })
+  ],
+  doors: [[3, 1], [7, 1], [11, 1], [15, 1], [19, 1], [23, 1], [27, 1], [30, 1]],
+  start: [1, 1, -PI / 2],
+  objectives: [
+    { id: 'cab', text: 'Probojuj se vlakem až do lokomotivy' },
+    { id: 'drive', text: 'Převezmi řízení a zastav vlak u rampy ve Wolfsgrundu' },
+    { id: 'tre', text: 'Volitelné: posbírej poklady', optional: true }
+  ],
+  targets: [{ kind: 'regulator', cell: [32, 1], ox: 1.25, oz: 0, rot: 0, obj: 'cab', name: 'Lokomotiva je tvoje!' }],
+  alarms: [], reinforce: [],
+  barrels: [[17, 1, 1.2, -1.1], [25, 1, -1.2, 1.1]],
+  props: [
+    ['crates', 4, 1, -.4, -.9, 0], ['crates', 6, 1, .2, .8, 2], ['drums', 5, 1, .6, -.9, 0, { n: 3 }],
+    ['crates', 8, 1, -.6, -1.1, 0], ['crates', 10, 1, .6, 1.1, 2], ['lantern', 9, 1, 0, 1.5],
+    ['rocket', 13, 1, 0, 0, 0, { cradle: true, len: 10 }],
+    ['drums', 16, 1, -.5, 1, 0, { n: 6 }], ['crates', 18, 1, .4, -1, 0], ['crates', 17, 1, -1.2, 1.1, 2],
+    ['flak', 21, 1, 0, 0, 0],
+    ['crates', 24, 1, -.6, -1.1, 0], ['crates', 26, 1, .6, 1.1, 2], ['crates', 25, 1, .2, -1.2, 0],
+    ['coal', 28, 1, .8, -.4]
+  ],
+  enemies: [
+    ['soldat', 5, 1, -PI / 2, { oz: .9 }], ['sturm', 6, 1, -PI / 2, { oz: -.8 }],
+    ['soldat', 9, 1, -PI / 2, { oz: -.6 }], ['sturm', 10, 1, -PI / 2, { oz: .6 }], ['offizier', 10, 1, -PI / 2, { ox: 1.3, oz: -.9 }],
+    ['elite', 12, 1, -PI / 2, { oz: 1.1 }], ['elite', 14, 1, -PI / 2, { oz: -1.1 }],
+    ['soldat', 17, 1, -PI / 2, { oz: -1 }], ['sturm', 18, 1, -PI / 2, { oz: 1 }],
+    ['soldat', 20, 1, -PI / 2, { oz: 1.2 }], ['sturm', 22, 1, -PI / 2, { oz: -1.2 }], ['sniper', 22, 1, -PI / 2, { oz: 1.1, ox: 1 }],
+    ['elite', 24, 1, -PI / 2, { oz: 1 }], ['offizier', 26, 1, -PI / 2, { oz: -.8 }], ['elite', 26, 1, -PI / 2, { ox: 1.4, oz: .9 }],
+    ['soldat', 29, 1, -PI / 2, { oz: 1.1 }],
+    ['sturm', 31, 1, -PI / 2, { oz: 1 }], ['soldat', 32, 1, PI / 2, { oz: -1 }]
+  ],
+  pickups: [
+    ['a', 1, 1, -1, -1], ['h', 2, 1, 1, 1], ['n', 2, 1, 1, -1],
+    ['q', 5, 1, 0, 1.2], ['g', 4, 1, -1.4, 1.2],
+    ['H', 8, 1, -1.3, 1.1], ['s', 9, 1, 0, -1.3], ['g', 10, 1, 1.4, -1.2],
+    ['m', 12, 1, -1.3, -1.2], ['f', 14, 1, 1.4, 1.2],
+    ['a', 16, 1, -1.4, -1.2], ['n', 18, 1, 1.4, 1.2], ['g', 17, 1, 0, -1.4], ['v', 18, 1, 1.2, -1.2],
+    ['h', 20, 1, -1.4, -1.2], ['r', 22, 1, 1.4, 1.2],
+    ['H', 24, 1, -1.4, 1.2], ['g', 26, 1, 1.4, -1.2], ['b', 25, 1, 0, 1.3], ['q', 24, 1, -1.3, -1.3],
+    ['h', 29, 1, 1.2, 1.2], ['g', 32, 1, -1.3, 1.3]
+  ]
+});
 LEVELS.push(asciiLevel({
   id: 'e3m1', ep: 3, name: 'MISE 3.1 · BRÁNA WOLFSGRUND', sub: 'Vykládací rampa pod horou',
   brief: ['Zvláštní vlak zastavil na rampě pod skalní stěnou. Za betonovou zdí leží vjezd do podzemní továrny Wolfsgrund.',
@@ -1327,8 +1390,8 @@ LEVELS.push(asciiLevel({
 
 const EPISODES = [
   { title: 'ÚTĚK Z GRIMHOLDU', sub: 'Kobky, štáb SS a krypta hradu v Alpách', levels: [0, 1, 2], outro: 'Lanovka tě nese dolů z hory. Plány operace Finsternis i deník dr. Zemana máš u sebe.' },
-  { title: 'NOČNÍ HVOZD', sub: 'Lesy, polní tábor a nádraží v údolí', levels: [3, 4, 5], outro: 'Zvláštní vlak se dává do pohybu. Schovaný ve vagonu míříš přímo do Wolfsgrundu.' },
-  { title: 'OPERACE FINSTERNIS', sub: 'Podzemní továrna Wolfsgrund', levels: [6, 7, 8], outro: '' }
+  { title: 'NOČNÍ HVOZD', sub: 'Lesy, polní tábor, nádraží a zvláštní vlak', levels: [3, 4, 5, 6], outro: 'Zvláštní vlak stojí u rampy pod horou. Wolfsgrund je na dosah.' },
+  { title: 'OPERACE FINSTERNIS', sub: 'Podzemní továrna Wolfsgrund', levels: [7, 8, 9], outro: '' }
 ];
 const epOf = i => Math.max(0, EPISODES.findIndex(E => E.levels.includes(i)));
 /* ---------- room themes: surfaces + lighting style ---------- */
@@ -1363,9 +1426,15 @@ const THEMES = {
   catacomb: { wall: 'ossuary', floor: 'flag', ceil: 'stone', wS: 3.6, fS: 3, cS: 3, light: 'torch' },
   lab: { wall: 'labtile', lower: 'metal', lowerH: 1.0, floor: 'labfloor', ceil: 'metal', wS: 3, fS: 2, cS: 3, light: 'lab' },
   generator: { wall: 'brick', lower: 'metal', lowerH: 1.2, floor: 'labfloor', ceil: 'metal', wS: 2, fS: 2, cS: 3, light: 'lab' },
-  station: { wall: 'bigstone', floor: 'floorwood', wS: 3.2, fS: 3, light: 'none', rail: 'stone' }
+  station: { wall: 'bigstone', floor: 'floorwood', wS: 3.2, fS: 3, light: 'none', rail: 'stone' },
+  // the special train: goods vans, open wagons, flat cars, tender and footplate
+  boxcar: { wall: 'planks', floor: 'floorwood', ceil: 'planks', wS: 2, fS: 2.4, cS: 2, light: 'lamp' },
+  opencar: { wall: 'planks', floor: 'floorwood', wS: 2, fS: 2.4, light: 'none' },
+  flatcar: { wall: 'planks', floor: 'floorwood', wS: 2, fS: 2.4, light: 'none' },
+  tender: { wall: 'metal', floor: 'metal', wS: 2, fS: 2, light: 'none' },
+  cab: { wall: 'metal', floor: 'floorwood', wS: 2, fS: 2, light: 'none' }
 };
-const SKY_THEMES = new Set(['yard', 'rampart', 'yardstairs', 'station']);
+const SKY_THEMES = new Set(['yard', 'rampart', 'yardstairs', 'station', 'opencar', 'flatcar', 'tender', 'cab']);
 
 /* =====================================================================
    LEVEL STATE (rebuilt for every mission)
@@ -1604,7 +1673,7 @@ function buildRoomSurfaces() {
   }
   // wall caps + crenellations where walls meet the open sky
   for (let cz = 0; cz < MH; cz++) for (let cx = 0; cx < MW; cx++) {
-    if (OUT.on || !isWall(cx, cz) || !inside(cx, cz)) continue;
+    if (OUT.on || LV.train || !isWall(cx, cz) || !inside(cx, cz)) continue;
     let skyN = null; for (const [dx, dz] of DIR4) { const r = roomOf(cx + dx, cz + dz); if (r && r.sky) { skyN = r; break; } }
     if (!skyN) continue;
     const y = wallTop[cidx(cx, cz)], x0 = cx * CELL, z0 = cz * CELL;
@@ -1633,8 +1702,8 @@ TX.slate = tex(paint(TS, (x, y) => {
   return [150 * k, 158 * k, 172 * k, yy];
 }, 1.3));
 const EXT_DEF = { extWall: { map: TX.bigstone, tint: [.92, .9, .88], k: 1, s: 3.2 }, extRock: { map: TX.rock, tint: [.8, .8, .82], k: .9, s: 6 }, extRoof: { map: TX.stone, tint: [.7, .7, .72], k: 1, s: 3 }, slate: { map: TX.slate, tint: [1, 1, 1], k: 1.6, s: 2.4 }, copper: { map: TX.slate, tint: [.62, 1.05, .86], k: 1.7, s: 1.6 }, extTrim: { map: TX.stone, tint: [.85, .82, .78], k: 1.1, s: 2 }, extGlass: { map: TX.glass, k: 1, s: 0, emissive: 1.05, alpha: true }, extDark: { map: TX.white, tint: [.05, .05, .06], k: 1, s: 0 }, extGold: { map: TX.white, tint: [.9, .72, .32], k: 1.3, s: 0 } };
-function buildExterior() {
-  if (OUT.on || !ROOMS.some(r => r.sky)) return;
+// moonlit geometry outside the rooms (no lightmap bake): add/quad collect it per material, finish() makes the meshes
+function extKit() {
   const B = {}, push = (key, g) => {
     const b = B[key] || (B[key] = { p: [], n: [], uv: [] }), d = EXT_DEF[key], P = g.attributes.position.array, Nn = g.attributes.normal.array, U = g.attributes.uv.array;
     for (let i = 0; i < P.length / 3; i++) {
@@ -1648,6 +1717,20 @@ function buildExterior() {
   };
   const add = (key, geo, pos, ry = 0, rx = 0, rz = 0) => { const g = geo.index ? geo.toNonIndexed() : geo; _e.set(rx, ry, rz, 'YXZ'); _q.setFromEuler(_e); _m4.compose(pos, _q, _s1); g.applyMatrix4(_m4); push(key, g); if (g !== geo) geo.dispose(); };
   const quad = (key, cx, cy, cz, w, h, ry, rx = 0) => add(key, new THREE.PlaneGeometry(w, h), V(cx, cy, cz), ry, rx);
+  const finish = (parent = levelRoot, k0 = 1) => {
+    for (const [key, b] of Object.entries(B)) {
+      const d = EXT_DEF[key], n = b.p.length / 3, col = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) { const ndl = Math.max(0, b.n[i * 3] * MOON_DIR.x + b.n[i * 3 + 1] * MOON_DIR.y + b.n[i * 3 + 2] * MOON_DIR.z); for (let k = 0; k < 3; k++) col[i * 3 + k] = (SKY_AMB[k] * 1.25 + MOON_COL[k] * ndl * .75) * d.k * k0; }
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(b.p, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(b.uv, 2)); g.setAttribute('vcol', new THREE.BufferAttribute(col, 3)); g.computeBoundingSphere();
+      const m = new THREE.Mesh(g, worldMat(d.map, { tint: d.tint || [1, 1, 1], emissive: d.emissive || 0, alpha: !!d.alpha, side: d.alpha || d.both ? THREE.DoubleSide : THREE.FrontSide })); m.matrixAutoUpdate = parent === levelRoot ? false : true; m.frustumCulled = parent === levelRoot; parent.add(m);
+    }
+  };
+  return { add, quad, finish };
+}
+function buildExterior() {
+  if (LV.train) return buildTrainExterior();
+  if (OUT.on || !ROOMS.some(r => r.sky)) return;
+  const { add, quad, finish } = extKit();
   let minY = Infinity; for (const r of ROOMS) minY = Math.min(minY, r.y);
   const BASE = minY - 16, N = MW * MH, H = new Float32Array(N).fill(NaN), capped = new Uint8Array(N), skyCell = new Uint8Array(N);
   const nbRooms = (x, z) => DIR4.map(([dx, dz]) => roomOf(x + dx, z + dz)).filter(Boolean);
@@ -1679,12 +1762,7 @@ function buildExterior() {
     }
   }
   for (const c of church) buildChurch(c, add, quad, H, BASE);
-  for (const [key, b] of Object.entries(B)) {
-    const d = EXT_DEF[key], n = b.p.length / 3, col = new Float32Array(n * 3);
-    for (let i = 0; i < n; i++) { const ndl = Math.max(0, b.n[i * 3] * MOON_DIR.x + b.n[i * 3 + 1] * MOON_DIR.y + b.n[i * 3 + 2] * MOON_DIR.z); for (let k = 0; k < 3; k++) col[i * 3 + k] = (SKY_AMB[k] * 1.25 + MOON_COL[k] * ndl * .75) * d.k; }
-    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(b.p, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(b.uv, 2)); g.setAttribute('vcol', new THREE.BufferAttribute(col, 3)); g.computeBoundingSphere();
-    const m = new THREE.Mesh(g, worldMat(d.map, { tint: d.tint || [1, 1, 1], emissive: d.emissive || 0, alpha: !!d.alpha, side: d.alpha ? THREE.DoubleSide : THREE.FrontSide })); m.matrixAutoUpdate = false; levelRoot.add(m);
-  }
+  finish();
 }
 function buildChurch(c, add, quad, H, BASE) {
   const lx = (c.x1 - c.x0) >= (c.z1 - c.z0), L0 = lx ? c.x0 : c.z0, L1 = lx ? c.x1 : c.z1, W0 = lx ? c.z0 : c.x0, W1 = lx ? c.z1 : c.x1;
@@ -1726,6 +1804,137 @@ function buildChurch(c, add, quad, H, BASE) {
   add('copper', new THREE.ConeGeometry(ts * .74, 11, 4, 1, true), P(tu, top + 5.5, wm), Math.PI / 4);
   for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 + Math.PI / 4, o = ts * .55; add('copper', new THREE.ConeGeometry(.45, 2.6, 4), P(tu, top + 1.3, wm).add(V(Math.sin(a) * o, 0, Math.cos(a) * o)), Math.PI / 4); } // corner pinnacles
   add('extGold', B3(.18, 2.2, .18), P(tu, top + 12, wm)); add('extGold', B3(lx ? .18 : 1.1, .18, lx ? 1.1 : .18), P(tu, top + 12.3, wm)); add('extGold', new THREE.SphereGeometry(.22, 8, 6), P(tu, top + 11, wm));
+}
+
+/* ---------- mission 2.4: the special train ----------
+   The cars are ordinary rooms in a row (x = along the train, centre line z = 6); the train never moves –
+   the night scenery, the sleepers and later the signs, the bridge and the Wolfsgrund ramp scroll past instead. */
+const TRAIN = { on: false, zc: CELL * 1.5, front: 0, speed: 17, dist: 0, drv: null, ckpt: false, scroll: null, movers: [], chimney: null, clackT: 0 };
+const TRACK = { segs: [{ s: 0, lim: 90 }, { s: 650, lim: 40, kind: 'ZATÁČKA', end: 1050 }, { s: 1050, lim: 90 }, { s: 1600, lim: 50, kind: 'MOST', end: 1950 }, { s: 1950, lim: 90 }, { s: 2450, lim: 30, kind: 'VJEZD DO WOLFSGRUNDU' }], stop: 2900, win: 2830 };
+const trainDefs = () => Object.assign(EXT_DEF, {
+  wagonX: { map: TX.wagon, k: 1.25, s: 2.4 }, plankX: { map: TX.planks, k: 1.15, s: 2 }, ironX: { map: TX.iron, k: 1.3, s: 1.6 }, roofW: { map: TX.roof, tint: [.8, .8, .82], k: 1.5, s: 2 },
+  redX: { map: TX.white, tint: [.5, .09, .07], k: 1.4, s: 0 }, gravel: { map: TX.gravel, tint: [.85, .85, .85], k: 1, s: 3 }, ground: { map: TX.forestfloor, k: .9, s: 6 },
+  needles: { map: TX.needles, k: .9, s: 0, both: true }, bark: { map: TX.bark, k: .8, s: 0 }, sleeper: { map: TX.darkwood, tint: [.6, .55, .5], k: 1.1, s: 0 }, railX: { map: TX.metal, tint: [.8, .8, .85], k: 1.8, s: 0 },
+  signW: { map: TX.white, k: 2.4, s: 0 }, lampG: { map: TX.white, tint: [1.6, 1.3, .8], k: 3, s: 0, emissive: 1.6 }, concrete: { map: TX.concrete || TX.stone, k: 1.2, s: 3 }
+});
+function buildTrainExterior() {
+  trainDefs();
+  const { add, quad, finish } = extKit(), zc = TRAIN.zc;
+  const bogie = (x) => { add('ironX', B3(2.6, .35, 2.3), V(x, .66, zc)); for (const dx of [-.8, .8]) for (const s of [-1, 1]) add('ironX', Cyl(.45, .45, .12, 14), V(x + dx, .45, zc + s * .74), 0, Math.PI / 2); };
+  const buffers = (x, dir) => { for (const s of [-1, 1]) { add('ironX', Cyl(.11, .11, .5, 8), V(x + dir * .25, 1.05, zc + s * 1.1), 0, 0, Math.PI / 2); add('ironX', Cyl(.2, .2, .06, 12), V(x + dir * .5, 1.05, zc + s * 1.1), 0, 0, Math.PI / 2); } };
+  for (const rm of ROOMS) {
+    const x0 = rm.x0 + .1, x1 = rm.x1 - .1, L = x1 - x0, xm = (x0 + x1) / 2, top = rm.sky ? rm.high : rm.top + .05;
+    const skin = rm.theme === 'boxcar' ? 'wagonX' : rm.theme === 'tender' || rm.theme === 'cab' ? 'ironX' : 'plankX';
+    for (const s of [-1, 1]) quad(skin, xm, (.95 + top) / 2, zc + s * 2.02, L, top - .95, s > 0 ? 0 : Math.PI);   // body sides
+    add('ironX', B3(L, .32, 3.7), V(xm, 1.1, zc));                                                                   // underframe
+    if (rm.theme !== 'cab') { bogie(x0 + 2.2); bogie(x1 - 2.2); }
+    buffers(x0, -1); buffers(x1, 1);
+    if (!rm.sky) { add('roofW', B3(L + .3, .14, 4.4), V(xm, top + .12, zc)); for (const s of [-1, 1]) add('roofW', B3(L + .3, .1, .9), V(xm, top + .02, zc + s * 2.2), 0, s * .35); }
+    if (rm.theme === 'cab') add('roofW', B3(L + .6, .14, 4.4), V(xm, 4.25, zc));                                      // cab roof on four posts
+    if (rm.theme === 'cab') for (const px of [x0 + .2, x1 - .2]) for (const s of [-1, 1]) add('ironX', B3(.12, 1.8, .12), V(px, 3.35, zc + s * 1.9));
+  }
+  for (const [cx] of LV.doors) {                                                                                     // gangways: bellows + couplings
+    const xm = cx * CELL + CELL / 2;
+    for (const s of [-1, 1]) quad('extDark', xm, 2.4, zc + s * 1.55, CELL, 2.4, s > 0 ? 0 : Math.PI);
+    add('ironX', B3(CELL, .12, .25), V(xm, 1.0, zc)); add('ironX', B3(CELL - .4, .5, .3), V(xm, .7, zc));
+  }
+  // the engine ahead of the footplate: Kriegslok boiler, smokebox, chimney, dome, red driving wheels, headlamps
+  const cab = ROOMS.find(r => r.theme === 'cab'), f = cab.x1, yb = 2.75;
+  add('ironX', Cyl(1.0, 1.0, 9, 18), V(f + 4.5, yb, zc), 0, 0, Math.PI / 2); add('ironX', Cyl(1.08, 1.08, 1.6, 18), V(f + 9.8, yb, zc), 0, 0, Math.PI / 2);
+  add('extDark', new THREE.CircleGeometry(1.0, 18), V(f + 10.62, yb, zc), Math.PI / 2);
+  add('ironX', Cyl(.3, .36, 1.0, 12), V(f + 9.8, yb + 1.45, zc)); add('ironX', Cyl(.42, .42, .6, 12), V(f + 5.5, yb + 1.1, zc)); add('ironX', Cyl(.3, .32, .45, 10), V(f + 3, yb + 1.05, zc));
+  add('ironX', B3(11.5, .12, 3.3), V(f + 5.3, 1.7, zc)); add('redX', B3(.35, .5, 3.3), V(f + 11, 1.05, zc)); buffers(f + 11.2, 1);
+  for (let i = 0; i < 4; i++) for (const s of [-1, 1]) { add('redX', Cyl(.72, .72, .12, 18), V(f + 1.2 + i * 1.75, .72, zc + s * 1.0), 0, Math.PI / 2); add('ironX', B3(.1, .1, .1), V(f + 1.2 + i * 1.75, .72, zc + s * 1.08)); }
+  for (const s of [-1, 1]) { add('redX', Cyl(.45, .45, .12, 12), V(f + 9.6, .45, zc + s * .9), 0, Math.PI / 2); add('ironX', B3(7, .08, .08), V(f + 3.8, .75, zc + s * 1.12)); }
+  for (const [y, s] of [[1.75, -1], [1.75, 1], [4.0, 0]]) add('lampG', B3(.12, .3, .3), V(f + 11.2, y, zc + s * 1.2));
+  TRAIN.front = f + 11.3; TRAIN.chimney = V(f + 9.8, yb + 2.0, zc);
+  lights.push({ pos: V(f + .4, 2.0, zc), col: [1.6, .7, .25], rad: 6, int: 1.1 });                                  // firebox glow on the footplate
+  finish();
+}
+// scenery tile repeated along the line: forest floor, ballast, sleepers, spruces and telegraph poles
+function buildTrainScenery() {
+  trainDefs();
+  const P = 192, kit = extKit(), r = mulberry32(4711), zc = TRAIN.zc;
+  const g = new THREE.Group(); levelRoot.add(g); TRAIN.scroll = g;
+  for (let k = -1; k <= 2; k++) {
+    const x0 = k * P;
+    for (const [z0, z1] of [[-140, zc - 3.2], [zc + 3.2, 150]]) kit.quad('ground', x0 + P / 2, -.02, (z0 + z1) / 2, P, z1 - z0, 0, -Math.PI / 2);
+    kit.quad('gravel', x0 + P / 2, .02, zc, P, 6.4, 0, -Math.PI / 2);
+    for (let x = .4; x < P; x += .8) kit.add('sleeper', B3(.24, .14, 2.6), V(x0 + x, .08, zc));
+    for (let i = 0; i < 46; i++) {
+      const side = r() < .5 ? -1 : 1, z = zc + side * (9 + Math.pow(r(), 1.3) * 70), x = x0 + r() * P, h = 7 + r() * 9, w = h * .26;
+      kit.add('bark', Cyl(.12, .2, h * .5, 5), V(x, h * .25, z));
+      for (let t = 0; t < 3; t++) kit.add('needles', new THREE.ConeGeometry(w * (1 - t * .25), h * (.5 - t * .08), 7), V(x, h * (.32 + t * .22), z), r() * 6);
+    }
+    for (let x = 0; x < P; x += 48) { kit.add('sleeper', Cyl(.1, .12, 7.5, 6), V(x0 + x, 3.75, zc - 4.5)); kit.add('sleeper', B3(.1, .1, 1.6), V(x0 + x, 7.1, zc - 4.5)); }
+  }
+  kit.finish(g);
+  const rails = extKit(); for (const s of [-1, 1]) rails.add('railX', B3(1200, .14, .08), V(100, .22, zc + s * .72)); rails.finish();
+  TRAIN.period = P;
+}
+// track-side objects that only appear on the drive: speed boards, the bridge, the Wolfsgrund ramp and buffer stop
+function buildTrainMovers() {
+  for (const m of TRAIN.movers) levelRoot.remove(m.g); TRAIN.movers = [];
+  const zc = TRAIN.zc, mover = (s, build) => { const kit = extKit(); build(kit); const g = new THREE.Group(); kit.finish(g); levelRoot.add(g); TRAIN.movers.push({ s, g }); };
+  for (const sg of TRACK.segs) if (sg.kind) mover(sg.s - 260, k => { k.add('sleeper', Cyl(.06, .06, 2.6, 6), V(0, 1.3, zc - 3)); k.add('signW', B3(.08, .9, .9), V(0, 2.9, zc - 3)); k.add('redX', B3(.09, .72, .72), V(-.01, 2.9, zc - 3)); });
+  mover(1600, k => { for (let x = 0; x <= 350; x += 5) for (const s of [-1, 1]) { k.add('ironX', B3(.25, 4.2, .25), V(x, 2.1, zc + s * 2.7)); k.add('ironX', B3(5.2, .25, .25), V(x + 2.5, 4.2, zc + s * 2.7)); k.add('ironX', B3(5.6, .2, .2), V(x + 2.5, 2.2, zc + s * 2.7), 0, 0, s * .6); } });
+  mover(TRACK.stop - 330, k => {
+    k.add('concrete', B3(320, 1.1, 5), V(160, .55, zc + 5.2)); for (let x = 10; x < 320; x += 30) { k.add('sleeper', Cyl(.06, .08, 4, 6), V(x, 3.1, zc + 6.5)); k.add('lampG', B3(.4, .3, .4), V(x, 5.1, zc + 6.5)); }
+    k.add('ironX', B3(1, 1.3, 3.2), V(332, .9, zc)); k.add('redX', B3(.3, .6, 3.4), V(331.4, 1.2, zc)); k.add('lampG', B3(.25, .25, .25), V(331.3, 1.9, zc));
+  });
+}
+function trainInit() {
+  TRAIN.on = !!LV.train; TRAIN.drv = null; TRAIN.ckpt = false; TRAIN.dist = 0; TRAIN.movers = [];
+  if (!TRAIN.on) return;
+  buildTrainScenery(); $('drive').style.display = 'none';
+}
+function trainReset() { if (!TRAIN.on) return; TRAIN.drv = null; for (const m of TRAIN.movers) levelRoot.remove(m.g); TRAIN.movers = []; $('drive').style.display = 'none'; }
+// the footplate: take the regulator
+function takeTrain(d) {
+  d.used = true; sfx.play('clang', d.pos); sfx.play('switch', d.pos);
+  completeObjective('cab'); log(d.name || 'Lokomotiva je tvoje!'); TRAIN.ckpt = true;
+  TRAIN.drv = { s: 0, v: TRAIN.speed, reg: .45, brk: 0, over: 0, msgSeg: -1 };
+  buildTrainMovers(); $('drive').style.display = 'block';
+  log('<span style="color:#e6c36a">[W] regulátor · [S] brzda</span>');
+}
+function trainResume() {   // retry after a derailment: back on the footplate, the train already yours
+  for (const e of enemies) if (e.state !== 'dead') { e.state = 'dead'; e.deadT = 9; e.root.visible = false; e.blob.visible = false; }
+  const d = destructibles.find(q => q.kind === 'regulator'); const c = C(31, 1, 1, 0); player.pos.copy(c); player.viewY = c.y; player.yaw = -Math.PI / 2;
+  if (d) takeTrain(d);
+}
+function trainFail(title, text) {
+  if (game.state !== 'playing') return;
+  game.state = 'dead'; sfx.flame(false); TRAIN.drv = null; player.shake = 1.2; csBoom(V(TRAIN.front - 2, 3, TRAIN.zc), 1.6);
+  setTimeout(() => { document.exitPointerLock(); setOverlay(`<h1 style="color:#c22">${title}</h1><h2>MISE NESPLNĚNA</h2><p>${text}</p>`, [{ label: 'ZKUSIT ZNOVU (OD REGULÁTORU)', fn: () => { const ck = TRAIN.ckpt; resetLevelState(); if (ck) trainResume(); startPlaying(); } }, { label: 'RESTART MISE', cls: 'sm', fn: () => { TRAIN.ckpt = false; resetLevelState(); startPlaying(); } }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]); }, 1700);
+}
+function trainTick(dt) {
+  const D = TRAIN.drv;
+  let v = TRAIN.speed;
+  if (D) {
+    const th = (keys.KeyW || keys.ArrowUp) ? 1 : 0, br = (keys.KeyS || keys.ArrowDown) ? 1 : 0;
+    D.reg = clamp(D.reg + (th ? .45 : 0) * dt - (br ? 1.2 : 0) * dt, 0, 1); D.brk = lerp(D.brk, br, 1 - Math.exp(-6 * dt));
+    D.v = Math.max(0, D.v + (D.reg * (1 - D.v / 27) - D.brk * 2.6 - (D.v > .05 ? .08 : 0)) * dt);
+    D.s += D.v * dt; v = D.v;
+    let seg = TRACK.segs[0], si = 0; TRACK.segs.forEach((g, i) => { if (D.s >= g.s) { seg = g; si = i; } });
+    const kmh = D.v * 3.6;
+    if (seg.kind && seg.end && D.s < seg.end && kmh > seg.lim + 12) { D.over += dt; if (D.over > 1) return trainFail('VYKOLEJENÍ', `${seg.kind === 'MOST' ? 'Na mostě' : 'V zatáčce'} jsi jel ${Math.round(kmh)} km/h místo ${seg.lim}. Lokomotiva vyletěla z kolejí.`); } else D.over = Math.max(0, D.over - dt);
+    if (si !== D.msgSeg) { D.msgSeg = si; if (seg.kind) log(`<span style="color:#ffb347">${seg.kind} – max ${seg.lim} km/h</span>`); }
+    const nx = TRACK.segs.find(g => g.s > D.s && g.kind);
+    if (D.s >= TRACK.stop) { D.s = TRACK.stop; if (D.v > 2) return trainFail('NÁRAZ DO ZARÁŽEDLA', `Do konce koleje jsi vjel rychlostí ${Math.round(kmh)} km/h.`); D.v = 0; }
+    if (D.v < .35 && D.s >= TRACK.win && D.reg < .05) { completeObjective('drive'); D.v = 0; TRAIN.drv = null; $('drive').style.display = 'none'; sfx.play('clang', null, 1); return win(); }
+    const html = `<div class="dv">${Math.round(kmh)}<small> km/h</small></div><div class="dl">REGULÁTOR</div><div class="bar"><b style="width:${Math.round(D.reg * 100)}%"></b></div><div class="dl">BRZDA</div><div class="bar br"><b style="width:${Math.round(D.brk * 100)}%"></b></div>`
+      + `<div class="dn">${seg.kind && seg.end && D.s < seg.end ? `<span style="color:#ff9a60">${seg.kind}: max ${seg.lim}</span>` : nx ? `${nx.kind} za ${Math.max(0, Math.round(nx.s - D.s))} m · max ${nx.lim}` : seg.kind ? `max ${seg.lim} km/h` : ''}</div><div class="dn">Rampa za ${Math.max(0, Math.round(TRACK.win - D.s))} m${D.s >= TRACK.win ? ' – <b style="color:#7fe08a">ZASTAV (S)</b>' : ''}</div>`;
+    if (html !== TRAIN.hud) { TRAIN.hud = html; $('drive').innerHTML = html; }
+    for (const m of TRAIN.movers) m.g.position.x = TRAIN.front + (m.s - D.s);
+  }
+  TRAIN.dist += v * dt;
+  if (TRAIN.scroll) TRAIN.scroll.position.x = -(TRAIN.dist % TRAIN.period);
+  // smoke and steam, the rails' rhythm, and the footplate rocking
+  if (TRAIN.chimney && Math.random() < dt * (6 + v * .6)) smoke.spawn(TRAIN.chimney, -v * .55 + rand(-.4, .4), 2.2 + Math.random(), rand(-.4, .4), .26, .25, .24, 1.2, 3 + Math.random() * 2, -.15, 1, 2.4);
+  if (v > .5) { TRAIN.clackT -= dt; if (TRAIN.clackT <= 0) { TRAIN.clackT = 15 / v; sfx.play('clack', null, Math.min(1, v / 12)); after(1.6 / Math.max(v, 1), () => sfx.play('clack', null, Math.min(.8, v / 15))); } }
+  if (sfx.ctx && !TRAIN.rumble) { const C2 = sfx.ctx, n = C2.createBufferSource(), f = C2.createBiquadFilter(), g = C2.createGain(); n.buffer = sfx.noise; n.loop = true; f.type = 'lowpass'; f.frequency.value = 160; g.gain.value = 0; n.connect(f); f.connect(g); g.connect(sfx.master); n.start(); TRAIN.rumble = g; }
+  if (TRAIN.rumble) TRAIN.rumble.gain.setTargetAtTime(game.state === 'playing' ? Math.min(.3, v * .014) : 0, sfx.ctx.currentTime, .3);
+  const k = Math.min(1, v / 20); camera.rotation.z += Math.sin(time * 1.3) * .006 * k; camera.position.y += Math.sin(time * 11) * .007 * k + Math.sin(time * 2.1) * .01 * k;
 }
 
 /* ---------- doorways: thick castle walls with jambs + lintel, hinged doors ---------- */
@@ -3204,6 +3413,12 @@ function buildTargets() {
       const fr = M(TX.darkwood), ir = M(TX.iron), red = M(null, [.62, .1, .08]); add(B3(.5, .85, 2.0), fr, 0, .42, 0);
       for (let i = 0; i < 6; i++) { const g = B3(.05, 1.0, .06); g.translate(0, .5, 0); const h = add(g, i === 3 ? red : ir, 0, .85, -.85 + i * .34, 0, 0, -.3); if (i === 3) t.handle = h; }
       hx = .3; hy = .45; hz = 1; cy = .45;
+    } else if (t.kind === 'regulator') { // footplate: boiler backhead, firebox door, gauges, regulator and brake handles (faces the tender, -X)
+      const ir = M(TX.iron), br = M(null, [.75, .58, .3]), wh = M(null, [.92, .9, .85]), red = M(null, [.62, .1, .08]), fire = new THREE.MeshBasicMaterial({ color: new THREE.Color(1.6, .7, .25) }); mats.push(fire);
+      add(Cyl(.72, .72, .4, 18), ir, .4, 1.55, 0, 0, 0, Math.PI / 2); add(B3(.12, .45, .55), fire, .18, 1.05, 0);
+      for (const z of [-.32, .32]) { add(Cyl(.12, .12, .06, 14), br, .18, 2.0, z, 0, 0, Math.PI / 2); add(Cyl(.1, .1, .07, 14), wh, .16, 2.0, z, 0, 0, Math.PI / 2); }
+      const h = add(B3(.06, .06, .6), br, .16, 1.75, .3, .5, 0, 0); t.handle = h; add(B3(.06, .35, .06), red, .12, 1.45, -.6);
+      hx = .6; hy = 1.1; hz = .9; cy = 1.1;
     } else if (t.kind === 'turbine') { // turbo-generator set of the underground plant: only a charge will do
       const g = M(TX.metal, [.8, .85, .8]), dk = M(TX.iron);
       add(B3(4.2, .4, 2.4), dk, 0, .2, 0); add(Cyl(1.0, 1.0, 3.2, 18), g, 0, 1.4, 0, 0, 0, Math.PI / 2);
@@ -3216,7 +3431,7 @@ function buildTargets() {
     o.ref = d; destructibles.push(d);
   }
 }
-const nearCharge = () => destructibles.find(d => ((d.charge && d.alive && !d.planted) || (d.kind === 'lever' && !d.used)) && Math.abs(player.pos.y - d.base.y) < 2 && Math.max(d.occ.min.x - player.pos.x, 0, player.pos.x - d.occ.max.x) ** 2 + Math.max(d.occ.min.z - player.pos.z, 0, player.pos.z - d.occ.max.z) ** 2 < 1.6 * 1.6);
+const nearCharge = () => destructibles.find(d => ((d.charge && d.alive && !d.planted) || ((d.kind === 'lever' || d.kind === 'regulator') && !d.used)) && Math.abs(player.pos.y - d.base.y) < 2 && Math.max(d.occ.min.x - player.pos.x, 0, player.pos.x - d.occ.max.x) ** 2 + Math.max(d.occ.min.z - player.pos.z, 0, player.pos.z - d.occ.max.z) ** 2 < 1.6 * 1.6);
 function plantCharge(d) {
   d.planted = true; sfx.play('switch', d.pos); vm.act = 'throw'; vm.actT = .4;
   if (!d.chargeMesh) {
@@ -3592,8 +3807,9 @@ function cheapColors(pos, nor, k) {
 function applyAtmosphere() {
   const o = LV.outdoor;
   if (o) { FOG_COLOR.setRGB(...(o.fog || [.045, .06, .11])); SU.fogDensity.value = o.density || .026; }
+  else if (LV.train) { FOG_COLOR.setRGB(.045, .058, .1); SU.fogDensity.value = .02; }
   else { FOG_COLOR.setRGB(.035, .03, .028); SU.fogDensity.value = .016; }
-  valley.visible = !o;
+  valley.visible = !o && !LV.train;
 }
 async function buildWorldMeshes(progress) {
   const per = await bakeLightmaps(p => progress(p * .85));
@@ -3855,6 +4071,7 @@ const sfx = {
       case 'step': this.nb(o, .07, 'lowpass', 500, 150, 1, .22); break;
       case 'switch': this.click(o, 0, 3000, .5); this.click(o, .09, 2600, .5); break;
       case 'empty': this.click(o, 0, 4000, .5); break;
+      case 'clack': this.nb(o, .05, 'lowpass', 700, 200, 1, .5); this.tn(o, 'sine', 90, 50, .06, .35); this.click(o, 0, 1800, .25); break;
       case 'jump': this.nb(o, .1, 'lowpass', 400, 100, 1, .3); break;
       case 'ignite': this.nb(o, .4, 'bandpass', 500, 1500, 1, .7); break;
       case 'glass': this.nb(o, .25, 'highpass', 3000, 6000, 1, .8); for (let i = 0; i < 6; i++) this.tn(o, 'triangle', 2400 + Math.random() * 3000, 1800, .12, .12, .03 + i * .04); break;
@@ -4823,7 +5040,7 @@ function resetLevelState() {
   timers.length = 0; vm.pending = -1; vm.switchT = 0; vm.actT = 0; logLines.length = 0;
   for (const o of LV.objectives) { o.done = false; o.n = 0; }
   game.alarmed = false; game.detections = 0; game.bossE = enemies.find(e => e.T.boss) || null;
-  restoreLoadout(); placePlayerAtStart(); sfx.flame(false);
+  restoreLoadout(); placePlayerAtStart(); sfx.flame(false); trainReset();
 }
 
 /* ---------- HUD ---------- */
@@ -5467,7 +5684,7 @@ let stepPhase = 0;
 function updatePlayer(dt) {
   const s = Math.sin(player.yaw), c = Math.cos(player.yaw);
   let ix = 0, iz = 0;
-  if (keys.KeyW || keys.ArrowUp) { ix -= s; iz -= c; } if (keys.KeyS || keys.ArrowDown) { ix += s; iz += c; }
+  if (!TRAIN.drv) { if (keys.KeyW || keys.ArrowUp) { ix -= s; iz -= c; } if (keys.KeyS || keys.ArrowDown) { ix += s; iz += c; } }   // on the footplate W/S work the regulator and brake
   if (keys.KeyD || keys.ArrowRight) { ix += c; iz -= s; } if (keys.KeyA || keys.ArrowLeft) { ix -= c; iz += s; }
   // C crouches (toggle or hold, see settings; not Ctrl: Ctrl+W closes the browser tab); sprint or jump stands you up
   if (player.crouchOn && (keys.ShiftLeft || keys.ShiftRight) && (ix || iz)) player.crouchOn = false;
@@ -5523,7 +5740,7 @@ function updatePlayer(dt) {
   let pr = '';
   const ex = exits.find(ex => Math.hypot(P.x - ex.pos.x, P.z - ex.pos.z) < 2.6 && Math.abs(P.y - ex.pos.y) < 2);
   if (ex) pr = objectivesDone() ? `[F]  ${ex.text}` : 'NEJDŘÍV SPLŇ ÚKOLY MISE  (TAB)';
-  else if (nearCharge()) pr = nearCharge().kind === 'lever' ? '[F]  PŘESTAVIT VÝHYBKU' : '[F]  POLOŽIT NÁLOŽ';
+  else if (nearCharge()) pr = { lever: '[F]  PŘESTAVIT VÝHYBKU', regulator: '[F]  PŘEVZÍT ŘÍZENÍ LOKOMOTIVY' }[nearCharge().kind] || '[F]  POLOŽIT NÁLOŽ';
   else { const d = lookDoor(); if (d && doorLocked(d) && d.target === 0) pr = player.keys.has(d.lock) ? '[F]  ODEMKNOUT' : `ZAMČENO — POTŘEBUJEŠ: ${d.lockName.toUpperCase()}`; }
   setPrompt(pr);
   player.time += dt;
@@ -5536,7 +5753,7 @@ function lookDoor() {
 function useAction() {
   const ex = exits.find(ex => Math.hypot(player.pos.x - ex.pos.x, player.pos.z - ex.pos.z) < 2.6 && Math.abs(player.pos.y - ex.pos.y) < 2);
   if (ex) { if (objectivesDone()) { completeObjective('exit'); win(); } else { sfx.play('locked'); game.objT = 4; } return; }
-  const ch = nearCharge(); if (ch) { if (ch.kind === 'lever') pullLever(ch); else plantCharge(ch); return; }
+  const ch = nearCharge(); if (ch) { if (ch.kind === 'lever') pullLever(ch); else if (ch.kind === 'regulator') takeTrain(ch); else plantCharge(ch); return; }
   const best = lookDoor(); if (!best) return;
   if (doorLocked(best)) { if (player.keys.has(best.lock)) { best.unlocked = true; log('Odemčeno'); sfx.play('switch'); flowCell = -1; MM.dirty = true; } else { sfx.play('locked'); log(`Zamčeno — potřebuješ: ${best.lockName}`); return; } }
   if (best.target === 1) { const inPassage = Math.hypot(player.pos.x - best.c.x, player.pos.z - best.c.z) < 1.4 || enemies.some(e => e.state !== 'dead' && Math.hypot(e.x - best.c.x, e.z - best.c.z) < 1.4); if (!inPassage) best.target = 0; }
@@ -6251,6 +6468,7 @@ function soonArt(t) {
   g.fillStyle = 'rgba(160,20,10,.85)'; g.font = 'bold 34px Georgia,serif'; g.globalAlpha = .18 + .06 * Math.sin(t * 2); g.fillText('✠', 250, 120); g.globalAlpha = 1;
 }
 function menuScreen(on) { MB.cv.style.display = on ? 'block' : 'none'; overlay.classList.toggle('menu', on); if (on) MUSIC.start(); else MUSIC.stop(); }
+if (!store.get('cg_lv2', false)) { const u = store.get('cg_unlocked', 0); if (u >= 6) store.set('cg_unlocked', u + 1); store.set('cg_lv2', true); }   // v1.4 put the train mission at index 6
 function unlocked() { return clamp(store.get('cg_unlocked', 0), 0, LEVELS.length - 1); }
 let menuDiff = clamp(store.get('cg_diff', 1), 0, DIFFS.length - 1), menuLevel = 0;
 const TITLE = 'BLÁZEN Z LONDÝNA', SUBTITLE = 'TAJNÁ AKCE';
@@ -6334,10 +6552,10 @@ function die() { game.state = 'dead'; sfx.flame(false); setTimeout(() => { docum
 function win() {
   if (game.state !== 'playing') return; game.state = 'won'; sfx.flame(false);
   player.score += Math.max(0, 3000 - Math.floor(player.time) * 4); if (!game.detections) { player.score += 1500; log('Duch: neodhalen +1500'); } document.exitPointerLock();
-  const last = game.level >= LEVELS.length - 1, ep = epOf(game.level), epEnd = EPISODES[ep].levels[2] === game.level;
+  const last = game.level >= LEVELS.length - 1, ep = epOf(game.level), epEnd = EPISODES[ep].levels[EPISODES[ep].levels.length - 1] === game.level;
   store.set('cg_unlocked', Math.max(unlocked(), Math.min(LEVELS.length - 1, game.level + 1)));
   snapshotLoadout();
-  if (last) { setOverlay(`<h1>MISE SPLNĚNA</h1><h2>${LV.name}</h2>${statsHtml()}<p>Úniková štola tě vyvedla ven do lesa. Za tebou se rozhoří nálože…</p>`, [{ label: 'POKRAČOVAT', fn: async () => { await loadLevel(6); await playCutscene(CUTSCENES.finale); showEnding(); } }]); return; }
+  if (last) { setOverlay(`<h1>MISE SPLNĚNA</h1><h2>${LV.name}</h2>${statsHtml()}<p>Úniková štola tě vyvedla ven do lesa. Za tebou se rozhoří nálože…</p>`, [{ label: 'POKRAČOVAT', fn: async () => { await loadLevel(LEVELS.findIndex(L => L.id === 'e3m1')); await playCutscene(CUTSCENES.finale); showEnding(); } }]); return; }
   if (epEnd) { setOverlay(`<h1>EPIZODA ${ep + 1} DOKONČENA</h1><h2>${EPISODES[ep].title}</h2>${statsHtml()}<p>${EPISODES[ep].outro}</p>`, [{ label: 'DALŠÍ EPIZODA', fn: () => { menuLevel = game.level + 1; startMission(game.level + 1, false); } }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]); return; }
   setOverlay(`<h1>MISE SPLNĚNA</h1><h2>${LV.name}</h2>${statsHtml()}`, [{ label: 'DALŠÍ MISE', fn: () => { menuLevel = game.level + 1; startMission(game.level + 1, false); } }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]);
 }
@@ -6417,7 +6635,7 @@ async function loadLevel(i, def = null) {
   for (const e of enemies) tintMats(e.mats, e.x, e.z);
   linkSearchlightGuards();
   { const bn = document.getElementById('bossN'); if (bn && game.bossE) bn.textContent = game.bossE.T.name.toUpperCase(); }
-  placePlayerAtStart(); flowCell = -1;
+  placePlayerAtStart(); flowCell = -1; trainInit();
   camera.position.set(player.pos.x, player.pos.y + 1.62, player.pos.z); camera.rotation.set(0, player.yaw, 0);
   renderer.compile(scene, camera); renderer.compile(vmScene, vmCamera);
 }
@@ -6472,6 +6690,7 @@ function tick(dt) {
     if (flowT <= 0 || pc !== flowCell) { if (flowT <= 0 || pc !== flowCell) { computeFlowFrom(toCell(player.pos.x), toCell(player.pos.z), flowDist); flowCell = pc; flowT = .5; } }
     camera.updateMatrixWorld(); _pm.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); _fr.setFromProjectionMatrix(_pm);
     if (game.state === 'playing') updateStealth(dt);
+    if (TRAIN.on && game.state === 'playing') trainTick(dt);
     for (const e of enemies) updateEnemy(e, dt, frameNo);
     for (let i = 0; i < enemies.length; i++) { const a = enemies[i]; if (a.state === 'dead') continue; for (let j = i + 1; j < enemies.length; j++) { const b = enemies[j]; if (b.state === 'dead' || Math.abs(a.y - b.y) > 1.5) continue; const dx = a.x - b.x, dz = a.z - b.z, d = Math.hypot(dx, dz), rr = a.r + b.r + .1; if (d < rr && d > 1e-4) { const p = (rr - d) * .5; a.x += dx / d * p; a.z += dz / d * p; b.x -= dx / d * p; b.z -= dz / d * p; } } }
     for (const e of enemies) if (e.state === 'chase' || e.state === 'alarm' || e.state === 'investigate' || e.state === 'search' || e.state === 'return') for (const d of doors) if (d.target === 0 && !doorLocked(d) && Math.abs(d.y - e.y) < 1.5 && Math.hypot(d.c.x - e.x, d.c.z - e.z) < 3) openDoor(d, e.x, e.z);
@@ -6511,7 +6730,7 @@ function tick(dt) {
 window.__errs = [];
 addEventListener('error', e => window.__errs.push(String(e.message) + ' @' + e.lineno));
 addEventListener('unhandledrejection', e => window.__errs.push('rejection: ' + (e.reason && e.reason.message || e.reason)));
-window.__castle = { step(n = 1, dt = 1 / 60) { for (let i = 0; i < n; i++) tick(dt); }, OUT, LEVELS, sampleGrid, damageDestructible, useAction, get destructibles() { return destructibles; }, objectivesDone, completeObjective, get alarms() { return alarms; }, THREE, ARMS, GRIPS, RIGS, FBX, sfx, SET, P_, ARM_POLE_R, ARM_POLE_L, DELISLE_CAN, buildViewModels2: () => buildViewModels(), get pickups() { return pickups; }, damageEnemy, aim(v) { rightDown = v; }, player, enemies, WEAPONS, VMCFG, POSES, game, renderer, scene, camera, vmScene, vmCamera, get LV() { return LV; }, get lmB() { return lmB; }, get doors() { return doors; }, get patches() { return patches; }, get wallFaces() { return wallFaces; }, get ROOMS() { return ROOMS; }, get roomAt() { return roomAt; }, get wallTop() { return wallTop; }, floorAt, topAt, tp(x, z) { const p = C(x, z); player.pos.copy(p); player.viewY = p.y; }, give() { WEAPONS.forEach(w => { w.owned = true; if (w.mag) w.clip = w.mag; }); Object.assign(player.ammo, AMMO_MAX); }, loadLevel, startMission, buildViewModels, async quick(i = 0) { game.noCS = true; await startMission(i, true); game.noCS = false; startPlaying(); }, playCutscene, CUTSCENES, CS, CS_FOREST, vox, endCutscene };
+window.__castle = { step(n = 1, dt = 1 / 60) { for (let i = 0; i < n; i++) tick(dt); }, OUT, LEVELS, sampleGrid, damageDestructible, useAction, get destructibles() { return destructibles; }, objectivesDone, completeObjective, get alarms() { return alarms; }, THREE, ARMS, GRIPS, RIGS, FBX, sfx, SET, P_, ARM_POLE_R, ARM_POLE_L, DELISLE_CAN, buildViewModels2: () => buildViewModels(), get pickups() { return pickups; }, damageEnemy, aim(v) { rightDown = v; }, player, enemies, WEAPONS, VMCFG, POSES, game, renderer, scene, camera, vmScene, vmCamera, get LV() { return LV; }, get lmB() { return lmB; }, get doors() { return doors; }, get patches() { return patches; }, get wallFaces() { return wallFaces; }, get ROOMS() { return ROOMS; }, get roomAt() { return roomAt; }, get wallTop() { return wallTop; }, floorAt, topAt, tp(x, z) { const p = C(x, z); player.pos.copy(p); player.viewY = p.y; }, give() { WEAPONS.forEach(w => { w.owned = true; if (w.mag) w.clip = w.mag; }); Object.assign(player.ammo, AMMO_MAX); }, loadLevel, startMission, buildViewModels, async quick(i = 0) { game.noCS = true; await startMission(i, true); game.noCS = false; startPlaying(); }, playCutscene, CUTSCENES, CS, CS_FOREST, vox, endCutscene, TRAIN, TRACK };
 frame();
 boot().catch(err => { console.error(err); setLoad('Chyba při načítání: ' + err.message); });
 </script>
