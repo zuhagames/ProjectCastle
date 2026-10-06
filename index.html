@@ -50,6 +50,10 @@
   #introS { margin-top:6px; letter-spacing:6px; color:#c23b2c; font-size:clamp(12px,1.6vw,16px); text-shadow:0 2px 2px #000; }
   #boss { position:absolute; top:58px; left:50%; width:420px; margin-left:-210px; text-align:center; display:none; font:600 13px 'Oswald'; letter-spacing:4px; color:#e9c2b5; text-shadow:0 2px 2px #000; }
   #boss .bar { width:100%; height:9px; margin-top:4px; } #boss .bar b { background:linear-gradient(#b8231a,#5e0b06); }
+  #drive { position:absolute; right:22px; top:120px; width:230px; display:none; font-family:'Special Elite',monospace; color:#f0e2b6; background:rgba(10,8,6,.62); border:1px solid rgba(201,162,76,.5); padding:10px 14px; text-shadow:0 1px 2px #000; }
+  #drive .dv { font-size:46px; line-height:1; color:#fff; } #drive .dv small { font-size:16px; color:#c9a24c; }
+  #drive .dl { font:600 11px 'Oswald',sans-serif; letter-spacing:3px; color:var(--gold); margin-top:6px; } #drive .bar { width:100%; height:7px; }
+  #drive .bar b { background:linear-gradient(90deg,#c98a2c,#f2c53d); } #drive .bar.br b { background:linear-gradient(90deg,#7a120b,#ff4a35); } #drive .dn { font-size:14px; margin-top:6px; }
   #stealth { position:absolute; bottom:18px; left:50%; width:160px; margin-left:-80px; text-align:center; font:600 12px 'Oswald',sans-serif; letter-spacing:3px; text-shadow:0 2px 2px #000; }
   #stealth .bar { width:100%; height:5px; } #visb b { background:linear-gradient(90deg,#55606a,#e8e2c8); transition:width .15s; }
   #prompt { position:absolute; top:62%; width:100%; text-align:center; font-family:'Special Elite',monospace; font-size:19px; color:#fff; text-shadow:0 2px 3px #000; }
@@ -71,6 +75,13 @@
   @keyframes pulse { 50% { box-shadow:0 0 22px rgba(230,190,90,.55), 0 0 0 2px #e6c36a inset; } }
   .mnote { font-family:'Special Elite',monospace; font-size:13px; color:#cfc4a8; text-shadow:0 1px 2px #000; margin-bottom:6px; }
   .mfoot { position:absolute; bottom:10px; left:0; right:0; margin:0 auto !important; font-size:11px !important; color:#8d8571 !important; text-shadow:0 1px 2px #000; }
+  .soon { position:absolute; right:18px; bottom:16px; width:300px; border:2px solid var(--gold); background:#000; box-shadow:0 0 0 1px #000, 0 10px 30px rgba(0,0,0,.8); transform:rotate(1.5deg); }
+  .soon canvas { display:block; width:300px; height:168px; }
+  .soon .st { position:absolute; left:0; right:0; bottom:0; padding:6px 10px 7px; background:linear-gradient(transparent, rgba(0,0,0,.9) 40%); text-align:left; }
+  .soon b { display:block; font:600 15px 'Oswald',sans-serif; letter-spacing:3px; color:#f0e3bd; }
+  .soon span { display:block; font:13px 'Special Elite',monospace; color:#c9a24c; }
+  .soon i { position:absolute; right:-10px; top:-128px; font:700 13px 'Oswald',sans-serif; font-style:normal; letter-spacing:3px; color:#fff; background:#a3180f; padding:4px 12px; transform:rotate(12deg); box-shadow:0 3px 8px rgba(0,0,0,.6); animation:pulse 2.4s ease-in-out infinite; }
+  @media (max-width:900px) { .soon { transform:scale(.7); transform-origin:right bottom; } }
   .mpanel { background:rgba(10,8,6,.72); border:1px solid rgba(201,162,76,.4); padding:10px 22px 16px; box-shadow:0 10px 40px rgba(0,0,0,.7); max-width:900px; }
   #overlay h1 { font-family:'Special Elite',monospace; font-size:clamp(34px,7vw,84px); margin:0; color:#e6d6aa; letter-spacing:3px; text-shadow:0 0 24px rgba(160,20,10,.6), 0 4px 0 #000; }
   #overlay h2 { margin:6px 0 18px; font-weight:400; letter-spacing:8px; color:#b52519; font-size:clamp(13px,2vw,18px); }
@@ -133,6 +144,7 @@
   <div id="boss"><span id="bossN">ÜBERSOLDAT</span><div class="bar"><b id="bossB"></b></div></div>
   <div id="log"></div>
   <div id="prompt"></div>
+  <div id="drive"></div>
   <div id="stealth"><div id="stl">SKRYT</div><div class="bar" id="visb"><b></b></div></div>
   <div id="hl" class="p">
     <div class="lbl">ZDRAVÍ</div><div class="num" id="hp">100</div><div class="bar" id="hpb"><b></b></div>
@@ -830,7 +842,7 @@ const LEVELS = [
       ['a', 1, 1, -1, -1], ['h', 4, 3, 1, 1],
       ['g', 14, 1, 1, -1], ['g', 14, 6, 1, 1], ['h', 8, 6, -1, 1], ['n', 8, 1, -1, -1],
       ['g', 8, 9, -1, -1], ['g', 14, 13, 1, 1], ['g', 8, 13, -1, 1], ['g', 14, 9, 1, -1], ['H', 11, 13, 0, 1.2],
-      ['W:flamer', 10, 16, 0, 0], ['q', 9, 16, -1, 0], ['q', 26, 21, 0, 1], ['u', 8, 17, -1, 1], ['u', 12, 15, 1, -1], ['a', 9, 15, -1, -1],
+      ['W:flamer', 10, 16, 0, 0], ['W:thompson', 12, 16, 0, -1], ['q', 9, 16, -1, 0], ['q', 12, 17, 1, 1], ['q', 26, 21, 0, 1], ['u', 8, 17, -1, 1], ['u', 12, 15, 1, -1], ['a', 9, 15, -1, -1],
       ['h', 22, 10, 1, 0],
       ['d:diary', 23, 17, .6, .6], ['v', 16, 12, -1, -1], ['h', 23, 12, 1, -1], ['u', 16, 15, -1, 0],
       ['a', 16, 21, -1, 1], ['h', 21, 19, 1, -1],
@@ -919,7 +931,7 @@ LEVELS.push(asciiLevel({
     ['g', 27, 10, 1, -1], ['a', 23, 12, -1, 1], ['h', 27, 16, 1, 1], ['q', 23, 14, -1, -1],
     ['h', 13, 11, -1, -1], ['n', 16, 11, 1, -1], ['s', 13, 13, -1, 1],
     ['f', 12, 22, -1, 1], ['a', 17, 21, 1, -1],
-    ['d:mapa', 4, 1, 0, 2], ['g', 2, 1, -1, -1], ['g', 6, 1, 1, -1], ['H', 2, 2, -1, 1], ['q', 6, 2, 1, 1],
+    ['d:mapa', 4, 1, 0, 2], ['g', 2, 1, -1, -1], ['g', 6, 1, 1, -1], ['H', 2, 2, -1, 1], ['q', 6, 2, 1, 1], ['W:garand', 5, 2, 0, 0], ['m', 3, 2, 0, 1],
     ['g', 25, 2, 1, -1], ['g', 2, 22, -1, 1], ['h', 21, 9, 1, -1], ['r', 8, 14, .5, .5], ['v', 9, 0, 0, .5], ['p', 18, 21, 0, 1], ['q', 11, 7, 0, 0], ['f', 5, 16, -1, 0]
   ]
 }));
@@ -1082,12 +1094,70 @@ LEVELS.push(asciiLevel({
   ],
   pickups: [
     ['d:list', 16, 2, 0, 2], ['g', 9, 2, -1, -1], ['h', 13, 2, 1, -1], ['a', 17, 5, 1, 0], ['g', 15, 3, -1, 1],
-    ['n', 22, 2, -1, -1], ['a', 27, 5, 1, 1], ['g', 27, 2, 1, -1], ['H', 22, 5, -1, 1], ['f', 5, 18, -.6, .6],
+    ['n', 22, 2, -1, -1], ['a', 27, 5, 1, 1], ['W:bar', 26, 5, 0, 0], ['m', 28, 5, 0, 0], ['g', 27, 2, 1, -1], ['H', 22, 5, -1, 1], ['f', 5, 18, -.6, .6],
     ['g', 30, 1, 0, 0], ['g', 3, 21, 0, 0], ['h', 20, 20, 0, 0], ['q', 12, 19, 0, 0], ['s', 30, 20, 0, 0], ['r', 2, 9, 0, 0], ['q', 29, 5, 0, 0], ['v', 3, 1, 0, 0], ['f', 19, 4, 0, 0]
   ]
 }));
 
 // ---------- EPISODE 3 · OPERACE FINSTERNIS ----------
+// ---------- EPISODE 2 · mission 4: the special train – fight car by car to the engine, then drive it ----------
+LEVELS.push({
+  id: 'e2m4', ep: 2, train: true, name: 'MISE 2.4 · ZVLÁŠTNÍ VLAK', sub: 'Noční jízda do Wolfsgrundu', w: 34, h: 3,
+  brief: ['Schoval ses ve služebním voze na konci zvláštního vlaku. Souprava se řítí nocí do hor – a je plná vojáků.',
+    'Probojuj se vagon po vagonu dopředu: otevřené vozy, krytý vůz, plošina s raketou, municí a protiletadlovým kanonem, tendr.',
+    'V lokomotivě převezmi řízení. Regulátor [W] přidává páru, brzda [S] zpomaluje. Dodržuj rychlost v zatáčkách a na mostě – jinak vykolejíš.',
+    'Ve Wolfsgrundu zastav u vykládací rampy. Nedobrzdíš-li, skončíš na zarážedle.'],
+  rooms: [
+    R('brake', [1, 1, 2, 1], 'boxcar', 1.3, 4.3, 'Služební vůz'),
+    R('gon1', [4, 1, 6, 1], 'opencar', 1.3, 0, 'Otevřený vůz', { wallY: 2.45 }),
+    R('box1', [8, 1, 10, 1], 'boxcar', 1.3, 4.3, 'Krytý vůz'),
+    R('flat1', [12, 1, 14, 1], 'flatcar', 1.3, 0, 'Plošinový vůz s raketou', { wallY: 1.75 }),
+    R('box2', [16, 1, 18, 1], 'boxcar', 1.3, 4.3, 'Vůz s municí'),
+    R('flak', [20, 1, 22, 1], 'flatcar', 1.3, 0, 'Protiletadlový vůz', { wallY: 1.75 }),
+    R('box3', [24, 1, 26, 1], 'boxcar', 1.3, 4.3, 'Vůz zvláštního nákladu'),
+    R('tender', [28, 1, 29, 1], 'tender', 1.3, 0, 'Tendr', { wallY: 2.7 }),
+    R('cab', [31, 1, 32, 1], 'cab', 1.3, 0, 'Kabina lokomotivy', { wallY: 2.45 })
+  ],
+  doors: [[3, 1], [7, 1], [11, 1], [15, 1], [19, 1], [23, 1], [27, 1], [30, 1]],
+  start: [1, 1, -PI / 2],
+  objectives: [
+    { id: 'cab', text: 'Probojuj se vlakem až do lokomotivy' },
+    { id: 'drive', text: 'Převezmi řízení a zastav vlak u rampy ve Wolfsgrundu' },
+    { id: 'tre', text: 'Volitelné: posbírej poklady', optional: true }
+  ],
+  targets: [{ kind: 'regulator', cell: [32, 1], ox: 1.25, oz: 0, rot: 0, obj: 'cab', name: 'Lokomotiva je tvoje!' }],
+  alarms: [], reinforce: [],
+  barrels: [[17, 1, 1.2, -1.1], [25, 1, -1.2, 1.1]],
+  props: [
+    ['crates', 4, 1, -.4, -.9, 0], ['crates', 6, 1, .2, .8, 2], ['drums', 5, 1, .6, -.9, 0, { n: 3 }],
+    ['crates', 8, 1, -.6, -1.1, 0], ['crates', 10, 1, .6, 1.1, 2], ['lantern', 9, 1, 0, 1.5],
+    ['rocket', 13, 1, 0, 0, 0, { cradle: true, len: 10 }],
+    ['drums', 16, 1, -.5, 1, 0, { n: 6 }], ['crates', 18, 1, .4, -1, 0], ['crates', 17, 1, -1.2, 1.1, 2],
+    ['flak', 21, 1, 0, 0, 0],
+    ['crates', 24, 1, -.6, -1.1, 0], ['crates', 26, 1, .6, 1.1, 2], ['crates', 25, 1, .2, -1.2, 0],
+    ['coal', 28, 1, .8, -.4]
+  ],
+  enemies: [
+    ['soldat', 5, 1, -PI / 2, { oz: .9 }], ['sturm', 6, 1, -PI / 2, { oz: -.8 }],
+    ['soldat', 9, 1, -PI / 2, { oz: -.6 }], ['sturm', 10, 1, -PI / 2, { oz: .6 }], ['offizier', 10, 1, -PI / 2, { ox: 1.3, oz: -.9 }],
+    ['elite', 12, 1, -PI / 2, { oz: 1.1 }], ['elite', 14, 1, -PI / 2, { oz: -1.1 }],
+    ['soldat', 17, 1, -PI / 2, { oz: -1 }], ['sturm', 18, 1, -PI / 2, { oz: 1 }],
+    ['soldat', 20, 1, -PI / 2, { oz: 1.2 }], ['sturm', 22, 1, -PI / 2, { oz: -1.2 }], ['sniper', 22, 1, -PI / 2, { oz: 1.1, ox: 1 }],
+    ['elite', 24, 1, -PI / 2, { oz: 1 }], ['offizier', 26, 1, -PI / 2, { oz: -.8 }], ['elite', 26, 1, -PI / 2, { ox: 1.4, oz: .9 }],
+    ['soldat', 29, 1, -PI / 2, { oz: 1.1 }],
+    ['sturm', 31, 1, -PI / 2, { oz: 1 }], ['soldat', 32, 1, PI / 2, { oz: -1 }]
+  ],
+  pickups: [
+    ['a', 1, 1, -1, -1], ['h', 2, 1, 1, 1], ['n', 2, 1, 1, -1],
+    ['q', 5, 1, 0, 1.2], ['g', 4, 1, -1.4, 1.2],
+    ['H', 8, 1, -1.3, 1.1], ['s', 9, 1, 0, -1.3], ['g', 10, 1, 1.4, -1.2],
+    ['m', 12, 1, -1.3, -1.2], ['f', 14, 1, 1.4, 1.2],
+    ['a', 16, 1, -1.4, -1.2], ['n', 18, 1, 1.4, 1.2], ['g', 17, 1, 0, -1.4], ['v', 18, 1, 1.2, -1.2],
+    ['h', 20, 1, -1.4, -1.2], ['r', 22, 1, 1.4, 1.2],
+    ['H', 24, 1, -1.4, 1.2], ['g', 26, 1, 1.4, -1.2], ['b', 25, 1, 0, 1.3], ['q', 24, 1, -1.3, -1.3],
+    ['h', 29, 1, 1.2, 1.2], ['g', 32, 1, -1.3, 1.3]
+  ]
+});
 LEVELS.push(asciiLevel({
   id: 'e3m1', ep: 3, name: 'MISE 3.1 · BRÁNA WOLFSGRUND', sub: 'Vykládací rampa pod horou',
   brief: ['Zvláštní vlak zastavil na rampě pod skalní stěnou. Za betonovou zdí leží vjezd do podzemní továrny Wolfsgrund.',
@@ -1244,7 +1314,7 @@ LEVELS.push(asciiLevel({
   ],
   pickups: [
     ['k:laborator', 21, 2, 2, 0], ['g', 20, 1, -1, -1], ['h', 23, 1, 1, -1],
-    ['a', 26, 3, 0, 1], ['n', 25, 1, -1, -1], ['n', 27, 1, 1, -1], ['v', 27, 3, 1, 1],
+    ['a', 26, 3, 0, 1], ['n', 25, 1, -1, -1], ['n', 27, 1, 1, -1], ['v', 27, 3, 1, 1], ['W:bazooka', 24, 3, 0, 0], ['b', 25, 3, 0, 1],
     ['f', 14, 1, -1, -1], ['f', 18, 3, 1, 1], ['h', 8, 3, -1, 1], ['s', 12, 1, 1, -1],
     ['g', 2, 8, -1, -1], ['q', 6, 8, 1, -1], ['h', 2, 16, -1, 1],
     ['g', 8, 8, -1, -1], ['a', 21, 16, 1, 1], ['q', 9, 13, -1, 0], ['g', 21, 11, 1, 0],
@@ -1312,7 +1382,7 @@ LEVELS.push(asciiLevel({
   pickups: [
     ['d:vzorky', 5, 14, 0, 2], ['g', 2, 13, -1, -1], ['g', 8, 16, 1, 1], ['H', 8, 13, 1, -1],
     ['a', 2, 7, -1, -1], ['h', 8, 11, 1, 1], ['u', 3, 11, -1, 1], ['q', 7, 7, 1, -1],
-    ['a', 23, 7, 1, -1], ['n', 17, 11, -1, 1], ['g', 23, 11, 1, 1],
+    ['a', 23, 7, 1, -1], ['n', 17, 11, -1, 1], ['g', 23, 11, 1, 1], ['b', 23, 7, 0, 1], ['b', 17, 16, 0, 1], ['m', 2, 7, 0, 1],
     ['H', 23, 16, 1, 1], ['a', 17, 16, -1, 1], ['v', 23, 13, 1, -1], ['u', 17, 13, -1, -1], ['n', 20, 16, 0, 1],
     ['h', 11, 2, -1, -1], ['a', 14, 2, 1, -1], ['g', 2, 5, -1, 1], ['g', 23, 4, 1, -1], ['q', 12, 19, 0, 0]
   ]
@@ -1320,8 +1390,8 @@ LEVELS.push(asciiLevel({
 
 const EPISODES = [
   { title: 'ÚTĚK Z GRIMHOLDU', sub: 'Kobky, štáb SS a krypta hradu v Alpách', levels: [0, 1, 2], outro: 'Lanovka tě nese dolů z hory. Plány operace Finsternis i deník dr. Zemana máš u sebe.' },
-  { title: 'NOČNÍ HVOZD', sub: 'Lesy, polní tábor a nádraží v údolí', levels: [3, 4, 5], outro: 'Zvláštní vlak se dává do pohybu. Schovaný ve vagonu míříš přímo do Wolfsgrundu.' },
-  { title: 'OPERACE FINSTERNIS', sub: 'Podzemní továrna Wolfsgrund', levels: [6, 7, 8], outro: '' }
+  { title: 'NOČNÍ HVOZD', sub: 'Lesy, polní tábor, nádraží a zvláštní vlak', levels: [3, 4, 5, 6], outro: 'Zvláštní vlak stojí u rampy pod horou. Wolfsgrund je na dosah.' },
+  { title: 'OPERACE FINSTERNIS', sub: 'Podzemní továrna Wolfsgrund', levels: [7, 8, 9], outro: '' }
 ];
 const epOf = i => Math.max(0, EPISODES.findIndex(E => E.levels.includes(i)));
 /* ---------- room themes: surfaces + lighting style ---------- */
@@ -1356,9 +1426,15 @@ const THEMES = {
   catacomb: { wall: 'ossuary', floor: 'flag', ceil: 'stone', wS: 3.6, fS: 3, cS: 3, light: 'torch' },
   lab: { wall: 'labtile', lower: 'metal', lowerH: 1.0, floor: 'labfloor', ceil: 'metal', wS: 3, fS: 2, cS: 3, light: 'lab' },
   generator: { wall: 'brick', lower: 'metal', lowerH: 1.2, floor: 'labfloor', ceil: 'metal', wS: 2, fS: 2, cS: 3, light: 'lab' },
-  station: { wall: 'bigstone', floor: 'floorwood', wS: 3.2, fS: 3, light: 'none', rail: 'stone' }
+  station: { wall: 'bigstone', floor: 'floorwood', wS: 3.2, fS: 3, light: 'none', rail: 'stone' },
+  // the special train: goods vans, open wagons, flat cars, tender and footplate
+  boxcar: { wall: 'planks', floor: 'floorwood', ceil: 'planks', wS: 2, fS: 2.4, cS: 2, light: 'lamp' },
+  opencar: { wall: 'planks', floor: 'floorwood', wS: 2, fS: 2.4, light: 'none' },
+  flatcar: { wall: 'planks', floor: 'floorwood', wS: 2, fS: 2.4, light: 'none' },
+  tender: { wall: 'metal', floor: 'metal', wS: 2, fS: 2, light: 'none' },
+  cab: { wall: 'metal', floor: 'floorwood', wS: 2, fS: 2, light: 'none' }
 };
-const SKY_THEMES = new Set(['yard', 'rampart', 'yardstairs', 'station']);
+const SKY_THEMES = new Set(['yard', 'rampart', 'yardstairs', 'station', 'opencar', 'flatcar', 'tender', 'cab']);
 
 /* =====================================================================
    LEVEL STATE (rebuilt for every mission)
@@ -1597,7 +1673,7 @@ function buildRoomSurfaces() {
   }
   // wall caps + crenellations where walls meet the open sky
   for (let cz = 0; cz < MH; cz++) for (let cx = 0; cx < MW; cx++) {
-    if (OUT.on || !isWall(cx, cz) || !inside(cx, cz)) continue;
+    if (OUT.on || LV.train || !isWall(cx, cz) || !inside(cx, cz)) continue;
     let skyN = null; for (const [dx, dz] of DIR4) { const r = roomOf(cx + dx, cz + dz); if (r && r.sky) { skyN = r; break; } }
     if (!skyN) continue;
     const y = wallTop[cidx(cx, cz)], x0 = cx * CELL, z0 = cz * CELL;
@@ -1626,8 +1702,8 @@ TX.slate = tex(paint(TS, (x, y) => {
   return [150 * k, 158 * k, 172 * k, yy];
 }, 1.3));
 const EXT_DEF = { extWall: { map: TX.bigstone, tint: [.92, .9, .88], k: 1, s: 3.2 }, extRock: { map: TX.rock, tint: [.8, .8, .82], k: .9, s: 6 }, extRoof: { map: TX.stone, tint: [.7, .7, .72], k: 1, s: 3 }, slate: { map: TX.slate, tint: [1, 1, 1], k: 1.6, s: 2.4 }, copper: { map: TX.slate, tint: [.62, 1.05, .86], k: 1.7, s: 1.6 }, extTrim: { map: TX.stone, tint: [.85, .82, .78], k: 1.1, s: 2 }, extGlass: { map: TX.glass, k: 1, s: 0, emissive: 1.05, alpha: true }, extDark: { map: TX.white, tint: [.05, .05, .06], k: 1, s: 0 }, extGold: { map: TX.white, tint: [.9, .72, .32], k: 1.3, s: 0 } };
-function buildExterior() {
-  if (OUT.on || !ROOMS.some(r => r.sky)) return;
+// moonlit geometry outside the rooms (no lightmap bake): add/quad collect it per material, finish() makes the meshes
+function extKit() {
   const B = {}, push = (key, g) => {
     const b = B[key] || (B[key] = { p: [], n: [], uv: [] }), d = EXT_DEF[key], P = g.attributes.position.array, Nn = g.attributes.normal.array, U = g.attributes.uv.array;
     for (let i = 0; i < P.length / 3; i++) {
@@ -1641,6 +1717,20 @@ function buildExterior() {
   };
   const add = (key, geo, pos, ry = 0, rx = 0, rz = 0) => { const g = geo.index ? geo.toNonIndexed() : geo; _e.set(rx, ry, rz, 'YXZ'); _q.setFromEuler(_e); _m4.compose(pos, _q, _s1); g.applyMatrix4(_m4); push(key, g); if (g !== geo) geo.dispose(); };
   const quad = (key, cx, cy, cz, w, h, ry, rx = 0) => add(key, new THREE.PlaneGeometry(w, h), V(cx, cy, cz), ry, rx);
+  const finish = (parent = levelRoot, k0 = 1) => {
+    for (const [key, b] of Object.entries(B)) {
+      const d = EXT_DEF[key], n = b.p.length / 3, col = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) { const ndl = Math.max(0, b.n[i * 3] * MOON_DIR.x + b.n[i * 3 + 1] * MOON_DIR.y + b.n[i * 3 + 2] * MOON_DIR.z); for (let k = 0; k < 3; k++) col[i * 3 + k] = (SKY_AMB[k] * 1.25 + MOON_COL[k] * ndl * .75) * d.k * k0; }
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(b.p, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(b.uv, 2)); g.setAttribute('vcol', new THREE.BufferAttribute(col, 3)); g.computeBoundingSphere();
+      const m = new THREE.Mesh(g, worldMat(d.map, { tint: d.tint || [1, 1, 1], emissive: d.emissive || 0, alpha: !!d.alpha, side: d.alpha || d.both ? THREE.DoubleSide : THREE.FrontSide })); m.matrixAutoUpdate = parent === levelRoot ? false : true; m.frustumCulled = parent === levelRoot; parent.add(m);
+    }
+  };
+  return { add, quad, finish };
+}
+function buildExterior() {
+  if (LV.train) return buildTrainExterior();
+  if (OUT.on || !ROOMS.some(r => r.sky)) return;
+  const { add, quad, finish } = extKit();
   let minY = Infinity; for (const r of ROOMS) minY = Math.min(minY, r.y);
   const BASE = minY - 16, N = MW * MH, H = new Float32Array(N).fill(NaN), capped = new Uint8Array(N), skyCell = new Uint8Array(N);
   const nbRooms = (x, z) => DIR4.map(([dx, dz]) => roomOf(x + dx, z + dz)).filter(Boolean);
@@ -1672,12 +1762,7 @@ function buildExterior() {
     }
   }
   for (const c of church) buildChurch(c, add, quad, H, BASE);
-  for (const [key, b] of Object.entries(B)) {
-    const d = EXT_DEF[key], n = b.p.length / 3, col = new Float32Array(n * 3);
-    for (let i = 0; i < n; i++) { const ndl = Math.max(0, b.n[i * 3] * MOON_DIR.x + b.n[i * 3 + 1] * MOON_DIR.y + b.n[i * 3 + 2] * MOON_DIR.z); for (let k = 0; k < 3; k++) col[i * 3 + k] = (SKY_AMB[k] * 1.25 + MOON_COL[k] * ndl * .75) * d.k; }
-    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(b.p, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(b.uv, 2)); g.setAttribute('vcol', new THREE.BufferAttribute(col, 3)); g.computeBoundingSphere();
-    const m = new THREE.Mesh(g, worldMat(d.map, { tint: d.tint || [1, 1, 1], emissive: d.emissive || 0, alpha: !!d.alpha, side: d.alpha ? THREE.DoubleSide : THREE.FrontSide })); m.matrixAutoUpdate = false; levelRoot.add(m);
-  }
+  finish();
 }
 function buildChurch(c, add, quad, H, BASE) {
   const lx = (c.x1 - c.x0) >= (c.z1 - c.z0), L0 = lx ? c.x0 : c.z0, L1 = lx ? c.x1 : c.z1, W0 = lx ? c.z0 : c.x0, W1 = lx ? c.z1 : c.x1;
@@ -1719,6 +1804,137 @@ function buildChurch(c, add, quad, H, BASE) {
   add('copper', new THREE.ConeGeometry(ts * .74, 11, 4, 1, true), P(tu, top + 5.5, wm), Math.PI / 4);
   for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 + Math.PI / 4, o = ts * .55; add('copper', new THREE.ConeGeometry(.45, 2.6, 4), P(tu, top + 1.3, wm).add(V(Math.sin(a) * o, 0, Math.cos(a) * o)), Math.PI / 4); } // corner pinnacles
   add('extGold', B3(.18, 2.2, .18), P(tu, top + 12, wm)); add('extGold', B3(lx ? .18 : 1.1, .18, lx ? 1.1 : .18), P(tu, top + 12.3, wm)); add('extGold', new THREE.SphereGeometry(.22, 8, 6), P(tu, top + 11, wm));
+}
+
+/* ---------- mission 2.4: the special train ----------
+   The cars are ordinary rooms in a row (x = along the train, centre line z = 6); the train never moves –
+   the night scenery, the sleepers and later the signs, the bridge and the Wolfsgrund ramp scroll past instead. */
+const TRAIN = { on: false, zc: CELL * 1.5, front: 0, speed: 17, dist: 0, drv: null, ckpt: false, scroll: null, movers: [], chimney: null, clackT: 0 };
+const TRACK = { segs: [{ s: 0, lim: 90 }, { s: 650, lim: 40, kind: 'ZATÁČKA', end: 1050 }, { s: 1050, lim: 90 }, { s: 1600, lim: 50, kind: 'MOST', end: 1950 }, { s: 1950, lim: 90 }, { s: 2450, lim: 30, kind: 'VJEZD DO WOLFSGRUNDU' }], stop: 2900, win: 2830 };
+const trainDefs = () => Object.assign(EXT_DEF, {
+  wagonX: { map: TX.wagon, k: 1.25, s: 2.4 }, plankX: { map: TX.planks, k: 1.15, s: 2 }, ironX: { map: TX.iron, k: 1.3, s: 1.6 }, roofW: { map: TX.roof, tint: [.8, .8, .82], k: 1.5, s: 2 },
+  redX: { map: TX.white, tint: [.5, .09, .07], k: 1.4, s: 0 }, gravel: { map: TX.gravel, tint: [.85, .85, .85], k: 1, s: 3 }, ground: { map: TX.forestfloor, k: .9, s: 6 },
+  needles: { map: TX.needles, k: .9, s: 0, both: true }, bark: { map: TX.bark, k: .8, s: 0 }, sleeper: { map: TX.darkwood, tint: [.6, .55, .5], k: 1.1, s: 0 }, railX: { map: TX.metal, tint: [.8, .8, .85], k: 1.8, s: 0 },
+  signW: { map: TX.white, k: 2.4, s: 0 }, lampG: { map: TX.white, tint: [1.6, 1.3, .8], k: 3, s: 0, emissive: 1.6 }, concrete: { map: TX.concrete || TX.stone, k: 1.2, s: 3 }
+});
+function buildTrainExterior() {
+  trainDefs();
+  const { add, quad, finish } = extKit(), zc = TRAIN.zc;
+  const bogie = (x) => { add('ironX', B3(2.6, .35, 2.3), V(x, .66, zc)); for (const dx of [-.8, .8]) for (const s of [-1, 1]) add('ironX', Cyl(.45, .45, .12, 14), V(x + dx, .45, zc + s * .74), 0, Math.PI / 2); };
+  const buffers = (x, dir) => { for (const s of [-1, 1]) { add('ironX', Cyl(.11, .11, .5, 8), V(x + dir * .25, 1.05, zc + s * 1.1), 0, 0, Math.PI / 2); add('ironX', Cyl(.2, .2, .06, 12), V(x + dir * .5, 1.05, zc + s * 1.1), 0, 0, Math.PI / 2); } };
+  for (const rm of ROOMS) {
+    const x0 = rm.x0 + .1, x1 = rm.x1 - .1, L = x1 - x0, xm = (x0 + x1) / 2, top = rm.sky ? rm.high : rm.top + .05;
+    const skin = rm.theme === 'boxcar' ? 'wagonX' : rm.theme === 'tender' || rm.theme === 'cab' ? 'ironX' : 'plankX';
+    for (const s of [-1, 1]) quad(skin, xm, (.95 + top) / 2, zc + s * 2.02, L, top - .95, s > 0 ? 0 : Math.PI);   // body sides
+    add('ironX', B3(L, .32, 3.7), V(xm, 1.1, zc));                                                                   // underframe
+    if (rm.theme !== 'cab') { bogie(x0 + 2.2); bogie(x1 - 2.2); }
+    buffers(x0, -1); buffers(x1, 1);
+    if (!rm.sky) { add('roofW', B3(L + .3, .14, 4.4), V(xm, top + .12, zc)); for (const s of [-1, 1]) add('roofW', B3(L + .3, .1, .9), V(xm, top + .02, zc + s * 2.2), 0, s * .35); }
+    if (rm.theme === 'cab') add('roofW', B3(L + .6, .14, 4.4), V(xm, 4.25, zc));                                      // cab roof on four posts
+    if (rm.theme === 'cab') for (const px of [x0 + .2, x1 - .2]) for (const s of [-1, 1]) add('ironX', B3(.12, 1.8, .12), V(px, 3.35, zc + s * 1.9));
+  }
+  for (const [cx] of LV.doors) {                                                                                     // gangways: bellows + couplings
+    const xm = cx * CELL + CELL / 2;
+    for (const s of [-1, 1]) quad('extDark', xm, 2.4, zc + s * 1.55, CELL, 2.4, s > 0 ? 0 : Math.PI);
+    add('ironX', B3(CELL, .12, .25), V(xm, 1.0, zc)); add('ironX', B3(CELL - .4, .5, .3), V(xm, .7, zc));
+  }
+  // the engine ahead of the footplate: Kriegslok boiler, smokebox, chimney, dome, red driving wheels, headlamps
+  const cab = ROOMS.find(r => r.theme === 'cab'), f = cab.x1, yb = 2.75;
+  add('ironX', Cyl(1.0, 1.0, 9, 18), V(f + 4.5, yb, zc), 0, 0, Math.PI / 2); add('ironX', Cyl(1.08, 1.08, 1.6, 18), V(f + 9.8, yb, zc), 0, 0, Math.PI / 2);
+  add('extDark', new THREE.CircleGeometry(1.0, 18), V(f + 10.62, yb, zc), Math.PI / 2);
+  add('ironX', Cyl(.3, .36, 1.0, 12), V(f + 9.8, yb + 1.45, zc)); add('ironX', Cyl(.42, .42, .6, 12), V(f + 5.5, yb + 1.1, zc)); add('ironX', Cyl(.3, .32, .45, 10), V(f + 3, yb + 1.05, zc));
+  add('ironX', B3(11.5, .12, 3.3), V(f + 5.3, 1.7, zc)); add('redX', B3(.35, .5, 3.3), V(f + 11, 1.05, zc)); buffers(f + 11.2, 1);
+  for (let i = 0; i < 4; i++) for (const s of [-1, 1]) { add('redX', Cyl(.72, .72, .12, 18), V(f + 1.2 + i * 1.75, .72, zc + s * 1.0), 0, Math.PI / 2); add('ironX', B3(.1, .1, .1), V(f + 1.2 + i * 1.75, .72, zc + s * 1.08)); }
+  for (const s of [-1, 1]) { add('redX', Cyl(.45, .45, .12, 12), V(f + 9.6, .45, zc + s * .9), 0, Math.PI / 2); add('ironX', B3(7, .08, .08), V(f + 3.8, .75, zc + s * 1.12)); }
+  for (const [y, s] of [[1.75, -1], [1.75, 1], [4.0, 0]]) add('lampG', B3(.12, .3, .3), V(f + 11.2, y, zc + s * 1.2));
+  TRAIN.front = f + 11.3; TRAIN.chimney = V(f + 9.8, yb + 2.0, zc);
+  lights.push({ pos: V(f + .4, 2.0, zc), col: [1.6, .7, .25], rad: 6, int: 1.1 });                                  // firebox glow on the footplate
+  finish();
+}
+// scenery tile repeated along the line: forest floor, ballast, sleepers, spruces and telegraph poles
+function buildTrainScenery() {
+  trainDefs();
+  const P = 192, kit = extKit(), r = mulberry32(4711), zc = TRAIN.zc;
+  const g = new THREE.Group(); levelRoot.add(g); TRAIN.scroll = g;
+  for (let k = -1; k <= 2; k++) {
+    const x0 = k * P;
+    for (const [z0, z1] of [[-140, zc - 3.2], [zc + 3.2, 150]]) kit.quad('ground', x0 + P / 2, -.02, (z0 + z1) / 2, P, z1 - z0, 0, -Math.PI / 2);
+    kit.quad('gravel', x0 + P / 2, .02, zc, P, 6.4, 0, -Math.PI / 2);
+    for (let x = .4; x < P; x += .8) kit.add('sleeper', B3(.24, .14, 2.6), V(x0 + x, .08, zc));
+    for (let i = 0; i < 46; i++) {
+      const side = r() < .5 ? -1 : 1, z = zc + side * (9 + Math.pow(r(), 1.3) * 70), x = x0 + r() * P, h = 7 + r() * 9, w = h * .26;
+      kit.add('bark', Cyl(.12, .2, h * .5, 5), V(x, h * .25, z));
+      for (let t = 0; t < 3; t++) kit.add('needles', new THREE.ConeGeometry(w * (1 - t * .25), h * (.5 - t * .08), 7), V(x, h * (.32 + t * .22), z), r() * 6);
+    }
+    for (let x = 0; x < P; x += 48) { kit.add('sleeper', Cyl(.1, .12, 7.5, 6), V(x0 + x, 3.75, zc - 4.5)); kit.add('sleeper', B3(.1, .1, 1.6), V(x0 + x, 7.1, zc - 4.5)); }
+  }
+  kit.finish(g);
+  const rails = extKit(); for (const s of [-1, 1]) rails.add('railX', B3(1200, .14, .08), V(100, .22, zc + s * .72)); rails.finish();
+  TRAIN.period = P;
+}
+// track-side objects that only appear on the drive: speed boards, the bridge, the Wolfsgrund ramp and buffer stop
+function buildTrainMovers() {
+  for (const m of TRAIN.movers) levelRoot.remove(m.g); TRAIN.movers = [];
+  const zc = TRAIN.zc, mover = (s, build) => { const kit = extKit(); build(kit); const g = new THREE.Group(); kit.finish(g); levelRoot.add(g); TRAIN.movers.push({ s, g }); };
+  for (const sg of TRACK.segs) if (sg.kind) mover(sg.s - 260, k => { k.add('sleeper', Cyl(.06, .06, 2.6, 6), V(0, 1.3, zc - 3)); k.add('signW', B3(.08, .9, .9), V(0, 2.9, zc - 3)); k.add('redX', B3(.09, .72, .72), V(-.01, 2.9, zc - 3)); });
+  mover(1600, k => { for (let x = 0; x <= 350; x += 5) for (const s of [-1, 1]) { k.add('ironX', B3(.25, 4.2, .25), V(x, 2.1, zc + s * 2.7)); k.add('ironX', B3(5.2, .25, .25), V(x + 2.5, 4.2, zc + s * 2.7)); k.add('ironX', B3(5.6, .2, .2), V(x + 2.5, 2.2, zc + s * 2.7), 0, 0, s * .6); } });
+  mover(TRACK.stop - 330, k => {
+    k.add('concrete', B3(320, 1.1, 5), V(160, .55, zc + 5.2)); for (let x = 10; x < 320; x += 30) { k.add('sleeper', Cyl(.06, .08, 4, 6), V(x, 3.1, zc + 6.5)); k.add('lampG', B3(.4, .3, .4), V(x, 5.1, zc + 6.5)); }
+    k.add('ironX', B3(1, 1.3, 3.2), V(332, .9, zc)); k.add('redX', B3(.3, .6, 3.4), V(331.4, 1.2, zc)); k.add('lampG', B3(.25, .25, .25), V(331.3, 1.9, zc));
+  });
+}
+function trainInit() {
+  TRAIN.on = !!LV.train; TRAIN.drv = null; TRAIN.ckpt = false; TRAIN.dist = 0; TRAIN.movers = [];
+  if (!TRAIN.on) return;
+  buildTrainScenery(); $('drive').style.display = 'none';
+}
+function trainReset() { if (!TRAIN.on) return; TRAIN.drv = null; for (const m of TRAIN.movers) levelRoot.remove(m.g); TRAIN.movers = []; $('drive').style.display = 'none'; }
+// the footplate: take the regulator
+function takeTrain(d) {
+  d.used = true; sfx.play('clang', d.pos); sfx.play('switch', d.pos);
+  completeObjective('cab'); log(d.name || 'Lokomotiva je tvoje!'); TRAIN.ckpt = true;
+  TRAIN.drv = { s: 0, v: TRAIN.speed, reg: .45, brk: 0, over: 0, msgSeg: -1 };
+  buildTrainMovers(); $('drive').style.display = 'block';
+  log('<span style="color:#e6c36a">[W] regulátor · [S] brzda</span>');
+}
+function trainResume() {   // retry after a derailment: back on the footplate, the train already yours
+  for (const e of enemies) if (e.state !== 'dead') { e.state = 'dead'; e.deadT = 9; e.root.visible = false; e.blob.visible = false; }
+  const d = destructibles.find(q => q.kind === 'regulator'); const c = C(31, 1, 1, 0); player.pos.copy(c); player.viewY = c.y; player.yaw = -Math.PI / 2;
+  if (d) takeTrain(d);
+}
+function trainFail(title, text) {
+  if (game.state !== 'playing') return;
+  game.state = 'dead'; sfx.flame(false); TRAIN.drv = null; player.shake = 1.2; csBoom(V(TRAIN.front - 2, 3, TRAIN.zc), 1.6);
+  setTimeout(() => { document.exitPointerLock(); setOverlay(`<h1 style="color:#c22">${title}</h1><h2>MISE NESPLNĚNA</h2><p>${text}</p>`, [{ label: 'ZKUSIT ZNOVU (OD REGULÁTORU)', fn: () => { const ck = TRAIN.ckpt; resetLevelState(); if (ck) trainResume(); startPlaying(); } }, { label: 'RESTART MISE', cls: 'sm', fn: () => { TRAIN.ckpt = false; resetLevelState(); startPlaying(); } }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]); }, 1700);
+}
+function trainTick(dt) {
+  const D = TRAIN.drv;
+  let v = TRAIN.speed;
+  if (D) {
+    const th = (keys.KeyW || keys.ArrowUp) ? 1 : 0, br = (keys.KeyS || keys.ArrowDown) ? 1 : 0;
+    D.reg = clamp(D.reg + (th ? .45 : 0) * dt - (br ? 1.2 : 0) * dt, 0, 1); D.brk = lerp(D.brk, br, 1 - Math.exp(-6 * dt));
+    D.v = Math.max(0, D.v + (D.reg * (1 - D.v / 27) - D.brk * 2.6 - (D.v > .05 ? .08 : 0)) * dt);
+    D.s += D.v * dt; v = D.v;
+    let seg = TRACK.segs[0], si = 0; TRACK.segs.forEach((g, i) => { if (D.s >= g.s) { seg = g; si = i; } });
+    const kmh = D.v * 3.6;
+    if (seg.kind && seg.end && D.s < seg.end && kmh > seg.lim + 12) { D.over += dt; if (D.over > 1) return trainFail('VYKOLEJENÍ', `${seg.kind === 'MOST' ? 'Na mostě' : 'V zatáčce'} jsi jel ${Math.round(kmh)} km/h místo ${seg.lim}. Lokomotiva vyletěla z kolejí.`); } else D.over = Math.max(0, D.over - dt);
+    if (si !== D.msgSeg) { D.msgSeg = si; if (seg.kind) log(`<span style="color:#ffb347">${seg.kind} – max ${seg.lim} km/h</span>`); }
+    const nx = TRACK.segs.find(g => g.s > D.s && g.kind);
+    if (D.s >= TRACK.stop) { D.s = TRACK.stop; if (D.v > 2) return trainFail('NÁRAZ DO ZARÁŽEDLA', `Do konce koleje jsi vjel rychlostí ${Math.round(kmh)} km/h.`); D.v = 0; }
+    if (D.v < .35 && D.s >= TRACK.win && D.reg < .05) { completeObjective('drive'); D.v = 0; TRAIN.drv = null; $('drive').style.display = 'none'; sfx.play('clang', null, 1); return win(); }
+    const html = `<div class="dv">${Math.round(kmh)}<small> km/h</small></div><div class="dl">REGULÁTOR</div><div class="bar"><b style="width:${Math.round(D.reg * 100)}%"></b></div><div class="dl">BRZDA</div><div class="bar br"><b style="width:${Math.round(D.brk * 100)}%"></b></div>`
+      + `<div class="dn">${seg.kind && seg.end && D.s < seg.end ? `<span style="color:#ff9a60">${seg.kind}: max ${seg.lim}</span>` : nx ? `${nx.kind} za ${Math.max(0, Math.round(nx.s - D.s))} m · max ${nx.lim}` : seg.kind ? `max ${seg.lim} km/h` : ''}</div><div class="dn">Rampa za ${Math.max(0, Math.round(TRACK.win - D.s))} m${D.s >= TRACK.win ? ' – <b style="color:#7fe08a">ZASTAV (S)</b>' : ''}</div>`;
+    if (html !== TRAIN.hud) { TRAIN.hud = html; $('drive').innerHTML = html; }
+    for (const m of TRAIN.movers) m.g.position.x = TRAIN.front + (m.s - D.s);
+  }
+  TRAIN.dist += v * dt;
+  if (TRAIN.scroll) TRAIN.scroll.position.x = -(TRAIN.dist % TRAIN.period);
+  // smoke and steam, the rails' rhythm, and the footplate rocking
+  if (TRAIN.chimney && Math.random() < dt * (6 + v * .6)) smoke.spawn(TRAIN.chimney, -v * .55 + rand(-.4, .4), 2.2 + Math.random(), rand(-.4, .4), .26, .25, .24, 1.2, 3 + Math.random() * 2, -.15, 1, 2.4);
+  if (v > .5) { TRAIN.clackT -= dt; if (TRAIN.clackT <= 0) { TRAIN.clackT = 15 / v; sfx.play('clack', null, Math.min(1, v / 12)); after(1.6 / Math.max(v, 1), () => sfx.play('clack', null, Math.min(.8, v / 15))); } }
+  if (sfx.ctx && !TRAIN.rumble) { const C2 = sfx.ctx, n = C2.createBufferSource(), f = C2.createBiquadFilter(), g = C2.createGain(); n.buffer = sfx.noise; n.loop = true; f.type = 'lowpass'; f.frequency.value = 160; g.gain.value = 0; n.connect(f); f.connect(g); g.connect(sfx.master); n.start(); TRAIN.rumble = g; }
+  if (TRAIN.rumble) TRAIN.rumble.gain.setTargetAtTime(game.state === 'playing' ? Math.min(.3, v * .014) : 0, sfx.ctx.currentTime, .3);
+  const k = Math.min(1, v / 20); camera.rotation.z += Math.sin(time * 1.3) * .006 * k; camera.position.y += Math.sin(time * 11) * .007 * k + Math.sin(time * 2.1) * .01 * k;
 }
 
 /* ---------- doorways: thick castle walls with jambs + lintel, hinged doors ---------- */
@@ -3197,6 +3413,12 @@ function buildTargets() {
       const fr = M(TX.darkwood), ir = M(TX.iron), red = M(null, [.62, .1, .08]); add(B3(.5, .85, 2.0), fr, 0, .42, 0);
       for (let i = 0; i < 6; i++) { const g = B3(.05, 1.0, .06); g.translate(0, .5, 0); const h = add(g, i === 3 ? red : ir, 0, .85, -.85 + i * .34, 0, 0, -.3); if (i === 3) t.handle = h; }
       hx = .3; hy = .45; hz = 1; cy = .45;
+    } else if (t.kind === 'regulator') { // footplate: boiler backhead, firebox door, gauges, regulator and brake handles (faces the tender, -X)
+      const ir = M(TX.iron), br = M(null, [.75, .58, .3]), wh = M(null, [.92, .9, .85]), red = M(null, [.62, .1, .08]), fire = new THREE.MeshBasicMaterial({ color: new THREE.Color(1.6, .7, .25) }); mats.push(fire);
+      add(Cyl(.72, .72, .4, 18), ir, .4, 1.55, 0, 0, 0, Math.PI / 2); add(B3(.12, .45, .55), fire, .18, 1.05, 0);
+      for (const z of [-.32, .32]) { add(Cyl(.12, .12, .06, 14), br, .18, 2.0, z, 0, 0, Math.PI / 2); add(Cyl(.1, .1, .07, 14), wh, .16, 2.0, z, 0, 0, Math.PI / 2); }
+      const h = add(B3(.06, .06, .6), br, .16, 1.75, .3, .5, 0, 0); t.handle = h; add(B3(.06, .35, .06), red, .12, 1.45, -.6);
+      hx = .6; hy = 1.1; hz = .9; cy = 1.1;
     } else if (t.kind === 'turbine') { // turbo-generator set of the underground plant: only a charge will do
       const g = M(TX.metal, [.8, .85, .8]), dk = M(TX.iron);
       add(B3(4.2, .4, 2.4), dk, 0, .2, 0); add(Cyl(1.0, 1.0, 3.2, 18), g, 0, 1.4, 0, 0, 0, Math.PI / 2);
@@ -3209,7 +3431,7 @@ function buildTargets() {
     o.ref = d; destructibles.push(d);
   }
 }
-const nearCharge = () => destructibles.find(d => ((d.charge && d.alive && !d.planted) || (d.kind === 'lever' && !d.used)) && Math.abs(player.pos.y - d.base.y) < 2 && Math.max(d.occ.min.x - player.pos.x, 0, player.pos.x - d.occ.max.x) ** 2 + Math.max(d.occ.min.z - player.pos.z, 0, player.pos.z - d.occ.max.z) ** 2 < 1.6 * 1.6);
+const nearCharge = () => destructibles.find(d => ((d.charge && d.alive && !d.planted) || ((d.kind === 'lever' || d.kind === 'regulator') && !d.used)) && Math.abs(player.pos.y - d.base.y) < 2 && Math.max(d.occ.min.x - player.pos.x, 0, player.pos.x - d.occ.max.x) ** 2 + Math.max(d.occ.min.z - player.pos.z, 0, player.pos.z - d.occ.max.z) ** 2 < 1.6 * 1.6);
 function plantCharge(d) {
   d.planted = true; sfx.play('switch', d.pos); vm.act = 'throw'; vm.actT = .4;
   if (!d.chargeMesh) {
@@ -3585,8 +3807,9 @@ function cheapColors(pos, nor, k) {
 function applyAtmosphere() {
   const o = LV.outdoor;
   if (o) { FOG_COLOR.setRGB(...(o.fog || [.045, .06, .11])); SU.fogDensity.value = o.density || .026; }
+  else if (LV.train) { FOG_COLOR.setRGB(.045, .058, .1); SU.fogDensity.value = .02; }
   else { FOG_COLOR.setRGB(.035, .03, .028); SU.fogDensity.value = .016; }
-  valley.visible = !o;
+  valley.visible = !o && !LV.train;
 }
 async function buildWorldMeshes(progress) {
   const per = await bakeLightmaps(p => progress(p * .85));
@@ -3810,6 +4033,11 @@ const sfx = {
     switch (name) {
       case 'welrod': this.nb(o, .04, 'lowpass', 800, 160, 1, .55); this.tn(o, 'sine', 125, 45, .06, .35); this.click(o, 0, 3200, .22); this.click(o, .3, 2400, .25); this.click(o, .52, 2900, .3); break;
       case 'delisle': this.nb(o, .06, 'lowpass', 1000, 170, 1, .75); this.tn(o, 'sine', 140, 45, .09, .5); this.click(o, 0, 3000, .3); this.click(o, .45, 2200, .5); this.click(o, .62, 1800, .5); break;
+      case 'thompson': this.nb(o, .04, 'bandpass', 2400, 1300, .9, 1.05); this.nb(o, .16, 'lowpass', 1500, 120, 1, .95); this.tn(o, 'sine', 120, 45, .1, .8); this.click(o, .03, 2000, .2); break;
+      case 'garand': this.nb(o, .07, 'bandpass', 2400, 1100, .7, 1.35); this.nb(o, .5, 'lowpass', 2000, 70, 1, 1.35); this.tn(o, 'sine', 105, 32, .26, 1.15); break;
+      case 'ping': this.tn(o, 'sine', 2950, 2900, .5, .3); this.tn(o, 'sine', 4400, 4350, .3, .12); break;
+      case 'bar': this.nb(o, .06, 'bandpass', 2300, 1100, .8, 1.25); this.nb(o, .3, 'lowpass', 1800, 80, 1, 1.15); this.tn(o, 'sine', 100, 34, .16, 1); break;
+      case 'bazooka': this.nb(o, .9, 'lowpass', 900, 120, 1, 1.4); this.nb(o, .5, 'bandpass', 2600, 600, .7, .8); this.tn(o, 'sine', 70, 30, .5, 1.2); break;
       case 'supp': this.nb(o, .05, 'lowpass', 1100, 180, 1, .8); this.tn(o, 'sine', 170, 55, .07, .55); this.click(o, 0, 3400, .35); this.click(o, .045, 2300, .3); this.nb(o, .03, 'bandpass', 2600, 1800, 2, .25, .02); break;
       case 'revolver': this.nb(o, .06, 'bandpass', 2600, 1300, .8, 1.3); this.nb(o, .36, 'lowpass', 2100, 90, 1, 1.25); this.tn(o, 'sine', 130, 38, .2, 1.1); break;
       case 'sten': this.nb(o, .035, 'bandpass', 3200, 1700, .9, .9); this.nb(o, .13, 'lowpass', 1700, 160, 1, .8); this.tn(o, 'sine', 150, 55, .08, .6); this.click(o, .03, 2400, .25); break;
@@ -3843,6 +4071,7 @@ const sfx = {
       case 'step': this.nb(o, .07, 'lowpass', 500, 150, 1, .22); break;
       case 'switch': this.click(o, 0, 3000, .5); this.click(o, .09, 2600, .5); break;
       case 'empty': this.click(o, 0, 4000, .5); break;
+      case 'clack': this.nb(o, .05, 'lowpass', 700, 200, 1, .5); this.tn(o, 'sine', 90, 50, .06, .35); this.click(o, 0, 1800, .25); break;
       case 'jump': this.nb(o, .1, 'lowpass', 400, 100, 1, .3); break;
       case 'ignite': this.nb(o, .4, 'bandpass', 500, 1500, 1, .7); break;
       case 'glass': this.nb(o, .25, 'highpass', 3000, 6000, 1, .8); for (let i = 0; i < 6; i++) this.tn(o, 'triangle', 2400 + Math.random() * 3000, 1800, .12, .12, .03 + i * .04); break;
@@ -3998,7 +4227,62 @@ function buildDeLisle() {
   for (let i = 1; i < 4; i++) part(can, Cz(.0255, .0255, .003, 18), supRing, 0, 0, -len * i / 4);
   return g;
 }
-const FALLBACK = { machete: buildKnife, revolver: buildPistol, sten: buildSMG, rifle: buildRifle, grenade: buildGrenade, flamer: buildFlamer, welrod: buildWelrod, delisle: buildDeLisle };
+/* ---------- American weapons: a Thompson from an SOE drop, and US small arms the Germans took apart in their test labs ---------- */
+const olive = new THREE.MeshLambertMaterial({ color: new THREE.Color(.27, .3, .2) }), parker = new THREE.MeshLambertMaterial({ color: new THREE.Color(.22, .23, .22) });
+function buildThompson() {   // M1A1: flat-topped receiver, finned-free barrel, walnut stock/grip/handguard, 30-round stick
+  const g = new THREE.Group(), w = gm.wood, b = gm.blued;
+  part(g, new RoundedBoxGeometry(.044, .056, .27, 2, .006), parker, 0, .04, .0);                // receiver
+  part(g, Cz(.013, .013, .29, 12), b, 0, .046, -.27);                                            // barrel
+  part(g, Bx(.006, .016, .012), b, 0, .062, -.4); part(g, Bx(.016, .02, .02), b, 0, .07, .11); // sights
+  part(g, Cz(.006, .006, .02, 6), b, .026, .05, -.04, 0, 0, Math.PI / 2);                       // cocking knob
+  part(g, new RoundedBoxGeometry(.036, .03, .17, 2, .008), w, -.004, .028, -.2);                 // horizontal handguard
+  const grip = new THREE.Group(); grip.position.set(0, -.02, .15); grip.rotation.x = -.25; g.add(grip);
+  part(grip, new RoundedBoxGeometry(.03, .11, .045, 2, .01), w, 0, -.03, 0);                     // pistol grip
+  part(g, Bx(.008, .03, .07), b, 0, -.004, .09);                                                 // trigger guard
+  const st = new THREE.Mesh(new RoundedBoxGeometry(.04, .085, .3, 2, .012), w); st.position.set(0, .0, .3); st.rotation.x = .12; g.add(st);
+  part(g, Bx(.044, .1, .012), parker, 0, -.01, .45, .12);                                        // butt plate
+  const mag = part(g, Bx(.03, .19, .052), b, 0, -.075, -.045); mag.name = 'Magazine'; g.userData.mag = mag;
+  return g;
+}
+function rifleStock(g) {      // long walnut stock shared by the Garand and the BAR
+  const st = new THREE.Mesh(new RoundedBoxGeometry(.042, .06, .78, 2, .012), gm.wood); st.position.set(0, .03, -.08); g.add(st);   // fore-end + wrist
+  const bt = new THREE.Mesh(new RoundedBoxGeometry(.044, .11, .3, 2, .015), gm.wood); bt.position.set(0, -.005, .42); bt.rotation.x = .1; g.add(bt);
+  part(g, Bx(.006, .028, .06), parker, 0, -.01, .2);                                             // trigger guard
+}
+function buildGarand() {     // M1: long walnut stock, op-rod on the right, en-bloc clip showing in the receiver
+  const g = new THREE.Group(), w = gm.wood, b = parker; rifleStock(g);
+  part(g, new RoundedBoxGeometry(.036, .04, .2, 2, .006), b, 0, .068, .08);                     // receiver
+  part(g, Bx(.03, .012, .07), gm.metal, 0, .093, .08);                                           // the clip of 8
+  part(g, Cz(.011, .011, .56, 10), b, 0, .07, -.36); part(g, Cz(.014, .014, .02, 10), b, 0, .07, -.63);
+  part(g, Bx(.008, .01, .4), b, .021, .06, -.15);                                                // operating rod
+  part(g, new RoundedBoxGeometry(.03, .022, .2, 2, .005), w, 0, .07, -.3);                       // upper handguard
+  part(g, Bx(.006, .02, .01), b, 0, .088, -.62); part(g, Bx(.018, .02, .02), b, 0, .095, .17);   // sights
+  for (const z of [-.47, -.23]) part(g, Cz(.024, .024, .012, 10), b, 0, .045, z);              // bands
+  return g;
+}
+function buildBAR() {        // M1918A2: heavy receiver, 20-round box underneath, long barrel with gas cylinder and folded bipod
+  const g = new THREE.Group(), b = parker; rifleStock(g);
+  part(g, new RoundedBoxGeometry(.05, .07, .3, 2, .006), b, 0, .06, .02);
+  part(g, Cz(.013, .013, .66, 10), b, 0, .075, -.42); part(g, Cz(.008, .008, .4, 8), b, 0, .045, -.38);
+  part(g, Cz(.02, .016, .06, 10), b, 0, .075, -.77);                                             // flash hider
+  const mag = part(g, Bx(.036, .12, .085), b, 0, -.035, -.03); mag.name = 'Magazine'; g.userData.mag = mag;
+  for (const s of [-1, 1]) part(g, Cz(.005, .005, .32, 6), b, s * .02, .03, -.55, .05 * s, 0, 0); // bipod legs, folded
+  part(g, Bx(.008, .03, .012), b, 0, .1, -.76); part(g, Bx(.02, .03, .03), b, 0, .105, .14);
+  return g;
+}
+function buildBazooka() {    // M1 "bazooka": smoothbore tube, wooden shoulder stock, two grips, battery box, blast deflector
+  const g = new THREE.Group(), b = olive;
+  part(g, Cz(.043, .043, 1.38, 18), b, 0, .1, -.2);
+  part(g, Cz(.05, .05, .05, 18), b, 0, .1, .47); part(g, Cz(.058, .05, .07, 18), b, 0, .1, -.88);
+  part(g, new RoundedBoxGeometry(.05, .07, .3, 2, .015), gm.wood, 0, .055, .3);                  // shoulder stock
+  const r = new THREE.Group(); r.position.set(0, -.02, .15); r.rotation.x = -.15; g.add(r); part(r, new RoundedBoxGeometry(.03, .1, .04, 2, .008), gm.wood, 0, -.02, 0);
+  const l = new THREE.Group(); l.position.set(-.004, .03, -.18); l.rotation.x = -.1; g.add(l); part(l, new RoundedBoxGeometry(.03, .09, .04, 2, .008), gm.wood, 0, -.02, 0);
+  part(g, Bx(.04, .05, .1), b, -.048, .09, .1);                                                  // battery box
+  part(g, Bx(.01, .06, .012), gm.blued, .045, .15, -.35); part(g, Bx(.01, .03, .012), gm.blued, .045, .14, .2);   // sights
+  part(g, Cz(.03, .03, .2, 10), gm.gren, 0, .1, -.95);                                           // rocket nose showing at the muzzle
+  return g;
+}
+const FALLBACK = { thompson: buildThompson, garand: buildGarand, bar: buildBAR, bazooka: buildBazooka, machete: buildKnife, revolver: buildPistol, sten: buildSMG, rifle: buildRifle, grenade: buildGrenade, flamer: buildFlamer, welrod: buildWelrod, delisle: buildDeLisle };
 // view-model layout per weapon (camera space): FBX models are real size, barrel along -Z
 const VMCFG = {
   machete: { pos: [.16, -.16, -.5], rot: [-.1, .2, -.3], muzzle: [0, 0, -.27], rh: { p: [0, -.005, .2], r: [0, 0, 0], e: [.08, -.25, .62] } },
@@ -4008,6 +4292,10 @@ const VMCFG = {
   grenade: { pos: [.17, -.15, -.42], rot: [-.4, .25, -.15], muzzle: [0, 0, -.15], rh: { p: [0, 0, .06], r: [0, 0, 0], e: [.08, -.28, .45] } },
   welrod: { pos: [.14, -.13, -.42], rot: [.02, .1, -.03], ads: { pos: [0, -.021, -.46], rot: [0, 0, 0] }, muzzle: [0, 0, -.258] },
   delisle: { pos: [.12, -.14, -.36], rot: [0, .03, 0], muzzle: [0, .069, -.635] },
+  thompson: { pos: [.14, -.185, -.47], rot: [0, .03, 0], muzzle: [0, .046, -.42] },
+  garand: { pos: [.13, -.175, -.43], rot: [0, .03, 0], muzzle: [0, .07, -.64] },
+  bar: { pos: [.13, -.18, -.43], rot: [0, .03, 0], muzzle: [0, .075, -.8] },
+  bazooka: { pos: [.2, -.25, -.34], rot: [0, .06, 0], muzzle: [0, .1, -.92] },
   flamer: { pos: [.11, -.19, -.45], rot: [0, .03, 0], muzzle: [0, .07, -.5], rh: { p: [0, -.06, .1], r: [-.3, 0, 0], e: [.13, -.3, .5] }, lh: { p: [-.01, -.03, -.16], r: [.1, 0, .3], e: [-.24, -.3, .25], left: true } }
 };
 const WEAPONS = [
@@ -4019,9 +4307,14 @@ const WEAPONS = [
   { id: 'flamer', name: 'PLAMENOMET', ammo: 'fuel', flame: true, rate: .06, dmg: 5, fbx: 'flamer', owned: false },
   // silent weapons: no muzzle flash, only guards right next to you hear the shot
   { id: 'welrod', name: 'WELROD Mk I', ammo: 'smg', mag: 6, clip: 0, reload: 2.6, dmg: 60, rate: .85, auto: false, spread: .008, kick: .035, snd: 'welrod', fbx: 'welrod', owned: false, sup: true, quiet: 3 },
-  { id: 'delisle', name: 'DE LISLE (T)', ammo: 'acp', mag: 8, clip: 0, reload: 2.8, dmg: 110, rate: 1.2, auto: false, spread: .002, kick: .07, snd: 'delisle', fbx: 'delisle', owned: false, scope: true, sup: true, quiet: 4 }
+  { id: 'delisle', name: 'DE LISLE (T)', ammo: 'acp', mag: 8, clip: 0, reload: 2.8, dmg: 110, rate: 1.2, auto: false, spread: .002, kick: .07, snd: 'delisle', fbx: 'delisle', owned: false, scope: true, sup: true, quiet: 4 },
+  // American: a Thompson from an SOE container, and US arms the Wehrmacht tested at Wolfsgrund
+  { id: 'thompson', name: 'THOMPSON M1A1', ammo: 'acp', mag: 30, clip: 0, reload: 2.4, dmg: 19, rate: .086, auto: true, spread: .026, kick: .03, snd: 'thompson', fbx: 'thompson', owned: false, us: true },
+  { id: 'garand', name: 'M1 GARAND', ammo: 'g30', mag: 8, clip: 0, reload: 2.1, dmg: 72, rate: .2, auto: false, spread: .006, kick: .11, snd: 'garand', fbx: 'garand', owned: false, us: true, ping: true },
+  { id: 'bar', name: 'BAR M1918A2', ammo: 'g30', mag: 20, clip: 0, reload: 2.9, dmg: 44, rate: .12, auto: true, spread: .02, kick: .055, snd: 'bar', fbx: 'bar', owned: false, us: true },
+  { id: 'bazooka', name: 'BAZUKA M1 (prototyp)', ammo: 'rocket', mag: 1, clip: 0, reload: 3.1, dmg: 170, rate: 1, auto: false, spread: .004, kick: .22, snd: 'bazooka', fbx: 'bazooka', owned: false, us: true, rocket: true }
 ];
-const AMMO_MAX = { pistol: 72, smg: 256, rifle: 60, gren: 8, fuel: 300, acp: 48 };
+const AMMO_MAX = { pistol: 72, smg: 256, rifle: 60, gren: 8, fuel: 300, acp: 180, g30: 120, rocket: 8 };
 const vmRoot = new THREE.Group(); vmScene.add(vmRoot);
 let vmMats = [];
 // screw-on suppressors (revolver: Nagant-style can, Sten Mk IIS-style sleeve, rifle: De Lisle-style can)
@@ -4081,7 +4374,7 @@ const GRIPS = {
   welrod: { R: { p: [0, -.064, .036], r: .016, t: [0, -.043, -.012], a: [0, 1, -.2], f: [-.05, .2, -1], c: { fingers: TRIG.fingers, th: [.02, .0, .07] } } },
   flamer: { R: { p: [0, -.024, .25], r: .015, a: [0, 1, -.35], f: [-.05, .3, -1], c: TRIG }, L: { p: [0, .046, -.11], r: .016, a: [0, .05, -1], f: [1, .45, .1], c: SUPPORT } }
 };
-GRIPS.delisle = GRIPS.rifle; // same Lee-Enfield stock and fore-end under the can
+GRIPS.delisle = GRIPS.rifle; GRIPS.garand = GRIPS.bar = { R: { ...GRIPS.rifle.R, p: [0, .02, .23] }, L: { ...GRIPS.rifle.L, p: [0, .04, -.24] } }; GRIPS.thompson = GRIPS.bazooka = GRIPS.sten; // same Lee-Enfield stock and fore-end under the can
 const ARM_ROOT = [0, -.165, .06], ARM_SCALE = 1.2, ARM_YAW = -.4; // bladed shooting stance: left shoulder forward; long arms to reach the fore-ends
 const HAND_K = .8; // ...but real-sized hands (1.2 × .8 ≈ 0.96)
 let PALM_F = .09;
@@ -4241,13 +4534,13 @@ pilotSprite.visible = false; pilotSprite.scale.set(.02, .04, 1); vmScene.add(pil
 const goldMat = new THREE.MeshLambertMaterial({ color: new THREE.Color(1, .78, .3), emissive: new THREE.Color(.18, .12, 0) });
 const chaliceG = new THREE.LatheGeometry([[0, 0], [.13, 0], [.13, .02], [.05, .045], [.03, .1], [.055, .13], [.028, .16], [.035, .2], [.11, .25], [.14, .36], [.13, .365], [.1, .27], [0, .24]].map(([x, y]) => new THREE.Vector2(x, y)), 10);
 const DOC_NAMES = { plans: 'Plány operace Finsternis jsou tvoje', diary: 'Deník dr. Zemana', mapa: 'Mapa spojky – cesta k trati', jizdni: 'Jízdní řád transportů do Wolfsgrundu', list: 'Nákladní list zvláštního vlaku', propustka: 'Propustka do podzemí', vzorky: 'Zemanovy vzorky séra' };
-const PICK_NAMES = { q: 'Náboje .45 ACP', h: 'Lékárnička +25', H: 'Velká lékárnička +50', f: 'Jídlo +10', v: 'Neprůstřelná vesta', a: 'Bedna munice', p: 'Náboje do revolveru', s: 'Zásobníky 9 mm', r: 'Náboje .303', n: 'Stielhandgranate ×2', u: 'Palivo do plamenometu' };
+const PICK_NAMES = { q: 'Náboje .45 ACP', h: 'Lékárnička +25', H: 'Velká lékárnička +50', f: 'Jídlo +10', v: 'Neprůstřelná vesta', a: 'Bedna munice', p: 'Náboje do revolveru', s: 'Zásobníky 9 mm', r: 'Náboje .303', n: 'Stielhandgranate ×2', u: 'Palivo do plamenometu', m: 'Klipy .30-06', b: 'Rakety do bazuky ×2' };
 function makePickupMesh(kind) {
   const g = new THREE.Group(), mats = [];
   const M = (opts) => { const m = new THREE.MeshLambertMaterial(opts); mats.push(m); return m; };
   const k0 = kind[0];
   if (kind.startsWith('W:')) {
-    const name = { sten: 'sten', rifle: 'rifle', flamer: 'flamer', welrod: 'welrod', delisle: 'delisle' }[kind.slice(2)];
+    const name = { sten: 'sten', rifle: 'rifle', flamer: 'flamer', welrod: 'welrod', delisle: 'delisle', thompson: 'thompson', garand: 'garand', bar: 'bar', bazooka: 'bazooka' }[kind.slice(2)];
     const w = fbxClone(name, mats) || (() => { const f = FALLBACK[name](); f.traverse(o => { if (o.isMesh) { o.material = o.material.clone(); mats.push(o.material); } }); return f; })();
     w.rotation.set(0, Math.PI / 2, Math.PI / 2 * .0); w.position.y = .12; g.add(w);
   }
@@ -4256,7 +4549,8 @@ function makePickupMesh(kind) {
   else if (k0 === 'h' || k0 === 'H') { const s = k0 === 'H' ? 1.4 : 1; part(g, Bx(.5 * s, .28 * s, .35 * s), M({ map: TX.medkit }), 0, .14 * s, 0); }
   else if (k0 === 'f') { const r = Math.random(); const plate = M({ color: new THREE.Color(.75, .72, .66) }); part(g, Cyl(.2, .17, .03, 14), plate, 0, .015, 0); if (r < .33) part(g, new THREE.SphereGeometry(.12, 8, 6), M({ color: new THREE.Color(.75, .5, .25) }), 0, .09, 0).scale.set(1.5, .7, 1); else if (r < .66) { const s = M({ color: new THREE.Color(.55, .2, .14) }); for (let i = 0; i < 2; i++) part(g, new THREE.CapsuleGeometry(.03, .16, 3, 6), s, i * .07 - .035, .05, 0, 0, 0, Math.PI / 2); } else part(g, new THREE.CylinderGeometry(.11, .11, .09, 3), M({ color: new THREE.Color(.95, .8, .35) }), 0, .07, 0); }
   else if (k0 === 'v') { const m = M({ map: TX.cloth, color: new THREE.Color(.55, .58, .45) }); part(g, Bx(.46, .06, .36), m, 0, .04, 0); part(g, Bx(.3, .06, .2), m, 0, .09, -.05); }
-  else if ('aprsq'.includes(k0)) { const m = M({ map: TX.ammo }); part(g, Bx(.46, .26, .28), m, 0, .13, 0); if (k0 === 'a') part(g, Bx(.3, .18, .2), m, .05, .35, 0, 0, .5); }
+  else if (k0 === 'b') { const m = M({ color: new THREE.Color(.3, .34, .26) }); for (let i = 0; i < 2; i++) { part(g, Cyl(.03, .03, .4, 8), m, i * .09 - .045, .05, 0, Math.PI / 2, 0, 0); part(g, new THREE.ConeGeometry(.03, .1, 8), m, i * .09 - .045, .05, -.25, -Math.PI / 2, 0, 0); } }
+  else if ('aprsqm'.includes(k0)) { const m = M({ map: TX.ammo }); part(g, Bx(.46, .26, .28), m, 0, .13, 0); if (k0 === 'a') part(g, Bx(.3, .18, .2), m, .05, .35, 0, 0, .5); }
   else if (k0 === 'u') { const m = M({ map: TX.fuel }); part(g, Bx(.34, .46, .16), m, 0, .23, 0); part(g, Cyl(.03, .03, .08, 6), M({ color: new THREE.Color(.3, .3, .3) }), .1, .49, 0); }
   else if (k0 === 'n') { const w = M({ map: TX.floorwood, color: new THREE.Color(.9, .7, .5) }), mt = M({ color: new THREE.Color(.3, .34, .26) }); for (let i = 0; i < 2; i++) { part(g, new THREE.CylinderGeometry(.012, .012, .22, 6), w, i * .12 - .06, .03, 0, 0, 0, Math.PI / 2); part(g, new THREE.CylinderGeometry(.034, .034, .09, 8), mt, i * .12 - .06 + .14, .034, 0, 0, 0, Math.PI / 2); } }
   else if (k0 === 'g') {
@@ -4718,10 +5012,10 @@ const vm = { recoil: 0, swayX: 0, swayY: 0, switchT: 0, pending: -1, flashT: 0, 
 const after = (t, fn) => timers.push({ t, fn });
 function newLoadout() {
   WEAPONS.forEach((w, i) => { w.owned = i === 0 || i === 1 || i === 4; if (w.mag) w.clip = i === 1 ? w.mag : 0; });
-  player.ammo = { pistol: 30, smg: 0, rifle: 0, gren: 3, fuel: 0, acp: 0 }; player.armor = 0; player.score = 0; player.weapon = 1; player.keys = new Set(); player.supKit = false;
+  player.ammo = { pistol: 30, smg: 0, rifle: 0, gren: 3, fuel: 0, acp: 0, g30: 0, rocket: 0 }; player.armor = 0; player.score = 0; player.weapon = 1; player.keys = new Set(); player.supKit = false;
 }
 function snapshotLoadout() { game.snapshot = { owned: WEAPONS.map(w => w.owned), clip: WEAPONS.map(w => w.clip || 0), sup: WEAPONS.map(w => !!w.sup), ammo: { ...player.ammo }, armor: player.armor, score: player.score, weapon: player.weapon, supKit: !!player.supKit }; }
-function restoreLoadout() { const s = game.snapshot; if (!s) return newLoadout(); WEAPONS.forEach((w, i) => { w.owned = !!s.owned[i]; if (w.mag) w.clip = s.clip[i] || 0; }); player.ammo = { acp: 0, ...s.ammo }; player.armor = s.armor; player.score = s.score; player.supKit = !!s.supKit; player.weapon = WEAPONS[s.weapon].owned ? s.weapon : 1; }
+function restoreLoadout() { const s = game.snapshot; if (!s) return newLoadout(); WEAPONS.forEach((w, i) => { w.owned = !!s.owned[i]; if (w.mag) w.clip = s.clip[i] || 0; }); player.ammo = { acp: 0, g30: 0, rocket: 0, ...s.ammo }; player.armor = s.armor; player.score = s.score; player.supKit = !!s.supKit; player.weapon = WEAPONS[s.weapon].owned ? s.weapon : 1; }
 function placePlayerAtStart() {
   const [sx, sz, syaw] = LV.start, p = C(sx, sz);
   Object.assign(player, { yaw: syaw, pitch: 0, recoilPitch: 0, vy: 0, onGround: true, hp: 100, stamina: 100, crouch: 0, crouchOn: false, lean: 0, kills: 0, treasure: 0, fireT: 0, reloadT: 0, shake: 0, dmgFlash: 0, burn: 0, dead: false, time: 0, queued: false, zoom: false, fallV: 0 });
@@ -4746,7 +5040,7 @@ function resetLevelState() {
   timers.length = 0; vm.pending = -1; vm.switchT = 0; vm.actT = 0; logLines.length = 0;
   for (const o of LV.objectives) { o.done = false; o.n = 0; }
   game.alarmed = false; game.detections = 0; game.bossE = enemies.find(e => e.T.boss) || null;
-  restoreLoadout(); placePlayerAtStart(); sfx.flame(false);
+  restoreLoadout(); placePlayerAtStart(); sfx.flame(false); trainReset();
 }
 
 /* ---------- HUD ---------- */
@@ -4886,6 +5180,7 @@ function fire() {
   if (w.scope) { vm.act = 'bolt'; vm.actT = .9; }
   if (w.id === 'welrod') { vm.act = 'cycle'; vm.actT = .8; }
   if (w.id === 'revolver') { vm.act = 'hammer'; vm.actT = .25; }
+  if (w.ping && w.clip === 0) after(.12, () => sfx.play('ping'));   // the en-bloc clip flies out
   muzzleSprite.material.rotation = Math.random() * 6.28;
   const d0 = camFwd(), right = V(1, 0, 0).applyQuaternion(camera.quaternion), up = V(0, 1, 0).applyQuaternion(camera.quaternion);
   if (!sup) { DL.pos[0].copy(camera.position).addScaledVector(d0, .8); DL.col[0].setRGB(1.6, 1.15, .55); DL.rad[0] = 9; dynFlash.position.copy(DL.pos[0]); dynFlash.intensity = 6; }
@@ -4896,6 +5191,13 @@ function fire() {
   const hit = rayWorld(o, d, 140);
   let best = null, bt = hit.t;
   for (const e of enemies) { if (e.state === 'dead') continue; const r = rayEnemy(o, d, e); if (r && r.t < bt) { bt = r.t; best = { e, head: r.head }; } }
+  if (w.rocket) {   // the rocket flies (fast) and bursts on whatever it meets
+    const pt = o.clone().addScaledVector(d, Math.min(bt, 140) - .25), dist = o.distanceTo(pt), from = vmMuzzleWorld();
+    for (let i = 0; i < 26; i++) { const k = i / 26; smoke.spawn(from.clone().lerp(pt, k), rand(-.2, .2), .3, rand(-.2, .2), .5, .48, .45, .5, 1.6 + Math.random(), -.2, 1, 1.4); }
+    for (let i = 0; i < 14; i++) smoke.spawn(camera.position.clone().addScaledVector(d, -1.2), rand(-1, 1), rand(0, 1), rand(-1, 1), .55, .52, .5, .8, 1.2, -.3, 1, 1.6);   // back-blast
+    after(Math.min(.6, dist / 85), () => { if (best && best.e.state !== 'dead') damageEnemy(best.e, w.dmg, _v2.set(d.x, 0, d.z).normalize()); explosion(pt, 5.5, 150); });
+    wakeNearby(45); return;
+  }
   if (best) {
     const pt = o.clone().addScaledVector(d, bt);
     damageEnemy(best.e, w.dmg * (sup ? .92 : 1) * (best.head ? (best.e.T.boss ? 1.4 : 2.6) : 1) * (.85 + Math.random() * .3), _v2.set(d.x, 0, d.z).normalize(), { silent: sup });
@@ -5272,6 +5574,8 @@ function updatePickups(dt) {
       if (!w.owned) { w.owned = true; if (w.mag) w.clip = w.mag; log(`Máš novou zbraň: ${w.name}`); sfx.play('weapon'); switchWeapon(wi); }
       else log(`${w.name}: munice`);
       if (id === 'welrod') A.smg = Math.min(AMMO_MAX.smg, A.smg + 18); if (id === 'delisle') A.acp = Math.min(AMMO_MAX.acp, A.acp + 16);
+      if (w.us && !w.seen) { w.seen = true; log(id === 'thompson' ? 'Americký samopal z kontejneru SOE' : 'Ukořistěná americká zbraň z výzkumu Wolfsgrund'); }
+      if (id === 'thompson') A.acp = Math.min(AMMO_MAX.acp, A.acp + 60); if (id === 'garand') A.g30 = Math.min(AMMO_MAX.g30, A.g30 + 24); if (id === 'bar') A.g30 = Math.min(AMMO_MAX.g30, A.g30 + 40); if (id === 'bazooka') A.rocket = Math.min(AMMO_MAX.rocket, A.rocket + 3);
       if (id === 'sten') A.smg = Math.min(AMMO_MAX.smg, A.smg + 64); if (id === 'rifle') A.rifle = Math.min(AMMO_MAX.rifle, A.rifle + 20); if (id === 'flamer') A.fuel = Math.min(AMMO_MAX.fuel, A.fuel + 150);
       took = true;
     }
@@ -5282,8 +5586,10 @@ function updatePickups(dt) {
       case 'H': if (player.hp < 100) { player.hp = Math.min(100, player.hp + 50); log(PICK_NAMES.H); took = true; } break;
       case 'f': if (player.hp < 100) { player.hp = Math.min(100, player.hp + 10); log(PICK_NAMES.f); sfx.play('eat'); took = true; } break;
       case 'v': if (player.armor < 100) { player.armor = Math.min(100, player.armor + 50); log(PICK_NAMES.v); took = true; } break;
-      case 'q': if (A.acp < AMMO_MAX.acp) { A.acp = Math.min(AMMO_MAX.acp, A.acp + 8); log(PICK_NAMES.q); took = true; } break;
-      case 'a': if (WEAPONS[7].owned) A.acp = Math.min(AMMO_MAX.acp, A.acp + 8); A.pistol = Math.min(AMMO_MAX.pistol, A.pistol + 12); A.smg = Math.min(AMMO_MAX.smg, A.smg + 32); if (WEAPONS[3].owned) A.rifle = Math.min(AMMO_MAX.rifle, A.rifle + 10); if (WEAPONS[5].owned) A.fuel = Math.min(AMMO_MAX.fuel, A.fuel + 40); log(PICK_NAMES.a); took = true; break;
+      case 'q': if (A.acp < AMMO_MAX.acp) { A.acp = Math.min(AMMO_MAX.acp, A.acp + (WEAPONS[8].owned ? 30 : 8)); log(PICK_NAMES.q); took = true; } break;
+      case 'm': if (A.g30 < AMMO_MAX.g30) { A.g30 = Math.min(AMMO_MAX.g30, A.g30 + 16); log(PICK_NAMES.m); took = true; } break;
+      case 'b': if (A.rocket < AMMO_MAX.rocket) { A.rocket = Math.min(AMMO_MAX.rocket, A.rocket + 2); log(PICK_NAMES.b); took = true; } break;
+      case 'a': if (WEAPONS[7].owned || WEAPONS[8].owned) A.acp = Math.min(AMMO_MAX.acp, A.acp + (WEAPONS[8].owned ? 30 : 8)); if (WEAPONS[9].owned || WEAPONS[10].owned) A.g30 = Math.min(AMMO_MAX.g30, A.g30 + 16); if (WEAPONS[11].owned) A.rocket = Math.min(AMMO_MAX.rocket, A.rocket + 1); A.pistol = Math.min(AMMO_MAX.pistol, A.pistol + 12); A.smg = Math.min(AMMO_MAX.smg, A.smg + 32); if (WEAPONS[3].owned) A.rifle = Math.min(AMMO_MAX.rifle, A.rifle + 10); if (WEAPONS[5].owned) A.fuel = Math.min(AMMO_MAX.fuel, A.fuel + 40); log(PICK_NAMES.a); took = true; break;
       case 'p': if (A.pistol < AMMO_MAX.pistol) { A.pistol = Math.min(AMMO_MAX.pistol, A.pistol + 12); log(PICK_NAMES.p); took = true; } break;
       case 's': if (A.smg < AMMO_MAX.smg) { A.smg = Math.min(AMMO_MAX.smg, A.smg + 24); log(PICK_NAMES.s); took = true; } break;
       case 'r': if (A.rifle < AMMO_MAX.rifle) { A.rifle = Math.min(AMMO_MAX.rifle, A.rifle + 8); log(PICK_NAMES.r); took = true; } break;
@@ -5378,7 +5684,7 @@ let stepPhase = 0;
 function updatePlayer(dt) {
   const s = Math.sin(player.yaw), c = Math.cos(player.yaw);
   let ix = 0, iz = 0;
-  if (keys.KeyW || keys.ArrowUp) { ix -= s; iz -= c; } if (keys.KeyS || keys.ArrowDown) { ix += s; iz += c; }
+  if (!TRAIN.drv) { if (keys.KeyW || keys.ArrowUp) { ix -= s; iz -= c; } if (keys.KeyS || keys.ArrowDown) { ix += s; iz += c; } }   // on the footplate W/S work the regulator and brake
   if (keys.KeyD || keys.ArrowRight) { ix += c; iz -= s; } if (keys.KeyA || keys.ArrowLeft) { ix -= c; iz += s; }
   // C crouches (toggle or hold, see settings; not Ctrl: Ctrl+W closes the browser tab); sprint or jump stands you up
   if (player.crouchOn && (keys.ShiftLeft || keys.ShiftRight) && (ix || iz)) player.crouchOn = false;
@@ -5434,7 +5740,7 @@ function updatePlayer(dt) {
   let pr = '';
   const ex = exits.find(ex => Math.hypot(P.x - ex.pos.x, P.z - ex.pos.z) < 2.6 && Math.abs(P.y - ex.pos.y) < 2);
   if (ex) pr = objectivesDone() ? `[F]  ${ex.text}` : 'NEJDŘÍV SPLŇ ÚKOLY MISE  (TAB)';
-  else if (nearCharge()) pr = nearCharge().kind === 'lever' ? '[F]  PŘESTAVIT VÝHYBKU' : '[F]  POLOŽIT NÁLOŽ';
+  else if (nearCharge()) pr = { lever: '[F]  PŘESTAVIT VÝHYBKU', regulator: '[F]  PŘEVZÍT ŘÍZENÍ LOKOMOTIVY' }[nearCharge().kind] || '[F]  POLOŽIT NÁLOŽ';
   else { const d = lookDoor(); if (d && doorLocked(d) && d.target === 0) pr = player.keys.has(d.lock) ? '[F]  ODEMKNOUT' : `ZAMČENO — POTŘEBUJEŠ: ${d.lockName.toUpperCase()}`; }
   setPrompt(pr);
   player.time += dt;
@@ -5447,7 +5753,7 @@ function lookDoor() {
 function useAction() {
   const ex = exits.find(ex => Math.hypot(player.pos.x - ex.pos.x, player.pos.z - ex.pos.z) < 2.6 && Math.abs(player.pos.y - ex.pos.y) < 2);
   if (ex) { if (objectivesDone()) { completeObjective('exit'); win(); } else { sfx.play('locked'); game.objT = 4; } return; }
-  const ch = nearCharge(); if (ch) { if (ch.kind === 'lever') pullLever(ch); else plantCharge(ch); return; }
+  const ch = nearCharge(); if (ch) { if (ch.kind === 'lever') pullLever(ch); else if (ch.kind === 'regulator') takeTrain(ch); else plantCharge(ch); return; }
   const best = lookDoor(); if (!best) return;
   if (doorLocked(best)) { if (player.keys.has(best.lock)) { best.unlocked = true; log('Odemčeno'); sfx.play('switch'); flowCell = -1; MM.dirty = true; } else { sfx.play('locked'); log(`Zamčeno — potřebuješ: ${best.lockName}`); return; } }
   if (best.target === 1) { const inPassage = Math.hypot(player.pos.x - best.c.x, player.pos.z - best.c.z) < 1.4 || enemies.some(e => e.state !== 'dead' && Math.hypot(e.x - best.c.x, e.z - best.c.z) < 1.4); if (!inPassage) best.target = 0; }
@@ -5458,6 +5764,8 @@ function useAction() {
    VOICE-OVER — Piper neural TTS clips (assets/voices.js): cutscene dialogue with subtitles, German barks of the guards
    ===================================================================== */
 const VOX_SUB = {bj_01: ['bj', "Tady Orel. Jsem na místě. Hrad Grimhold je hned za hřebenem."], lon_01: ['lon', "Rozumím, Orle. Buďte opatrný. Hory jsou plné hlídek."], off_01: ['offA', "Ruce vzhůru! Ani hnout!"], off_02: ['off', "Americký špion. Úplně sám v našich horách."], bj_02: ['bj', "Jen jsem si tu sbíral houby."], off_03: ['offM', "Doktor bude mít radost. Odveďte ho na Grimhold!"], grd_01: ['grd', "Vstávej, Amíku! Doktor tě chce vidět."], bj_03: ['bj', "Doktor si bude muset počkat."], bj_04: ['bj', "Revolver a klíče. A teď ven z téhle díry."], bj_05: ['bj', "Londýne, tady Orel. Jsem venku z Grimholdu. Mám plány i Zemanův deník."], lon_02: ['lon', "Výborně, Orle. A co je v tom deníku?"], bj_06: ['bj', "Wolfsgrund. Podzemní továrna, kam vede jen železnice. Tam stavějí Finsternis."], lon_03: ['lon', "Pak tam musíte vy. Spojka odboje na vás čeká v hájovně nad údolím. Hodně štěstí."], bj_07: ['bj', "Štěstí si nechte, plukovníku. Mně stačí náboje."], zem_01: ['zem', "Übersoldat Mk II je připraven, Standartenführere. Stačí ho jen probudit."], off_04: ['off', "A rakety, pane doktore?"], zem_02: ['zem', "Za tři dny poletí první na Londýn."], bj_08: ['bj', "Za tři dny. To mám času dost."], lon_04: ['lon', "Orle, tady Londýn. Slyšíte nás? Seismografy ve Švýcarsku právě zaznamenaly zemětřesení."], bj_09: ['bj', "To nebylo zemětřesení, Londýne. To byl Wolfsgrund. Operace Finsternis skončila."], lon_05: ['lon', "Skvělá práce, Orle. Je čas vrátit se domů."], bj_10: ['bj', "Domů. To zní dobře."], zem_03: ['zem', "Stráže! Zastavte ho!"], bj_obj1: ['bj', "Mám to."], bj_obj2: ['bj', "Další odškrtnuto."], bj_obj3: ['bj', "Tohle se bude v Londýně hodit."]};
+// v1.4 transition lines, and subtitles that come with a regenerated voices.js (tools/make_voices_neural.py)
+Object.assign(VOX_SUB, { bj_t1: ['bj', 'Z kobek jsem venku. Teď štáb SS – a plány operace Finsternis.'], bj_t2: ['bj', 'Plány mám. Zeman a jeho laboratoř jsou někde pod kaplí.'], bj_t3: ['bj', 'Podle mapy: lesní tábor, pak trať. Žádné světlo, žádný hluk.'], bj_t4: ['bj', 'Odtud jede zvláštní vlak. Bez čísla a bez cíle v papírech.'], bj_t5: ['bj', 'Jsem uvnitř. Teď dopředu, vagon po vagonu – až k lokomotivě.'], bj_t6: ['bj', 'Sto metrů pod horou. Tady stavějí Finsternis.'], bj_t7: ['bj', 'Doktore Zemane. Konečně se poznáme.'] }, window.CASTLE_VOX_SUB || {});
 const SPEAKER = { bj: 'B. J.', lon: 'Londýn (vysílačka)', off: 'Důstojník SS', offA: 'Důstojník SS', offM: 'Důstojník SS', grd: 'Strážný', zem: 'Dr. Zeman' };
 const BARK_N = { sus: 4, alert: 4, body: 2, lost: 3 };
 const vox = {
@@ -5474,6 +5782,7 @@ const vox = {
     const b = this.bufs[id]; if (!b || !sfx.ctx || sfx.muted) return b ? b.duration : 2.5;
     const C2 = sfx.ctx, s = C2.createBufferSource(), g = C2.createGain(); s.buffer = b; g.gain.value = vol * 1.6;
     s.connect(g); if (pos) { const o = sfx.out(pos, 1); g.connect(o); } else g.connect(sfx.master);
+    if (!pos && sfx.verb && !(VOX_SUB[id] && VOX_SUB[id][0] === 'lon')) { const rv = C2.createGain(); rv.gain.value = .22; g.connect(rv); rv.connect(sfx.verb); }   // a little of the room around the voice
     s.start(); this.cur.push(s); s.onended = () => { this.cur = this.cur.filter(x => x !== s); };
     if (VOX_SUB[id] && VOX_SUB[id][0] === 'lon') { const n = C2.createBufferSource(); n.buffer = sfx.noise; const f = C2.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1800; f.Q.value = .8; const ng = C2.createGain(); ng.gain.value = .035; n.connect(f); f.connect(ng); ng.connect(sfx.master); n.start(); n.stop(C2.currentTime + b.duration + .1); this.cur.push(n); sfx.click(sfx.master, 0, 2500, .25); sfx.click(sfx.master, b.duration, 2500, .25); }
     return b.duration;
@@ -5804,7 +6113,68 @@ function csBoom(p, s = 1) {
   sfx.play('explode', null, .9 + .4 * s);
 }
 // which scenes open which mission
-const MISSION_CS = { m1: { pre: 'capture', main: 'cell' }, e2m1: { main: 'cablecar' }, e3m1: { main: 'ramp' } };
+/* ---------- transitions: a short scene at the start of every mission shows how B. J. got there ----------
+   walk: he comes into the level from where the last mission ended; lift: a cage brings him down; train: he swings
+   aboard the moving special train. Lines without a recorded clip are shown as subtitles only. */
+function csLine(id, text, who) {
+  if (window.CASTLE_VOX && window.CASTLE_VOX[id] && VOX_SUB[id]) return csSay(id, who);
+  const el = $('csub'); el.innerHTML = `<b>B. J.</b>${text}`; el.style.opacity = 1; CS.subUntil = CS.t + Math.max(3, text.length * .065); if (who) who.talkT = 2; return 3;
+}
+function csCamSafe(target, want) {   // pull the camera in until it sees the target; in tight corridors try other angles round him
+  const fit = w => { for (let k = 1; k > .15; k -= .06) { const p = target.clone().lerp(w, k); const cx = toCell(p.x), cz = toCell(p.z); if (inside(cx, cz) && roomAt[cidx(cx, cz)] !== -1 && p.y < topAt(p.x, p.z) - .2 && losClear(target.x, target.y, target.z, p.x, p.y, p.z)) return [k * target.distanceTo(w), p]; } return [0, null]; };
+  let best = fit(want); if (best[0] > 2.2) return best[1];
+  const d = want.clone().sub(target);
+  for (const a of [.6, -.6, 1.2, -1.2, 2, -2, Math.PI]) { const w = target.clone().add(d.clone().applyAxisAngle(UP, a)); const r = fit(w); if (r[0] > best[0]) best = r; if (best[0] > 2.2) break; }
+  return best[1] || target.clone().lerp(want, .15);
+}
+function transitionCS(o) {
+  return {
+    dur: o.dur || 10.5, lines: o.line ? [o.line[0]] : [],
+    setup(A) {
+      const [sx, sz, syaw] = LV.start, p = C(sx, sz), f = V(-Math.sin(syaw), 0, -Math.cos(syaw)), side = V(f.z, 0, -f.x);
+      A.p = p; A.f = f; A.y0 = p.y;
+      const walk = o.kind === 'lift' ? 2.2 : o.kind === 'train' ? 3 : 5.5;
+      A.end = p.clone().addScaledVector(f, walk); if (!roomOf(toCell(A.end.x), toCell(A.end.z)) || Math.abs(floorAt(A.end.x, A.end.z) - p.y) > .4) A.end = p.clone();
+      A.bj = csActor('bj', p.x, p.z, syaw, { gun: true, speed: 1.5 });
+      if (o.kind === 'lift') {   // a works lift cage: steel frame, mesh sides, a lamp; it brings him down from 12 m
+        A.lift = new THREE.Group(); levelRoot.add(A.lift); const m = new THREE.MeshLambertMaterial({ color: new THREE.Color(.28, .29, .3) }), lamp = new THREE.MeshBasicMaterial({ color: new THREE.Color(1.5, 1.2, .7) });
+        for (const a of [-1, 1]) for (const b of [-1, 1]) part(A.lift, Bx(.12, 2.8, .12), m, a * 1.2, 1.4, b * 1.2);
+        part(A.lift, Bx(2.6, .12, 2.6), m, 0, .02, 0); part(A.lift, Bx(2.6, .12, 2.6), m, 0, 2.8, 0); part(A.lift, Bx(.3, .2, .3), lamp, 0, 2.65, 0);
+        for (let i = -1; i <= 1; i += .25) for (const s of [-1, 1]) { part(A.lift, Bx(.03, 2.6, .03), m, i * 1.2, 1.4, s * 1.2); part(A.lift, Bx(.03, 2.6, .03), m, s * 1.2, 1.4, i * 1.2); }
+        part(A.lift, Bx(.06, 40, .06), m, .4, 22, 0); part(A.lift, Bx(.06, 40, .06), m, -.4, 22, 0);
+        A.lift.position.copy(p); A.bj.fixedY = p.y + 12; A.lift.position.y = p.y + 12;
+      } else if (o.kind === 'train') { A.bj.x -= 1.2; }
+      const head = () => V(A.bj.x, A.bj.y + 1.5, A.bj.z);
+      const wide = o.kind === 'train' ? V(p.x + 9, 3.4, p.z - 9) : csCamSafe(V(p.x, p.y + 1.6, p.z), p.clone().addScaledVector(f, 9).addScaledVector(side, 4).setY(p.y + (o.kind === 'lift' ? 6 : 4.5)));   // the train is seen from the trackside
+      const close = csCamSafe(V(A.end.x, A.end.y + 1.6, A.end.z), A.end.clone().addScaledVector(f, 2.6).addScaledVector(side, -1.4).setY(A.end.y + 1.65));
+      const L = A.end.clone().setY(A.end.y + 1.4);
+      CS.cam = [[0, wide.x, wide.y, wide.z, L.x, L.y, L.z], [5.5, wide.x, wide.y - .4, wide.z, L.x, L.y, L.z], [5.51, close.x, close.y, close.z, L.x, L.y, L.z], [o.dur || 10.5, close.x, close.y, close.z, L.x, L.y, L.z]];
+      CS.look = () => head();
+    },
+    tick(cs, dt) {
+      const A = cs.A;
+      if (A.lift) { const k = clamp((cs.t - .6) / 5, 0, 1), e = 1 - Math.pow(1 - k, 2.2), y = A.p.y + 12 * (1 - e); A.lift.position.y = y; A.bj.fixedY = y + .08; if (k >= 1 && !A.landed) { A.landed = true; sfx.play('clang', A.p, 1.2); sfx.play('stomp', A.p, .8); A.bj.fixedY = undefined; A.bj.walkTo = { x: A.end.x, z: A.end.z }; } }
+      if (TRAIN.on) { TRAIN.dist += TRAIN.speed * dt; if (TRAIN.scroll) TRAIN.scroll.position.x = -(TRAIN.dist % TRAIN.period); if (TRAIN.chimney && Math.random() < dt * 14) smoke.spawn(TRAIN.chimney, -TRAIN.speed * .55, 2.4, 0, .26, .25, .24, 1.2, 3.5, -.15, 1, 2.4); }
+    },
+    ev: [
+      [0, () => { csFade(1, .01); setTimeout(() => csFade(0, 1.4), 50); csTitle(LV.name, o.title || LV.sub.toUpperCase(), 4.2); }],
+      [.8, (A) => { if (!A.lift) A.bj.walkTo = { x: A.end.x, z: A.end.z }; if (o.kind === 'train') sfx.play('jump', A.p, 1); }],
+      [o.lineAt || 5.8, (A) => { if (o.line) csLine(o.line[0], o.line[1], A.bj); }],
+      [(o.dur || 10.5) - .9, () => csFade(1, .8)]
+    ],
+    end(cs) { const e = cs.A.end; player.pos.set(e.x, floorAt(e.x, e.z), e.z); player.viewY = player.pos.y; player.yaw = LV.start[2]; if (cs.A.lift) levelRoot.remove(cs.A.lift); }
+  };
+}
+Object.assign(CUTSCENES, {
+  t_m2: transitionCS({ title: 'Z KOBEK DO HORNÍHO HRADU', line: ['bj_t1', 'Z kobek jsem venku. Teď štáb SS – a plány operace Finsternis.'] }),
+  t_m3: transitionCS({ title: 'PO MOSTĚ DO VĚŽE NAD KAPLÍ', line: ['bj_t2', 'Plány mám. Zeman a jeho laboratoř jsou někde pod kaplí.'] }),
+  t_e2m2: transitionCS({ title: 'HLUBOKO V HVOZDU', line: ['bj_t3', 'Podle mapy: lesní tábor, pak trať. Žádné světlo, žádný hluk.'] }),
+  t_e2m3: transitionCS({ title: 'NÁDRAŽÍ WOLFSGRUND', line: ['bj_t4', 'Odtud jede zvláštní vlak. Bez čísla a bez cíle v papírech.'] }),
+  t_e2m4: transitionCS({ kind: 'train', title: 'VE SLUŽEBNÍM VOZE ZVLÁŠTNÍHO VLAKU', line: ['bj_t5', 'Jsem uvnitř. Teď dopředu, vagon po vagonu – až k lokomotivě.'] }),
+  t_e3m2: transitionCS({ kind: 'lift', dur: 12, lineAt: 7.5, title: 'NÁKLADNÍ VÝTAH DO PODZEMÍ', line: ['bj_t6', 'Sto metrů pod horou. Tady stavějí Finsternis.'] }),
+  t_e3m3: transitionCS({ kind: 'lift', dur: 12, lineAt: 7.5, title: 'NEJHLUBŠÍ PATRO – LABORATOŘ', line: ['bj_t7', 'Doktore Zemane. Konečně se poznáme.'] })
+});
+const MISSION_CS = { m1: { pre: 'capture', main: 'cell' }, m2: { main: 't_m2' }, m3: { main: 't_m3' }, e2m1: { main: 'cablecar' }, e2m2: { main: 't_e2m2' }, e2m3: { main: 't_e2m3' }, e2m4: { main: 't_e2m4' }, e3m1: { main: 'ramp' }, e3m2: { main: 't_e3m2' }, e3m3: { main: 't_e3m3' } };
 
 /* =====================================================================
    INPUT & SCREENS
@@ -5957,7 +6327,7 @@ addEventListener('keydown', e => {
   if (game.state === 'playing' && !e.repeat) { if (e.code === 'KeyC' && SET.crouchToggle) player.crouchOn = !player.crouchOn; }
   if (e.code === 'Tab') { e.preventDefault(); if (game.state === 'playing' && !e.repeat) tabMap(true); return; }
   if (game.state !== 'playing') return;
-  const n = { Digit1: 0, Digit2: 1, Digit3: 2, Digit4: 3, Digit5: 4, Digit6: 5, Digit7: 6, Digit8: 7 }[e.code]; if (n !== undefined) switchWeapon(n);
+  const n = { Digit1: 0, Digit2: 1, Digit3: 2, Digit4: 3, Digit5: 4, Digit6: 5, Digit7: 6, Digit8: 7, Digit9: 8, Digit0: 9, Minus: 10, Equal: 11 }[e.code]; if (n !== undefined) switchWeapon(n);
   if (e.code === 'KeyR') startReload();
   if (e.code === 'KeyF' && !e.repeat) useAction();
   if (e.code === 'KeyM') { sfx.muted = !sfx.muted; if (sfx.master) sfx.master.gain.value = sfx.muted ? 0 : sfx.vol; log(sfx.muted ? 'Zvuk vypnut' : 'Zvuk zapnut'); }
@@ -5997,7 +6367,7 @@ document.addEventListener('pointerlockerror', () => {
   setOverlay(`<h1 style="font-size:clamp(26px,4.5vw,50px)">MYŠ NELZE ZAMKNOUT</h1><p>Stránka, do které je hra vložená, nedovoluje zamknout kurzor myši, takže se nedá rozhlížet. Otevři hru ve vlastním okně – hraje se stejně a postup zůstane uložený.</p>`,
     [{ label: 'OTEVŘÍT V NOVÉM OKNĚ', fn: openStandalone }, { label: 'ZKUSIT ZNOVU', cls: 'sm', fn: startPlaying }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]);
 });
-const KEYS_HTML = `<div class="keys"><span><b>WASD</b> pohyb · <b>SPACE</b> skok</span><span><b>LMB</b> střelba · <b>RMB</b> mířidla / puškohled</span><span><b>R</b> přebít · <b>F</b> použít / dveře</span><span><b>Q / E</b> vyklonit se</span><span><b>SHIFT</b> sprint · <b>C</b> přikrčit / plížit</span><span><b>1–8 / kolečko</b> zbraně</span><span><b>TAB</b> (držet) mapa a cíle mise</span><span><b>M</b> zvuk · <b>ESC</b> pauza</span></div>`;
+const KEYS_HTML = `<div class="keys"><span><b>WASD</b> pohyb · <b>SPACE</b> skok</span><span><b>LMB</b> střelba · <b>RMB</b> mířidla / puškohled</span><span><b>R</b> přebít · <b>F</b> použít / dveře</span><span><b>Q / E</b> vyklonit se</span><span><b>SHIFT</b> sprint · <b>C</b> přikrčit / plížit</span><span><b>1–9, 0, −, = / kolečko</b> zbraně</span><span><b>TAB</b> (držet) mapa a cíle mise</span><span><b>M</b> zvuk · <b>ESC</b> pauza</span></div>`;
 function setOverlay(html, buttons) {
   menuScreen(false);
   overlay.innerHTML = html + '<div>' + buttons.map((b, i) => `<button class="btn ${b.cls || ''}" data-i="${i}" ${b.disabled ? 'disabled' : ''}>${b.label}</button>`).join('') + '</div><div id="load"></div>';
@@ -6139,7 +6509,30 @@ function menuBG(t) {
   g.strokeStyle = `rgba(255,230,170,${.35 + .25 * Math.sin(t * 9) * Math.sin(t * 2.3)})`; g.lineWidth = 3 * u; g.beginPath(); for (let y = 0; y <= H; y += 20) y ? g.lineTo(seam(y), y) : g.moveTo(seam(y), y); g.stroke();
   const vg = g.createRadialGradient(mid, H * .45, H * .2, mid, H * .5, H * .95); vg.addColorStop(0, 'rgba(0,0,0,.45)'); vg.addColorStop(.5, 'rgba(0,0,0,.15)'); vg.addColorStop(1, 'rgba(0,0,0,.75)'); g.fillStyle = vg; g.fillRect(0, 0, W, H);
 }
+// teaser for the bonus episode: a German officer with a torch follows the Eagle's tracks through the snow
+function soonArt(t) {
+  const cv = $('soonc'); if (!cv) return; const g = cv.getContext('2d'), W = cv.width, H = cv.height;
+  let gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#060b18'); gr.addColorStop(.7, '#1a2338'); gr.addColorStop(1, '#2c3346'); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  g.fillStyle = 'rgba(255,240,200,.85)'; g.beginPath(); g.arc(240, 34, 13, 0, 7); g.fill();
+  g.fillStyle = '#04070d'; for (let i = 0; i < 9; i++) { const x = i * 38 - 6, h = 70 + 30 * hash2(i, 1, 3); g.beginPath(); g.moveTo(x, H - 40); g.lineTo(x + 15, H - 40 - h); g.lineTo(x + 30, H - 40); g.fill(); }
+  g.fillStyle = '#b9c2d4'; g.fillRect(0, H - 42, W, 42);   // snow
+  const ox = 70 + ((t * 9) % 30), fy = H - 30;
+  g.fillStyle = 'rgba(40,50,70,.55)'; for (let i = 0; i < 9; i++) { const x = ox + 40 + i * 24, y = fy + (i % 2 ? 5 : -2); g.beginPath(); g.ellipse(x, y, 5, 2, 0, 0, 7); g.fill(); }   // the Eagle's footprints
+  const a = Math.sin(t * .9) * .18 - .05, bx = ox + 14, by = H - 76;      // torch cone sweeping over the tracks
+  const lg = g.createLinearGradient(bx, by, bx + 160, by + 40); lg.addColorStop(0, 'rgba(255,236,170,.55)'); lg.addColorStop(1, 'rgba(255,236,170,0)'); g.fillStyle = lg;
+  g.beginPath(); g.moveTo(bx, by); g.lineTo(bx + Math.cos(a + .2) * 190, by + Math.sin(a + .2) * 190 + 40); g.lineTo(bx + Math.cos(a - .1) * 190, by + Math.sin(a - .1) * 190 + 40); g.fill();
+  g.save(); g.translate(ox, H - 30); g.fillStyle = '#05060a';   // officer: peaked cap, long leather coat
+  const sw = Math.sin(t * 4) * 3;
+  g.fillRect(-6 + sw * .4, -22, 5, 22); g.fillRect(2 - sw * .4, -22, 5, 22);
+  g.beginPath(); g.moveTo(-12, -20); g.lineTo(13, -20); g.lineTo(9, -62); g.lineTo(-8, -62); g.fill();
+  g.beginPath(); g.arc(0, -68, 6, 0, 7); g.fill(); g.fillRect(-9, -76, 17, 4); g.beginPath(); g.moveTo(-6, -76); g.quadraticCurveTo(2, -86, 9, -76); g.fill(); g.fillRect(-1, -73, 12, 2);
+  g.lineWidth = 4; g.strokeStyle = '#05060a'; g.beginPath(); g.moveTo(6, -56); g.lineTo(14, -48); g.stroke();
+  g.fillStyle = '#ffe9a8'; g.fillRect(13, -50, 4, 4); g.restore();
+  g.fillStyle = 'rgba(255,255,255,.75)'; for (let i = 0; i < 40; i++) { const x = (hash2(i, 2, 5) * W + t * 6) % W, y = (hash2(i, 3, 5) * H + t * (14 + 10 * hash2(i, 4, 5))) % H; g.fillRect(x, y, 1.6, 1.6); }
+  g.fillStyle = 'rgba(160,20,10,.85)'; g.font = 'bold 34px Georgia,serif'; g.globalAlpha = .18 + .06 * Math.sin(t * 2); g.fillText('✠', 250, 120); g.globalAlpha = 1;
+}
 function menuScreen(on) { MB.cv.style.display = on ? 'block' : 'none'; overlay.classList.toggle('menu', on); if (on) MUSIC.start(); else MUSIC.stop(); }
+if (!store.get('cg_lv2', false)) { const u = store.get('cg_unlocked', 0); if (u >= 6) store.set('cg_unlocked', u + 1); store.set('cg_lv2', true); }   // v1.4 put the train mission at index 6
 function unlocked() { return clamp(store.get('cg_unlocked', 0), 0, LEVELS.length - 1); }
 let menuDiff = clamp(store.get('cg_diff', 1), 0, DIFFS.length - 1), menuLevel = 0;
 const TITLE = 'BLÁZEN Z LONDÝNA', SUBTITLE = 'TAJNÁ AKCE';
@@ -6156,7 +6549,8 @@ function showMainMenu() {
       <button class="btn" data-go="keys">OVLÁDÁNÍ</button>
       ${IN_FRAME ? '<button class="btn sm" data-go="full">CELÁ OBRAZOVKA</button><button class="btn sm" data-go="tab">OTEVŘÍT V NOVÉM OKNĚ</button>' : ''}
     </div>
-    <p class="mfoot">v1.3 · agent B. J. z Londýna proti operaci Finsternis · 1943<br>Dabing: Piper TTS · Zbraně: CC0 z OpenGameArt · vojáci: nisu (CC0), three.js / Mixamo · ${Object.keys(FBX).length}/6 FBX načteno${soldierTpl ? '' : ' · náhradní postavy'}</p><div id="load"></div>`;
+    <div class="soon"><canvas id="soonc" width="300" height="168"></canvas><div class="st"><b>BONUS EXPANSION PACK</b><span>VE STOPÁCH ORLA</span><i>COMING SOON</i></div></div>
+    <p class="mfoot">v1.4 · agent B. J. z Londýna proti operaci Finsternis · 1943<br>Dabing: Piper TTS · Zbraně: CC0 z OpenGameArt · vojáci: nisu (CC0), three.js / Mixamo · ${Object.keys(FBX).length}/6 FBX načteno${soldierTpl ? '' : ' · náhradní postavy'}</p><div id="load"></div>`;
   overlay.style.display = 'flex'; $('hud').style.display = 'none';
   const go = { start: () => startMission(menuLevel, true), missions: showMissionSelect, settings: () => showSettings(showMainMenu), keys: showControls, full: goFullscreen, tab: openStandalone };
   overlay.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { sfx.play && sfx.ctx && sfx.play('switch'); go[b.dataset.go](); });
@@ -6191,10 +6585,13 @@ async function startMission(i, fresh) {
   for (const e of enemies) { e.maxHp = Math.round(e.T.hp * DIFF.hp); e.hp = e.maxHp; }
   if (fresh) {   // starting a later mission from the menu: hand out the weapons found earlier
     newLoadout();
-    if (i >= 1) { WEAPONS[2].owned = true; WEAPONS[2].clip = WEAPONS[2].mag; WEAPONS[6].owned = true; WEAPONS[6].clip = 6; WEAPONS[7].owned = true; WEAPONS[7].clip = 8; player.ammo.smg = 96; player.ammo.acp = 16; player.ammo.gren = 4; }
-    if (i >= 2) { WEAPONS[3].owned = true; WEAPONS[3].clip = 10; player.ammo.rifle = 20; player.ammo.acp = 24; player.armor = 50; }
-    if (i >= 3) { WEAPONS[5].owned = true; player.ammo.fuel = 100; player.ammo.gren = 5; player.ammo.acp = 32; player.ammo.rifle = 30; player.ammo.smg = 128; player.ammo.pistol = 36; }
-    if (i >= 6) { player.armor = 100; player.ammo.gren = 6; player.ammo.fuel = 150; }
+    const past = id => i > LEVELS.findIndex(L => L.id === id);   // by mission id, so inserting missions never shifts the loadouts
+    if (past('m1')) { WEAPONS[2].owned = true; WEAPONS[2].clip = WEAPONS[2].mag; WEAPONS[6].owned = true; WEAPONS[6].clip = 6; WEAPONS[7].owned = true; WEAPONS[7].clip = 8; player.ammo.smg = 96; player.ammo.acp = 16; player.ammo.gren = 4; }
+    if (past('m2')) { WEAPONS[3].owned = true; WEAPONS[3].clip = 10; player.ammo.rifle = 20; player.ammo.acp = 24; player.armor = 50; }
+    if (past('m3')) { WEAPONS[5].owned = true; player.ammo.fuel = 100; player.ammo.gren = 5; player.ammo.acp = 32; player.ammo.rifle = 30; player.ammo.smg = 128; player.ammo.pistol = 36; }
+    if (past('e2m3')) { player.armor = 100; player.ammo.gren = 6; player.ammo.fuel = 150; }
+    const give = (wi, ammo, n) => { WEAPONS[wi].owned = true; WEAPONS[wi].clip = WEAPONS[wi].mag; WEAPONS[wi].seen = true; player.ammo[ammo] += n; };
+    if (past('m3')) give(8, 'acp', 90); if (past('e2m1')) give(9, 'g30', 24); if (past('e2m3')) give(10, 'g30', 40); if (past('e3m2')) give(11, 'rocket', 3);
     snapshotLoadout();
   } else if (!game.snapshot) snapshotLoadout();
   restoreLoadout(); placePlayerAtStart();
@@ -6219,10 +6616,10 @@ function die() { game.state = 'dead'; sfx.flame(false); setTimeout(() => { docum
 function win() {
   if (game.state !== 'playing') return; game.state = 'won'; sfx.flame(false);
   player.score += Math.max(0, 3000 - Math.floor(player.time) * 4); if (!game.detections) { player.score += 1500; log('Duch: neodhalen +1500'); } document.exitPointerLock();
-  const last = game.level >= LEVELS.length - 1, ep = epOf(game.level), epEnd = EPISODES[ep].levels[2] === game.level;
+  const last = game.level >= LEVELS.length - 1, ep = epOf(game.level), epEnd = EPISODES[ep].levels[EPISODES[ep].levels.length - 1] === game.level;
   store.set('cg_unlocked', Math.max(unlocked(), Math.min(LEVELS.length - 1, game.level + 1)));
   snapshotLoadout();
-  if (last) { setOverlay(`<h1>MISE SPLNĚNA</h1><h2>${LV.name}</h2>${statsHtml()}<p>Úniková štola tě vyvedla ven do lesa. Za tebou se rozhoří nálože…</p>`, [{ label: 'POKRAČOVAT', fn: async () => { await loadLevel(6); await playCutscene(CUTSCENES.finale); showEnding(); } }]); return; }
+  if (last) { setOverlay(`<h1>MISE SPLNĚNA</h1><h2>${LV.name}</h2>${statsHtml()}<p>Úniková štola tě vyvedla ven do lesa. Za tebou se rozhoří nálože…</p>`, [{ label: 'POKRAČOVAT', fn: async () => { await loadLevel(LEVELS.findIndex(L => L.id === 'e3m1')); await playCutscene(CUTSCENES.finale); showEnding(); } }]); return; }
   if (epEnd) { setOverlay(`<h1>EPIZODA ${ep + 1} DOKONČENA</h1><h2>${EPISODES[ep].title}</h2>${statsHtml()}<p>${EPISODES[ep].outro}</p>`, [{ label: 'DALŠÍ EPIZODA', fn: () => { menuLevel = game.level + 1; startMission(game.level + 1, false); } }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]); return; }
   setOverlay(`<h1>MISE SPLNĚNA</h1><h2>${LV.name}</h2>${statsHtml()}`, [{ label: 'DALŠÍ MISE', fn: () => { menuLevel = game.level + 1; startMission(game.level + 1, false); } }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]);
 }
@@ -6302,7 +6699,7 @@ async function loadLevel(i, def = null) {
   for (const e of enemies) tintMats(e.mats, e.x, e.z);
   linkSearchlightGuards();
   { const bn = document.getElementById('bossN'); if (bn && game.bossE) bn.textContent = game.bossE.T.name.toUpperCase(); }
-  placePlayerAtStart(); flowCell = -1;
+  placePlayerAtStart(); flowCell = -1; trainInit();
   camera.position.set(player.pos.x, player.pos.y + 1.62, player.pos.z); camera.rotation.set(0, player.yaw, 0);
   renderer.compile(scene, camera); renderer.compile(vmScene, vmCamera);
 }
@@ -6357,6 +6754,7 @@ function tick(dt) {
     if (flowT <= 0 || pc !== flowCell) { if (flowT <= 0 || pc !== flowCell) { computeFlowFrom(toCell(player.pos.x), toCell(player.pos.z), flowDist); flowCell = pc; flowT = .5; } }
     camera.updateMatrixWorld(); _pm.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); _fr.setFromProjectionMatrix(_pm);
     if (game.state === 'playing') updateStealth(dt);
+    if (TRAIN.on && game.state === 'playing') trainTick(dt);
     for (const e of enemies) updateEnemy(e, dt, frameNo);
     for (let i = 0; i < enemies.length; i++) { const a = enemies[i]; if (a.state === 'dead') continue; for (let j = i + 1; j < enemies.length; j++) { const b = enemies[j]; if (b.state === 'dead' || Math.abs(a.y - b.y) > 1.5) continue; const dx = a.x - b.x, dz = a.z - b.z, d = Math.hypot(dx, dz), rr = a.r + b.r + .1; if (d < rr && d > 1e-4) { const p = (rr - d) * .5; a.x += dx / d * p; a.z += dz / d * p; b.x -= dx / d * p; b.z -= dz / d * p; } } }
     for (const e of enemies) if (e.state === 'chase' || e.state === 'alarm' || e.state === 'investigate' || e.state === 'search' || e.state === 'return') for (const d of doors) if (d.target === 0 && !doorLocked(d) && Math.abs(d.y - e.y) < 1.5 && Math.hypot(d.c.x - e.x, d.c.z - e.z) < 3) openDoor(d, e.x, e.z);
@@ -6389,14 +6787,14 @@ function tick(dt) {
   if (Math.abs(player.burn - lastBurn) > .01) { hud.burn.style.opacity = player.burn; lastBurn = player.burn; }
   if (hitTimer > 0) { hitTimer -= dt; if (hitTimer <= 0) hud.hitm.style.opacity = 0; }
   if (game.state === 'playing') { updateHud(); mmDraw(); if (TM.on) tmDraw(); } else if (TM.on) tabMap(false);
-  if (MB.cv.style.display === 'block') menuBG(time);
+  if (MB.cv.style.display === 'block') { menuBG(time); soonArt(time); }
   renderer.clear(); renderer.render(scene, camera);
   if (!player.zoom && game.state !== 'menu' && game.state !== 'loading' && game.state !== 'briefing' && game.state !== 'cutscene') { renderer.clearDepth(); renderer.render(vmScene, vmCamera); }
 }
 window.__errs = [];
 addEventListener('error', e => window.__errs.push(String(e.message) + ' @' + e.lineno));
 addEventListener('unhandledrejection', e => window.__errs.push('rejection: ' + (e.reason && e.reason.message || e.reason)));
-window.__castle = { step(n = 1, dt = 1 / 60) { for (let i = 0; i < n; i++) tick(dt); }, OUT, LEVELS, sampleGrid, damageDestructible, useAction, get destructibles() { return destructibles; }, objectivesDone, completeObjective, get alarms() { return alarms; }, THREE, ARMS, GRIPS, RIGS, FBX, sfx, SET, P_, ARM_POLE_R, ARM_POLE_L, DELISLE_CAN, buildViewModels2: () => buildViewModels(), get pickups() { return pickups; }, damageEnemy, aim(v) { rightDown = v; }, player, enemies, WEAPONS, VMCFG, POSES, game, renderer, scene, camera, vmScene, vmCamera, get LV() { return LV; }, get lmB() { return lmB; }, get doors() { return doors; }, get patches() { return patches; }, get wallFaces() { return wallFaces; }, get ROOMS() { return ROOMS; }, get roomAt() { return roomAt; }, get wallTop() { return wallTop; }, floorAt, topAt, tp(x, z) { const p = C(x, z); player.pos.copy(p); player.viewY = p.y; }, give() { WEAPONS.forEach(w => { w.owned = true; if (w.mag) w.clip = w.mag; }); Object.assign(player.ammo, AMMO_MAX); }, loadLevel, startMission, buildViewModels, async quick(i = 0) { game.noCS = true; await startMission(i, true); game.noCS = false; startPlaying(); }, playCutscene, CUTSCENES, CS, CS_FOREST, vox, endCutscene };
+window.__castle = { step(n = 1, dt = 1 / 60) { for (let i = 0; i < n; i++) tick(dt); }, OUT, LEVELS, sampleGrid, damageDestructible, useAction, get destructibles() { return destructibles; }, objectivesDone, completeObjective, get alarms() { return alarms; }, THREE, ARMS, GRIPS, RIGS, FBX, sfx, SET, P_, ARM_POLE_R, ARM_POLE_L, DELISLE_CAN, buildViewModels2: () => buildViewModels(), get pickups() { return pickups; }, damageEnemy, aim(v) { rightDown = v; }, player, enemies, WEAPONS, VMCFG, POSES, game, renderer, scene, camera, vmScene, vmCamera, get LV() { return LV; }, get lmB() { return lmB; }, get doors() { return doors; }, get patches() { return patches; }, get wallFaces() { return wallFaces; }, get ROOMS() { return ROOMS; }, get roomAt() { return roomAt; }, get wallTop() { return wallTop; }, floorAt, topAt, tp(x, z) { const p = C(x, z); player.pos.copy(p); player.viewY = p.y; }, give() { WEAPONS.forEach(w => { w.owned = true; if (w.mag) w.clip = w.mag; }); Object.assign(player.ammo, AMMO_MAX); }, loadLevel, startMission, buildViewModels, async quick(i = 0) { game.noCS = true; await startMission(i, true); game.noCS = false; startPlaying(); }, playCutscene, CUTSCENES, CS, CS_FOREST, vox, endCutscene, TRAIN, TRACK };
 frame();
 boot().catch(err => { console.error(err); setLoad('Chyba při načítání: ' + err.message); });
 </script>

@@ -4,12 +4,12 @@
 
 ![Polní tábor wehrmachtu v noci – stany, věž s reflektorem, ohniště](docs/screenshot-camp.jpg)
 
-Agent B. J. je zajat v Bavorských Alpách a uvržen do kobek hradu Grimhold. Hra má **tři epizody po třech misích** a začíná cutscénou, ve které ho Němci chytí v lese:
+Agent B. J. je zajat v Bavorských Alpách a uvržen do kobek hradu Grimhold. Hra má **tři epizody a deset misí** a začíná cutscénou, ve které ho Němci chytí v lese:
 
 | Epizoda | Mise |
 | --- | --- |
 | **1 · Útěk z Grimholdu** | 1.1 Kobky · 1.2 Velitelství · 1.3 Krypta |
-| **2 · Noční hvozd** | 2.1 Údolní stanice · 2.2 Lesní tábor · 2.3 Nádraží Wolfsgrund |
+| **2 · Noční hvozd** | 2.1 Údolní stanice · 2.2 Lesní tábor · 2.3 Nádraží Wolfsgrund · 2.4 Zvláštní vlak |
 | **3 · Operace Finsternis** | 3.1 Brána Wolfsgrund · 3.2 Podzemní továrna · 3.3 Srdce temnoty |
 
 Epizoda 1 se odehrává v hradu. Epizoda 2 je venku, v noci a daleko od hradu: smrkové lesy, mýtiny, hájovna, kontrolní stanoviště, polní tábor s věžemi a reflektory a nádraží s vlaky. Epizoda 3 začíná na vykládací rampě pod skalní stěnou a pokračuje do podzemní továrny na rakety až k finálnímu souboji s Übersoldatem Mk II.
@@ -22,6 +22,7 @@ Epizoda 1 se odehrává v hradu. Epizoda 2 je venku, v noci a daleko od hradu: s
 - Scény: zajetí v lese a útěk z cely (začátek hry), sjezd lanovkou do údolí (epizoda 2), zvláštní vlak ve Wolfsgrundu (epizoda 3) a výbuch hory (konec hry).
 - **Dabing** je vygenerovaný neuronovým TTS [Piper](https://github.com/OHF-Voice/piper1-gpl), které běží offline. Hlas B. J. a vysílačky z Londýna je český, vojáci, důstojníci a dr. Zeman mluví německy s českými titulky.
 - Stráže mluví i během hry („Was war das?“, „Alarm!“, „Mein Gott, ein Toter!“…) a každý voják má svůj hlas.
+- **Realističtější dabing:** skript `tools/make_voices_neural.py` (ve Windows stačí spustit `tools/make_voices_neural.bat`) přegeneruje všech 72 replik přirozenými neuronovými hlasy Microsoft (B. J. a Londýn česky – Antonín, Němci – Conrad, Killian, rakouský Jonas pro dr. Zemana, švýcarský Jan). Potřebuje internet, Python (`pip install edge-tts`) a ffmpeg. Výsledek zapíše do `assets/voices.js`, hra ho načte po obnovení stránky.
 
 ![Hájovna v nočním lese](docs/screenshot-forest.jpg)
 
@@ -65,9 +66,19 @@ Fotografické textury (Poly Haven) jsou volitelné – když nejsou dostupné, h
 
 Lee-Enfield No.4 (T) s puškohledem, revolver, Sten Mk II, plamenomet, mačeta, granát (Stielhandgranate) a dvě tiché zbraně SOE: pistole **Welrod Mk I** (9 mm, integrovaný tlumič) a tlumená karabina **De Lisle (T)** s puškohledem (.45 ACP). Když začneš pozdější misi z menu, dostaneš zbraně, které bys měl touto dobou mít.
 
+Americké zbraně: samopal **Thompson M1A1** z kontejneru SOE (mise 1.3) a zbraně, které Němci ukořistili a zkoumali ve Wolfsgrundu – puška **M1 Garand** (mise 2.1, prázdný klip po posledním náboji cinkne), kulomet **BAR M1918A2** (mise 2.3) a prototyp **bazuky M1** (mise 3.2) s raketami, které vybuchují. Klávesy `9`, `0`, `-`, `=` nebo kolečko.
+
 ## Nastavení
 
 V menu i v pauze: citlivost a obrácení myši, FOV, hlasitost, velikost rozhraní, rozlišení vykreslování, způsob přikrčení, minimapa a pohupování kamery. Nastavení se ukládá v prohlížeči. Minimapa ve stylu Wolfensteinu odkrývá místnosti, jak jimi procházíš (les je zelený, budovy hnědé).
+
+## Novinky ve verzi 1.4
+
+- **Mise 2.4 · Zvláštní vlak:** probojuješ se jedoucím vlakem vagon po vagonu (služební vůz, otevřený vůz, krytý vůz, plošina s raketou, vůz s municí, protiletadlový vůz, tendr) až do lokomotivy. Tam převezmeš řízení: `W` regulátor, `S` brzda. V zatáčce a na mostě dodržuj rychlost, jinak vykolejíš, a ve Wolfsgrundu zastav u rampy dřív, než narazíš do zarážedla.
+- **Cutscéna na začátku každé mise:** jak se B. J. dostal dál – z kobek do štábu, po mostě do věže, lesem k nádraží, naskočení do vlaku za jízdy, výtahy do podzemní továrny a k laboratoři.
+- **Americké zbraně:** Thompson M1A1, M1 Garand, BAR M1918A2 a prototyp bazuky M1.
+- **Realističtější dabing:** nový generátor s neuronovými hlasy (viz *Cutscény a dabing*).
+- V menu vpravo dole upoutávka na **Bonus Expansion Pack – Ve stopách Orla** (coming soon).
 
 ## Novinky ve verzi 1.3
 
