@@ -73,7 +73,7 @@
   #burn { position:absolute; inset:0; background:radial-gradient(ellipse at center, transparent 35%, rgba(255,120,20,.6)); opacity:0; }
   #overlay > * { zoom:var(--ui,1); }
   #overlay { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:radial-gradient(ellipse at center, rgba(30,10,6,.55), rgba(0,0,0,.94) 70%); z-index:5; text-align:center; padding:16px; box-sizing:border-box; overflow:auto; }
-  #menubg { position:fixed; inset:0; width:100%; height:100%; display:none; z-index:4; }
+  #menubg, #menu3d { position:fixed; inset:0; width:100%; height:100%; display:none; z-index:4; }
   #overlay.menu { background:radial-gradient(ellipse at 50% 45%, rgba(0,0,0,.55), rgba(0,0,0,.08) 60%, rgba(0,0,0,0)); justify-content:flex-start; padding-top:5vh; }
   .gtitle { text-align:center; margin-bottom:2.2vh; filter:drop-shadow(0 6px 0 #000) drop-shadow(0 0 26px rgba(0,0,0,.9)); }
   .gt1 { font-family:'Special Elite',monospace; font-size:clamp(38px,7.4vw,104px); line-height:.95; letter-spacing:4px; color:#f0e3bd; text-shadow:0 0 30px rgba(190,30,15,.7), 3px 3px 0 #5a0d07; }
@@ -222,7 +222,7 @@
 </div>
 <div id="cine"><div class="lb t"></div><div class="lb b"></div><div id="ctitle"></div><div id="csub"></div><div id="cskip">MEZERNÍK · PŘESKOČIT</div></div>
 <div id="fade"></div>
-<canvas id="menubg"></canvas>
+<canvas id="menubg"></canvas><canvas id="menu3d"></canvas>
 <div id="overlay">
   <h1>BLÁZEN Z LONDÝNA</h1>
   <h2>TAJNÁ AKCE · 1943</h2>
@@ -4651,6 +4651,7 @@ const ETYPES = {
   untoter: { name: 'Untoter', hp: 85, run: 4.6, walk: 1.0, uni: 'undead', head: 'rusthelm', melee: true, dmg: [11, 17], score: 150, h: 1.76, slow: true },
   doktor: { name: 'Dr. Zeman', hp: 150, run: 4.4, walk: 1.4, uni: 'labcoat', head: 'bare', gun: 'revolver', burst: [2, 3], rof: .32, dmg: [7, 11], acc: 1, range: 20, aim: [.3, .45], alarm: true, drop: 'H', score: 2500, h: 1.78, zeman: true },
   civil: { name: 'Spojka', hp: 20, run: 3.5, walk: 1.3, uni: 'civil', head: 'flatcap', score: 0, h: 1.78 },
+  tommy: { name: 'Tommy', hp: 100, run: 4, walk: 1.5, uni: 'agent', head: 'brodie', gun: 'rifle', score: 0, h: 1.8, actor: true },
   bj: { name: 'B. J.', hp: 100, run: 4.2, walk: 1.5, uni: 'agent', head: 'watchcap', gun: 'revolver', score: 0, h: 1.86 },
   uber: { name: 'Übersoldat', model: 'xbot', scale: 1.4, hp: 1100, run: 3.1, walk: 1.7, uni: 'metal', gun: 'flamer', flamer: true, burst: [14, 22], rof: .07, dmg: [3, 5], acc: .9, range: 11, aim: [.3, .5], boss: true, score: 3000, h: 2.5 }
 };
@@ -4785,7 +4786,8 @@ const GEAR = (() => {
   const cap = (mat) => { const g = new THREE.Group(); const band = new THREE.Mesh(new THREE.CylinderGeometry(.112, .108, .06, 16), capB); band.position.y = .03; g.add(band); const crown = new THREE.Mesh(new THREE.CylinderGeometry(.15, .114, .07, 16), mat); crown.position.y = .095; crown.scale.z = 1.08; crown.rotation.x = -.12; g.add(crown); const vis = new THREE.Mesh(new THREE.CircleGeometry(.1, 12, 0, Math.PI), capB); vis.rotation.x = -Math.PI / 2 + .35; vis.position.set(0, .012, .085); vis.scale.y = .7; g.add(vis); const b = new THREE.Mesh(new THREE.BoxGeometry(.05, .02, .01), badge); b.position.set(0, .1, .145); g.add(b); return g; };
   const fieldcap = () => { const g = new THREE.Group(); const c = new THREE.Mesh(new THREE.CylinderGeometry(.13, .125, .075, 14), new THREE.MeshLambertMaterial({ color: new THREE.Color(.26, .28, .2) })); c.position.y = .05; c.scale.z = 1.1; g.add(c); const vis = new THREE.Mesh(new THREE.CircleGeometry(.09, 10, 0, Math.PI), c.material); vis.rotation.x = -Math.PI / 2 + .4; vis.position.set(0, .01, .09); vis.scale.y = .6; g.add(vis); return g; };
   const rust = new THREE.MeshLambertMaterial({ color: new THREE.Color(.36, .22, .14) });
-  return { helmet, cap: () => cap(capM), capblack: () => cap(new THREE.MeshPhongMaterial({ color: new THREE.Color(.09, .09, .1), shininess: 25 })), fieldcap, rusthelm: () => { const g = helmet(); g.traverse(o => { if (o.isMesh) o.material = rust; }); g.rotation.z = .25; return g; },
+  const brodie = () => { const g = new THREE.Group(), m = new THREE.MeshPhongMaterial({ color: new THREE.Color(.33, .32, .22), specular: new THREE.Color(.1, .1, .1), shininess: 18 }); g.add(new THREE.Mesh(lathe([[0, .1], [.06, .098], [.1, .085], [.125, .05], [.135, .02], [.2, .0], [.205, -.012], [.13, -.004], [0, -.004]]), m)); return g; };   // British Mk II 'soup bowl'
+  return { brodie, helmet, cap: () => cap(capM), capblack: () => cap(new THREE.MeshPhongMaterial({ color: new THREE.Color(.09, .09, .1), shininess: 25 })), fieldcap, rusthelm: () => { const g = helmet(); g.traverse(o => { if (o.isMesh) o.material = rust; }); g.rotation.z = .25; return g; },
     bare: () => new THREE.Group(),
     flatcap: () => { const g = new THREE.Group(), m = new THREE.MeshLambertMaterial({ color: new THREE.Color(.26, .22, .17) }); const c = new THREE.Mesh(new THREE.CylinderGeometry(.14, .125, .07, 14), m); c.position.set(0, .04, .015); c.scale.z = 1.15; c.rotation.x = -.12; g.add(c); const v = new THREE.Mesh(new THREE.CircleGeometry(.1, 10, 0, Math.PI), m); v.rotation.x = -Math.PI / 2 + .25; v.position.set(0, .01, .12); v.scale.y = .55; g.add(v); return g; },
     watchcap: () => { const g = new THREE.Group(), m = new THREE.MeshLambertMaterial({ color: new THREE.Color(.11, .12, .16) }); const c = new THREE.Mesh(new THREE.SphereGeometry(.128, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), m); c.scale.set(1, .9, 1.1); c.position.y = -.01; g.add(c); const b = new THREE.Mesh(new THREE.CylinderGeometry(.132, .134, .05, 14), m); b.position.y = -.005; b.scale.z = 1.1; g.add(b); return g; } };
@@ -6586,7 +6588,122 @@ function soonArt(t) {
   g.fillStyle = 'rgba(255,255,255,.75)'; for (let i = 0; i < 40; i++) { const x = (hash2(i, 2, 5) * W + t * 6) % W, y = (hash2(i, 3, 5) * H + t * (14 + 10 * hash2(i, 4, 5))) % H; g.fillRect(x, y, 1.6, 1.6); }
   g.fillStyle = 'rgba(160,20,10,.85)'; g.font = 'bold 34px Georgia,serif'; g.globalAlpha = .18 + .06 * Math.sin(t * 2); g.fillText('✠', 250, 120); g.globalAlpha = 1;
 }
-function menuScreen(on) { MB.cv.style.display = on ? 'block' : 'none'; overlay.classList.toggle('menu', on); if (on) MUSIC.start(); else MUSIC.stop(); }
+/* ---------- 3D menu backdrop: the same split picture as before, built in 3D ----------
+   Left: Grimhold on its crag under a blood-red sky, sweeping searchlights, a column of German soldiers marching
+   past their flag. Right: wartime London by moonlight – Big Ben, Parliament, St Paul's, Tower Bridge, the Thames,
+   barrage balloons and blue searchlights, Tommies on guard by the Union Jack. Own renderer, drifting camera, mouse parallax. */
+const M3 = { cv: $('menu3d'), r: null, scene: null, cam: null, ok: false, tried: false, men: [], beams: [], flags: [], balloons: [], planes: [], mx: 0, my: 0, clock: null };
+addEventListener('mousemove', e => { M3.mx = e.clientX / innerWidth * 2 - 1; M3.my = e.clientY / innerHeight * 2 - 1; });
+function m3Init() {
+  M3.tried = true;
+  try { M3.r = new THREE.WebGLRenderer({ canvas: M3.cv, antialias: true, powerPreference: 'high-performance' }); } catch (e) { console.warn('menu 3D off', e); return; }
+  const R = M3.r; R.outputColorSpace = THREE.LinearSRGBColorSpace; R.useLegacyLights = true; R.setPixelRatio(Math.min(1.5, devicePixelRatio || 1));
+  const S = M3.scene = new THREE.Scene(); S.fog = new THREE.FogExp2(new THREE.Color(.05, .03, .04), .0075);
+  M3.cam = new THREE.PerspectiveCamera(50, 1, .1, 900);
+  const L = (c, opts = {}) => new THREE.MeshLambertMaterial({ color: new THREE.Color(...c), ...opts }), B = (c) => new THREE.MeshBasicMaterial({ color: new THREE.Color(...c), fog: false });
+  const add = (geo, mat, x, y, z, ry = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.y = ry; S.add(m); return m; };
+  // sky: blood red on the left, moonlit navy on the right, the front line wavering between
+  S.add(new THREE.Mesh(new THREE.SphereGeometry(400, 48, 24), new THREE.ShaderMaterial({ side: THREE.BackSide, depthWrite: false, fog: false, uniforms: { t: { value: 0 } },
+    vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.); }',
+    fragmentShader: `uniform float t; varying vec3 vP;
+      float h(vec2 p){ return fract(sin(dot(p, vec2(12.9898,78.233))) * 43758.5453); }
+      void main(){ float y = clamp(vP.y, 0., 1.); float seam = .06 * sin(vP.y * 9. + t * .5) + .03 * sin(vP.y * 23. - t * .8);
+        float k = smoothstep(-.06, .06, vP.x + seam);
+        vec3 red = mix(vec3(.55,.13,.05), vec3(.07,.01,.01), pow(y, .55)); vec3 blue = mix(vec3(.12,.2,.38), vec3(.008,.02,.06), pow(y, .5));
+        vec3 c = mix(red, blue, k);
+        float st = step(.9965, h(floor(vP.xy * 520.))) * k * smoothstep(.05, .3, y) * (.6 + .4 * sin(t * 2. + vP.x * 90.)); c += st;
+        c += vec3(1., .75, .45) * .28 * exp(-abs(vP.x + seam) * 60.) * (1. - y);   // glow along the front line
+        gl_FragColor = vec4(c, 1.); }` })));
+  add(new THREE.SphereGeometry(7, 24, 16), B([.95, .93, .82]), 120, 95, -260);                       // the moon over London
+  // ground and the Thames
+  const g = add(new THREE.PlaneGeometry(600, 300), L([.09, .08, .08]), 0, 0, -60); g.rotation.x = -Math.PI / 2;
+  const river = add(new THREE.PlaneGeometry(240, 14), new THREE.MeshPhongMaterial({ color: new THREE.Color(.05, .08, .15), specular: new THREE.Color(.6, .65, .8), shininess: 60 }), 120, .04, -48); river.rotation.x = -Math.PI / 2;
+  // lights: fires on the left, moon on the right, a little ambient
+  S.add(new THREE.AmbientLight(new THREE.Color(.24, .2, .22), 1));
+  const fire = new THREE.PointLight(new THREE.Color(1, .38, .12), 2.6, 90, 1); fire.position.set(-22, 5, 7); S.add(fire); M3.fire = fire;
+  const moon = new THREE.DirectionalLight(new THREE.Color(.45, .55, .9), 1.1); moon.position.set(60, 40, 20); S.add(moon);
+  const rim = new THREE.DirectionalLight(new THREE.Color(.9, .3, .15), .9); rim.position.set(-40, 20, -30); S.add(rim);
+  // ---- Germany: Alps, the crag and Grimhold
+  const dark = L([.07, .03, .03]), stone = L([.16, .12, .11]), win = B([1.4, .9, .45]);
+  for (let i = 0; i < 8; i++) { const h = 45 + 35 * Math.random(); add(new THREE.ConeGeometry(30 + 20 * Math.random(), h, 5), dark, -190 + i * 19, h / 2 - 2, -190 - Math.random() * 40, Math.random()); }
+  add(new THREE.CylinderGeometry(10, 18, 16, 7), dark, -62, 8, -105);
+  const cx = -62, cy = 16, cz = -105;
+  for (const [x, w, h, d, cap] of [[-6, 4, 16, 4, 1], [0, 10, 11, 8, 0], [7, 3.6, 19, 3.6, 1], [3, 3, 14, 3, 1]]) {
+    add(new THREE.BoxGeometry(w, h, d), stone, cx + x, cy + h / 2, cz);
+    if (cap) add(new THREE.ConeGeometry(w * .8, w * 1.4, 4), dark, cx + x, cy + h + w * .7, cz, Math.PI / 4);
+    else for (let k = 0; k < 5; k++) add(new THREE.BoxGeometry(1, 1.2, 1), stone, cx + x - 4 + k * 2, cy + h + .6, cz + d / 2 - .5);
+    for (let k = 0; k < 3; k++) if (Math.random() < .8) add(new THREE.BoxGeometry(.5, .8, .1), win, cx + x + (Math.random() - .5) * (w - 1), cy + 3 + Math.random() * (h - 5), cz + d / 2 + .06);
+  }
+  // ---- London skyline
+  const lon = L([.07, .08, .12]), lit = B([1.3, 1.05, .6]);
+  const tower = new THREE.Group(); tower.position.set(26, 0, -70); S.add(tower);
+  const tp = (geo, m, x, y, z, ry = 0) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.rotation.y = ry; tower.add(o); return o; };
+  tp(new THREE.BoxGeometry(3.4, 26, 3.4), lon, 0, 13, 0); tp(new THREE.BoxGeometry(4, 4.2, 4), lon, 0, 27.8, 0); tp(new THREE.ConeGeometry(2.8, 7, 4), lon, 0, 33.4, 0, Math.PI / 4); tp(new THREE.CylinderGeometry(.08, .08, 3), lon, 0, 37.9, 0);
+  const clockTex = (() => { const c = mkCanvas(128, 128), q = c.getContext('2d'); q.fillStyle = '#f2d98a'; q.beginPath(); q.arc(64, 64, 60, 0, 7); q.fill(); q.strokeStyle = '#2a2215'; q.lineWidth = 4; q.stroke(); for (let i = 0; i < 12; i++) { const a = i / 12 * 6.283; q.fillStyle = '#2a2215'; q.fillRect(64 + Math.sin(a) * 50 - 2, 64 - Math.cos(a) * 50 - 5, 4, 10); } const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.NoColorSpace; return t; })();
+  M3.hands = [];
+  for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2, f = new THREE.Group(); f.position.set(Math.sin(a) * 2.02, 27.8, Math.cos(a) * 2.02); f.rotation.y = a; tower.add(f);
+    f.add(new THREE.Mesh(new THREE.CircleGeometry(1.5, 32), new THREE.MeshBasicMaterial({ map: clockTex, fog: false, color: new THREE.Color(1.2, 1.1, .9) })));
+    for (const [len, w] of [[.85, .14], [1.25, .09]]) { const hnd = new THREE.Mesh(new THREE.PlaneGeometry(w, len), B([.1, .08, .05])); hnd.geometry.translate(0, len / 2, .02); f.add(hnd); M3.hands.push([hnd, len]); } }
+  add(new THREE.BoxGeometry(30, 9, 6), lon, 43, 4.5, -71); for (let i = 0; i < 12; i++) add(new THREE.ConeGeometry(.5, 3, 4), lon, 29.5 + i * 2.5, 10.5, -68.5);    // Parliament
+  for (let i = 0; i < 26; i++) if (Math.random() < .55) add(new THREE.BoxGeometry(.5, .9, .1), lit, 29 + Math.random() * 28, 2 + Math.random() * 6, -67.95);
+  add(new THREE.CylinderGeometry(7, 7, 6, 24), lon, 78, 13, -110); add(new THREE.SphereGeometry(7, 24, 12, 0, 6.29, 0, Math.PI / 2), lon, 78, 16, -110); add(new THREE.CylinderGeometry(.6, .9, 5, 8), lon, 78, 25, -110); add(new THREE.BoxGeometry(22, 13, 16), lon, 78, 6.5, -110);   // St Paul's
+  for (const s of [-1, 1]) { add(new THREE.BoxGeometry(4, 22, 4), lon, 118 + s * 9, 11, -90); add(new THREE.ConeGeometry(3, 5, 4), lon, 118 + s * 9, 24.5, -90, Math.PI / 4); } add(new THREE.BoxGeometry(18, 1.6, 3), lon, 118, 17, -90); add(new THREE.BoxGeometry(30, 1.2, 4), lon, 118, 5, -90);   // Tower Bridge
+  for (let i = 0; i < 40; i++) { const x = 16 + Math.random() * 150, z = -80 - Math.random() * 60, h = 6 + Math.random() * 10; add(new THREE.BoxGeometry(5 + Math.random() * 6, h, 5), lon, x, h / 2, z); if (Math.random() < .7) add(new THREE.BoxGeometry(.6, .8, .1), lit, x + (Math.random() - .5) * 3, 1 + Math.random() * (h - 2), z + 2.56); }
+  for (let k = 0; k < 4; k++) { const b = new THREE.Group(); b.position.set(40 + k * 30, 34 + k * 4, -110 - k * 12); S.add(b);   // barrage balloons on their cables
+    const body = new THREE.Mesh(new THREE.SphereGeometry(2.4, 18, 12), L([.42, .45, .5])); body.scale.set(2.2, 1, 1); b.add(body);
+    for (const r of [0, 2.1, 4.2]) { const fin = new THREE.Mesh(new THREE.BoxGeometry(2, 2, .1), L([.38, .4, .45])); fin.position.set(-5.2, 0, 0); fin.rotation.x = r; b.add(fin); }
+    const cab = new THREE.Mesh(new THREE.CylinderGeometry(.04, .04, 60), B([.3, .32, .38])); cab.position.set(1, -30, 0); b.add(cab); M3.balloons.push(b); }
+  // ---- searchlight beams (additive cones)
+  const beamTex = (() => { const c = mkCanvas(4, 128), q = c.getContext('2d'), gr = q.createLinearGradient(0, 0, 0, 128); gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(1, 'rgba(255,255,255,1)'); q.fillStyle = gr; q.fillRect(0, 0, 4, 128); return new THREE.CanvasTexture(c); })();
+  const beam = (x, z, col, ph, sw) => { const geo = new THREE.CylinderGeometry(4.5, .35, 120, 16, 1, true); geo.translate(0, 60, 0);
+    const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: beamTex, color: new THREE.Color(...col), transparent: true, opacity: .22, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false }));
+    m.position.set(x, 0, z); S.add(m); M3.beams.push({ m, ph, sw }); };
+  beam(-70, -80, [1, .8, .55], 0, .45); beam(-30, -70, [1, .75, .5], 2.2, .4); beam(30, -60, [.6, .75, 1], 4, .4); beam(70, -80, [.6, .75, 1], 1, .5); beam(110, -70, [.6, .75, 1], 3.1, .45);
+  // ---- flags on poles, waving
+  const flag = (img, x, z, w, h) => { add(new THREE.CylinderGeometry(.09, .12, 11), L([.1, .1, .1]), x, 5.5, z);
+    const t = new THREE.CanvasTexture(img); t.colorSpace = THREE.NoColorSpace; const geo = new THREE.PlaneGeometry(w, h, 24, 6);
+    const m = add(geo, new THREE.MeshLambertMaterial({ map: t, side: THREE.DoubleSide }), x + w / 2, 11 - h / 2, z); M3.flags.push({ geo, base: geo.attributes.position.array.slice(), w }); };
+  flag(ironCrossFlag(), -14, -10, 6, 3.6); flag(unionJack(), 12, -10, 6.4, 3.2);
+  // ---- bombers crossing high above the front
+  for (let k = 0; k < 3; k++) { const p = new THREE.Group(), m = B([.02, .02, .03]); p.add(new THREE.Mesh(new THREE.BoxGeometry(5, .5, .7), m)); const wing = new THREE.Mesh(new THREE.BoxGeometry(.9, .12, 9), m); wing.position.x = .5; p.add(wing); const tail = new THREE.Mesh(new THREE.BoxGeometry(.5, .1, 3), m); tail.position.x = -2.3; p.add(tail);
+    p.position.set(-120 + k * 12, 48 + k * 4, -90 - k * 8); S.add(p); M3.planes.push(p); }
+  // ---- embers (left) and falling snow
+  const dot = (() => { const c = mkCanvas(32, 32), q = c.getContext('2d'), gr = q.createRadialGradient(16, 16, 0, 16, 16, 16); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(.4, 'rgba(255,255,255,.5)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); q.fillStyle = gr; q.fillRect(0, 0, 32, 32); return new THREE.CanvasTexture(c); })();
+  const pts = (n, col, size) => { const geo = new THREE.BufferGeometry(), a = new Float32Array(n * 3); for (let i = 0; i < n; i++) { a[i * 3] = (Math.random() - .5) * 140; a[i * 3 + 1] = Math.random() * 50; a[i * 3 + 2] = -Math.random() * 60 + 15; } geo.setAttribute('position', new THREE.BufferAttribute(a, 3));
+    const m = new THREE.Points(geo, new THREE.PointsMaterial({ map: dot, color: new THREE.Color(...col), size, transparent: true, opacity: .9, blending: THREE.AdditiveBlending, depthWrite: false })); S.add(m); return m; };
+  M3.embers = pts(260, [1.5, .6, .22], .3); M3.snow = pts(700, [.8, .82, .9], .16);
+  // ---- soldiers: the real game models, re-dressed
+  const soldier = (type, x, z, yaw) => { const e = makeEnemy(type, 1, 1, 0); enemies.splice(enemies.indexOf(e), 1); for (const o of [e.blob, e.flashSprite, e.glint]) if (o) levelRoot.remove(o); levelRoot.remove(e.root); S.add(e.root);
+    e.mark.visible = false; e.root.position.set(x, 0, z); e.root.rotation.y = yaw; e.x = x; e.z = z; M3.men.push(e); return e; };
+  for (let i = 0; i < 7; i++) { const e = soldier(i === 0 ? 'offizier' : i % 3 === 1 ? 'sturm' : 'soldat', -24 + i * 3.1, 1.5 + (i % 2) * .9, Math.PI / 2); e.march = true; setAnim(e, 'Walk', 1); }
+  for (let i = 0; i < 4; i++) { const e = soldier('tommy', 8 + i * 3.6 + (i > 1 ? 3 : 0), 1.5 - (i % 2) * 1.5, -Math.PI / 2 + .35 * (i % 2 ? -1 : 1)); e.guard = true; }
+  M3.ok = true; M3.clock = new THREE.Clock();
+}
+function m3Render() {
+  if (!M3.tried) m3Init(); if (!M3.ok) return false;
+  const dt = Math.min(.05, M3.clock.getDelta()), t = (M3.t = (M3.t || 0) + dt), R = M3.r, W = innerWidth, H = innerHeight;
+  const sz = R.getSize(new THREE.Vector2()); if (sz.x !== W || sz.y !== H) { R.setSize(W, H, false); M3.cam.aspect = W / H; M3.cam.updateProjectionMatrix(); }
+  M3.scene.children[0].material.uniforms.t.value = t;
+  // camera: slow drift + mouse parallax
+  M3.cpx = lerp(M3.cpx || 0, M3.mx, 1 - Math.exp(-2 * dt)); M3.cpy = lerp(M3.cpy || 0, M3.my, 1 - Math.exp(-2 * dt));
+  M3.cam.position.set(Math.sin(t * .045) * 3 + M3.cpx * 2, 2.6 + Math.sin(t * .07) * .25 - M3.cpy * .8, 15 + Math.sin(t * .03) * 1.5);
+  M3.cam.lookAt(M3.cpx * 3, 8.5 - M3.cpy * 1.2, -50);
+  for (const b of M3.beams) b.m.rotation.set(Math.sin(t * .23 + b.ph) * .2 - .15, 0, Math.sin(t * .3 + b.ph) * b.sw);
+  for (const f of M3.flags) { const P = f.geo.attributes.position.array; for (let i = 0; i < P.length; i += 3) { const u = (f.base[i] + f.w / 2) / f.w; P[i + 2] = f.base[i + 2] + Math.sin(t * 3.2 + u * 6) * .35 * u; P[i + 1] = f.base[i + 1] - u * u * .3; } f.geo.attributes.position.needsUpdate = true; f.geo.computeVertexNormals(); }
+  for (const b of M3.balloons) b.position.y += Math.sin(t * .5 + b.position.x) * .006;
+  for (const p of M3.planes) { p.position.x += dt * 9; if (p.position.x > 160) p.position.x = -160; }
+  for (const [h, len] of M3.hands) h.rotation.z = -(len > 1 ? t * .2 : t * .017);
+  M3.fire.intensity = 2.3 + Math.sin(t * 13) * .25 + Math.sin(t * 7.3) * .2;
+  const mv = (pm, vy, wrap, fn) => { const a = pm.geometry.attributes.position.array; for (let i = 0; i < a.length; i += 3) { a[i + 1] += vy * dt; a[i] += Math.sin(t + i) * .01; if (fn(a, i)) { a[i + 1] = wrap; } } pm.geometry.attributes.position.needsUpdate = true; };
+  mv(M3.embers, 2.4, 0, (a, i) => { if (a[i + 1] > 30) { a[i] = -70 + Math.random() * 68; return true; } });
+  mv(M3.snow, -1.6, 50, (a, i) => a[i + 1] < 0);
+  for (const e of M3.men) {
+    if (e.march) { e.x += dt * 1.45; if (e.x > -3) e.x -= 21.7; e.root.position.x = e.x; }
+    if (e.mixer) { e.mixer.update(dt); e.root.updateMatrixWorld(true); if (e.holder && e.ikOK) poseSoldier(e, e.guard ? .2 : .08, 0); }
+  }
+  R.render(M3.scene, M3.cam); return true;
+}
+function menuScreen(on) { M3.cv.style.display = on ? 'block' : 'none'; if (!on) MB.cv.style.display = 'none'; overlay.classList.toggle('menu', on); if (on) MUSIC.start(); else MUSIC.stop(); }
 if (!store.get('cg_lv2', false)) { const u = store.get('cg_unlocked', 0); if (u >= 6) store.set('cg_unlocked', u + 1); store.set('cg_lv2', true); }   // v1.4 put the train mission at index 6
 function unlocked() { return clamp(store.get('cg_unlocked', 0), 0, LEVELS.length - 1); }
 let menuDiff = clamp(store.get('cg_diff', 1), 0, DIFFS.length - 1), menuLevel = 0;
@@ -6897,7 +7014,8 @@ function tick(dt) {
   if (Math.abs(player.burn - lastBurn) > .01) { hud.burn.style.opacity = player.burn; lastBurn = player.burn; }
   if (hitTimer > 0) { hitTimer -= dt; if (hitTimer <= 0) hud.hitm.style.opacity = 0; }
   if (game.state === 'playing') { updateHud(); mmDraw(); if (TM.on) tmDraw(); } else if (TM.on) tabMap(false);
-  if (MB.cv.style.display === 'block') { menuBG(time); soonArt(time); }
+  if (M3.cv.style.display === 'block') { if (!m3Render()) { MB.cv.style.display = 'block'; menuBG(time); } soonArt(time); }   // 2D picture only if WebGL for the backdrop fails
+  if (M3.ok && M3.cv.style.display === 'block') return;   // the menu draws its own 3D backdrop; the level behind it is hidden anyway
   renderer.clear(); renderer.render(scene, camera);
   if (!player.zoom && game.state !== 'menu' && game.state !== 'loading' && game.state !== 'briefing' && game.state !== 'cutscene') { renderer.clearDepth(); renderer.render(vmScene, vmCamera); }
 }
