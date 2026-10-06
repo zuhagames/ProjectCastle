@@ -6110,7 +6110,68 @@ function csBoom(p, s = 1) {
   sfx.play('explode', null, .9 + .4 * s);
 }
 // which scenes open which mission
-const MISSION_CS = { m1: { pre: 'capture', main: 'cell' }, e2m1: { main: 'cablecar' }, e3m1: { main: 'ramp' } };
+/* ---------- transitions: a short scene at the start of every mission shows how B. J. got there ----------
+   walk: he comes into the level from where the last mission ended; lift: a cage brings him down; train: he swings
+   aboard the moving special train. Lines without a recorded clip are shown as subtitles only. */
+function csLine(id, text, who) {
+  if (window.CASTLE_VOX && window.CASTLE_VOX[id] && VOX_SUB[id]) return csSay(id, who);
+  const el = $('csub'); el.innerHTML = `<b>B. J.</b>${text}`; el.style.opacity = 1; CS.subUntil = CS.t + Math.max(3, text.length * .065); if (who) who.talkT = 2; return 3;
+}
+function csCamSafe(target, want) {   // pull the camera in until it sees the target; in tight corridors try other angles round him
+  const fit = w => { for (let k = 1; k > .15; k -= .06) { const p = target.clone().lerp(w, k); const cx = toCell(p.x), cz = toCell(p.z); if (inside(cx, cz) && roomAt[cidx(cx, cz)] !== -1 && p.y < topAt(p.x, p.z) - .2 && losClear(target.x, target.y, target.z, p.x, p.y, p.z)) return [k * target.distanceTo(w), p]; } return [0, null]; };
+  let best = fit(want); if (best[0] > 2.2) return best[1];
+  const d = want.clone().sub(target);
+  for (const a of [.6, -.6, 1.2, -1.2, 2, -2, Math.PI]) { const w = target.clone().add(d.clone().applyAxisAngle(UP, a)); const r = fit(w); if (r[0] > best[0]) best = r; if (best[0] > 2.2) break; }
+  return best[1] || target.clone().lerp(want, .15);
+}
+function transitionCS(o) {
+  return {
+    dur: o.dur || 10.5, lines: o.line ? [o.line[0]] : [],
+    setup(A) {
+      const [sx, sz, syaw] = LV.start, p = C(sx, sz), f = V(-Math.sin(syaw), 0, -Math.cos(syaw)), side = V(f.z, 0, -f.x);
+      A.p = p; A.f = f; A.y0 = p.y;
+      const walk = o.kind === 'lift' ? 2.2 : o.kind === 'train' ? 3 : 5.5;
+      A.end = p.clone().addScaledVector(f, walk); if (!roomOf(toCell(A.end.x), toCell(A.end.z)) || Math.abs(floorAt(A.end.x, A.end.z) - p.y) > .4) A.end = p.clone();
+      A.bj = csActor('bj', p.x, p.z, syaw, { gun: true, speed: 1.5 });
+      if (o.kind === 'lift') {   // a works lift cage: steel frame, mesh sides, a lamp; it brings him down from 12 m
+        A.lift = new THREE.Group(); levelRoot.add(A.lift); const m = new THREE.MeshLambertMaterial({ color: new THREE.Color(.28, .29, .3) }), lamp = new THREE.MeshBasicMaterial({ color: new THREE.Color(1.5, 1.2, .7) });
+        for (const a of [-1, 1]) for (const b of [-1, 1]) part(A.lift, Bx(.12, 2.8, .12), m, a * 1.2, 1.4, b * 1.2);
+        part(A.lift, Bx(2.6, .12, 2.6), m, 0, .02, 0); part(A.lift, Bx(2.6, .12, 2.6), m, 0, 2.8, 0); part(A.lift, Bx(.3, .2, .3), lamp, 0, 2.65, 0);
+        for (let i = -1; i <= 1; i += .25) for (const s of [-1, 1]) { part(A.lift, Bx(.03, 2.6, .03), m, i * 1.2, 1.4, s * 1.2); part(A.lift, Bx(.03, 2.6, .03), m, s * 1.2, 1.4, i * 1.2); }
+        part(A.lift, Bx(.06, 40, .06), m, .4, 22, 0); part(A.lift, Bx(.06, 40, .06), m, -.4, 22, 0);
+        A.lift.position.copy(p); A.bj.fixedY = p.y + 12; A.lift.position.y = p.y + 12;
+      } else if (o.kind === 'train') { A.bj.x -= 1.2; }
+      const head = () => V(A.bj.x, A.bj.y + 1.5, A.bj.z);
+      const wide = o.kind === 'train' ? V(p.x + 9, 3.4, p.z - 9) : csCamSafe(V(p.x, p.y + 1.6, p.z), p.clone().addScaledVector(f, 9).addScaledVector(side, 4).setY(p.y + (o.kind === 'lift' ? 6 : 4.5)));   // the train is seen from the trackside
+      const close = csCamSafe(V(A.end.x, A.end.y + 1.6, A.end.z), A.end.clone().addScaledVector(f, 2.6).addScaledVector(side, -1.4).setY(A.end.y + 1.65));
+      const L = A.end.clone().setY(A.end.y + 1.4);
+      CS.cam = [[0, wide.x, wide.y, wide.z, L.x, L.y, L.z], [5.5, wide.x, wide.y - .4, wide.z, L.x, L.y, L.z], [5.51, close.x, close.y, close.z, L.x, L.y, L.z], [o.dur || 10.5, close.x, close.y, close.z, L.x, L.y, L.z]];
+      CS.look = () => head();
+    },
+    tick(cs, dt) {
+      const A = cs.A;
+      if (A.lift) { const k = clamp((cs.t - .6) / 5, 0, 1), e = 1 - Math.pow(1 - k, 2.2), y = A.p.y + 12 * (1 - e); A.lift.position.y = y; A.bj.fixedY = y + .08; if (k >= 1 && !A.landed) { A.landed = true; sfx.play('clang', A.p, 1.2); sfx.play('stomp', A.p, .8); A.bj.fixedY = undefined; A.bj.walkTo = { x: A.end.x, z: A.end.z }; } }
+      if (TRAIN.on) { TRAIN.dist += TRAIN.speed * dt; if (TRAIN.scroll) TRAIN.scroll.position.x = -(TRAIN.dist % TRAIN.period); if (TRAIN.chimney && Math.random() < dt * 14) smoke.spawn(TRAIN.chimney, -TRAIN.speed * .55, 2.4, 0, .26, .25, .24, 1.2, 3.5, -.15, 1, 2.4); }
+    },
+    ev: [
+      [0, () => { csFade(1, .01); setTimeout(() => csFade(0, 1.4), 50); csTitle(LV.name, o.title || LV.sub.toUpperCase(), 4.2); }],
+      [.8, (A) => { if (!A.lift) A.bj.walkTo = { x: A.end.x, z: A.end.z }; if (o.kind === 'train') sfx.play('jump', A.p, 1); }],
+      [o.lineAt || 5.8, (A) => { if (o.line) csLine(o.line[0], o.line[1], A.bj); }],
+      [(o.dur || 10.5) - .9, () => csFade(1, .8)]
+    ],
+    end(cs) { const e = cs.A.end; player.pos.set(e.x, floorAt(e.x, e.z), e.z); player.viewY = player.pos.y; player.yaw = LV.start[2]; if (cs.A.lift) levelRoot.remove(cs.A.lift); }
+  };
+}
+Object.assign(CUTSCENES, {
+  t_m2: transitionCS({ title: 'Z KOBEK DO HORNÍHO HRADU', line: ['bj_t1', 'Z kobek jsem venku. Teď štáb SS – a plány operace Finsternis.'] }),
+  t_m3: transitionCS({ title: 'PO MOSTĚ DO VĚŽE NAD KAPLÍ', line: ['bj_t2', 'Plány mám. Zeman a jeho laboratoř jsou někde pod kaplí.'] }),
+  t_e2m2: transitionCS({ title: 'HLUBOKO V HVOZDU', line: ['bj_t3', 'Podle mapy: lesní tábor, pak trať. Žádné světlo, žádný hluk.'] }),
+  t_e2m3: transitionCS({ title: 'NÁDRAŽÍ WOLFSGRUND', line: ['bj_t4', 'Odtud jede zvláštní vlak. Bez čísla a bez cíle v papírech.'] }),
+  t_e2m4: transitionCS({ kind: 'train', title: 'VE SLUŽEBNÍM VOZE ZVLÁŠTNÍHO VLAKU', line: ['bj_t5', 'Jsem uvnitř. Teď dopředu, vagon po vagonu – až k lokomotivě.'] }),
+  t_e3m2: transitionCS({ kind: 'lift', dur: 12, lineAt: 7.5, title: 'NÁKLADNÍ VÝTAH DO PODZEMÍ', line: ['bj_t6', 'Sto metrů pod horou. Tady stavějí Finsternis.'] }),
+  t_e3m3: transitionCS({ kind: 'lift', dur: 12, lineAt: 7.5, title: 'NEJHLUBŠÍ PATRO – LABORATOŘ', line: ['bj_t7', 'Doktore Zemane. Konečně se poznáme.'] })
+});
+const MISSION_CS = { m1: { pre: 'capture', main: 'cell' }, m2: { main: 't_m2' }, m3: { main: 't_m3' }, e2m1: { main: 'cablecar' }, e2m2: { main: 't_e2m2' }, e2m3: { main: 't_e2m3' }, e2m4: { main: 't_e2m4' }, e3m1: { main: 'ramp' }, e3m2: { main: 't_e3m2' }, e3m3: { main: 't_e3m3' } };
 
 /* =====================================================================
    INPUT & SCREENS
