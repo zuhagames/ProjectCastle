@@ -39,7 +39,7 @@ Hra nepotřebuje žádný vlastní server, three.js i všechny modely, zvuky a d
 
 - **Na webu (GitHub Pages):** v nastavení repozitáře zapni *Settings → Pages → Build and deployment → Source: Deploy from a branch*, vyber větev `main` a složku `/ (root)` a dej *Save*. Za minutu běží hra na <https://zuhagames.github.io/ProjectCastle/>.
 - **V Google Sites:** *Vložit → Vložit (Embed) → Podle adresy URL* a zadej adresu z GitHub Pages výš, pak rámeček roztáhni na celou šířku. Kdyby vložená stránka nedovolila zamknout myš, hra sama nabídne tlačítko **Otevřít v novém okně** (v menu jsou i tlačítka *Celá obrazovka* a *Otevřít v novém okně*).
-- **Z disku:** stačí otevřít `castle_grimhold.html` dvojklikem. Three.js se v tom případě stáhne z CDN (jsDelivr), takže je potřeba internet.
+- **Z disku:** stačí otevřít `index.html` dvojklikem. Three.js se v tom případě stáhne z CDN (jsDelivr), takže je potřeba internet.
 
 Fotografické textury (Poly Haven) jsou volitelné – když nejsou dostupné, hra si textury vygeneruje procedurálně.
 
@@ -87,7 +87,7 @@ V menu i v pauze: citlivost a obrácení myši, FOV, hlasitost, velikost rozhran
 ## Struktura projektu
 
 ```
-castle_grimhold.html   # celá hra (HTML + JS)
+index.html             # celá hra (HTML + JS); castle_grimhold.html jen přesměrovává na index.html
 assets/
   models.js            # zbraně, ruce a němečtí vojáci (FBX) zabalení do JS
   characters.js        # animace (Soldier.glb) a boss (Xbot.glb) zabalené do JS
