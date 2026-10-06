@@ -2152,7 +2152,7 @@ const FALLBACK = { machete: buildKnife, revolver: buildPistol, sten: buildSMG, r
 const VMCFG = {
   machete: { pos: [.16, -.16, -.5], rot: [-.1, .2, -.3], muzzle: [0, 0, -.27], rh: { p: [0, -.005, .2], r: [0, 0, 0], e: [.08, -.25, .62] } },
   revolver: { pos: [.15, -.13, -.45], rot: [.03, .12, -.04], ads: { pos: [0, -.082, -.4], rot: [0, 0, 0] }, muzzle: [0, .052, -.15], rh: { p: [0, -.045, .072], r: [-.38, 0, 0], e: [.1, -.3, .5] } },
-  sten: { pos: [.135, -.16, -.39], rot: [0, .03, 0], ads: { pos: [0, -.089, -.36], rot: [0, 0, 0] }, muzzle: [0, .03, -.39], rh: { p: [.005, -.055, .035], r: [-.2, 0, 0], e: [.13, -.32, .48] }, lh: { p: [-.075, .02, -.12], r: [0, 0, 1.3], e: [-.28, -.3, .3], left: true } },
+  sten: { pos: [.135, -.16, -.39], rot: [0, .03, 0], ads: { pos: [0, -.089, -.44], rot: [0, 0, 0] }, muzzle: [0, .03, -.39], rh: { p: [.005, -.055, .035], r: [-.2, 0, 0], e: [.13, -.32, .48] }, lh: { p: [-.075, .02, -.12], r: [0, 0, 1.3], e: [-.28, -.3, .3], left: true } },
   rifle: { pos: [.12, -.14, -.36], rot: [0, .03, 0], muzzle: [0, .045, -.57], rh: { p: [.0, -.045, .17], r: [-.3, 0, 0], e: [.12, -.32, .55] }, lh: { p: [-.01, -.04, -.2], r: [.2, 0, .3], e: [-.22, -.32, .25], left: true } },
   grenade: { pos: [.17, -.15, -.42], rot: [-.4, .25, -.15], muzzle: [0, 0, -.15], rh: { p: [0, 0, .06], r: [0, 0, 0], e: [.08, -.28, .45] } },
   flamer: { pos: [.11, -.19, -.45], rot: [0, .03, 0], muzzle: [0, .07, -.5], rh: { p: [0, -.06, .1], r: [-.3, 0, 0], e: [.13, -.3, .5] }, lh: { p: [-.01, -.03, -.16], r: [.1, 0, .3], e: [-.24, -.3, .25], left: true } }
@@ -2212,17 +2212,23 @@ function buildViewModels() {
 const ARMS = { ok: false };
 // grip per weapon, in weapon space (barrel along -Z): p = point the palm closes around, a = knuckle line (little finger -> index),
 // f = wrist -> knuckles, c = finger curl [index, middle, ring, little, thumb] (number or per-joint triple)
-const TRIG = [[.6, 1.1, .8], 1.7, 1.75, 1.8, [1.3, .8, .5]], SUPPORT = [1.5, 1.6, 1.65, 1.7, [1.2, .7, .5]];
+// finger curls per joint [knuckle, middle, tip] within anatomical limits; th = where the thumb tip goes, in the
+// hand's own frame [towards the grip, along the knuckle line, along the fingers] measured from the grip point
+const TRIG = { fingers: [[.55, 1.0, .6], [1.25, 1.45, .85], [1.3, 1.5, .9], [1.35, 1.5, .95]], th: [.025, .03, .07] };
+const SUPPORT = { fingers: [[1.05, 1.2, .7], [1.1, 1.25, .75], [1.15, 1.3, .75], [1.2, 1.35, .8]], th: [0, .06, -.02] };
+const FIST = { fingers: [[1.1, 1.3, .75], [1.15, 1.35, .8], [1.2, 1.4, .8], [1.2, 1.4, .85]], th: [.02, .025, .0] };
+const OPEN = { fingers: [[.2, .25, .15], [.25, .3, .2], [.3, .35, .2], [.35, .4, .25]], th: [-.02, .07, .03] };
 const GRIPS = {
-  machete: { R: { p: [0, -.012, .2], a: [0, .08, -1], f: [0, 1, .3], c: [1.5, 1.6, 1.65, 1.7, [.9, .9, .6]] } },
-  revolver: { R: { p: [-.004, -.012, .095], a: [0, 1, -.6], f: [-.1, .3, -1], c: TRIG } },
-  sten: { R: { p: [0, -.012, .165], a: [0, .45, -.9], f: [-.05, .5, -1], c: TRIG }, L: { p: [-.004, .045, -.18], a: [0, .05, -1], f: [1, .45, .1], c: SUPPORT } },
-  rifle: { R: { p: [0, .021, .24], a: [0, .53, -.85], f: [-.05, .6, -1], c: TRIG }, L: { p: [0, .056, -.2], a: [0, .04, -1], f: [1, .4, .05], c: SUPPORT } },
-  grenade: { R: { p: [0, 0, .06], a: [0, .1, -1], f: [0, 1, .3], c: [1.5, 1.6, 1.65, 1.7, [.9, .9, .6]] } },
-  flamer: { R: { p: [0, -.024, .25], a: [0, .83, -.55], f: [-.05, .4, -1], c: TRIG }, L: { p: [0, .046, -.11], a: [0, .05, -1], f: [1, .45, .1], c: SUPPORT } }
+  machete: { R: { p: [0, -.012, .2], r: .013, a: [0, .08, -1], f: [0, 1, .3], c: FIST } },
+  revolver: { R: { p: [-.004, -.016, .095], r: .014, a: [0, 1, -.25], f: [-.1, .2, -1], c: TRIG } },
+  sten: { R: { p: [0, -.02, .15], r: .012, a: [0, 1, -.4], f: [-.05, .3, -1], c: TRIG }, L: { p: [-.004, .03, -.18], r: .025, a: [0, .05, -1], f: [1, .45, .1], c: SUPPORT } },
+  rifle: { R: { p: [0, .021, .24], r: .017, a: [0, .8, -.6], f: [-.05, .5, -1], c: TRIG }, L: { p: [0, .056, -.2], r: .021, a: [0, .04, -1], f: [1, .4, .05], c: SUPPORT } },
+  grenade: { R: { p: [0, 0, .06], r: .013, a: [0, .1, -1], f: [0, 1, .3], c: FIST } },
+  flamer: { R: { p: [0, -.024, .25], r: .015, a: [0, 1, -.35], f: [-.05, .3, -1], c: TRIG }, L: { p: [0, .046, -.11], r: .016, a: [0, .05, -1], f: [1, .45, .1], c: SUPPORT } }
 };
-const ARM_ROOT = [0, -.165, .06], ARM_SCALE = 1.2, ARM_YAW = -.4; // bladed shooting stance: left shoulder forward
-const _aq = new THREE.Quaternion(), _aq2 = new THREE.Quaternion(), _am = new THREE.Matrix4(), _aA = V(0, 0, 0), _aF = V(0, 0, 0), _aN = V(0, 0, 0), _aP = V(0, 0, 0), _aW = V(0, 0, 0);
+const ARM_ROOT = [0, -.165, .06], ARM_SCALE = 1.2, ARM_YAW = -.4; // bladed shooting stance: left shoulder forward; long arms to reach the fore-ends
+const HAND_K = .8; // ...but real-sized hands (1.2 × .8 ≈ 0.96)
+const _aq = new THREE.Quaternion(), _aq2 = new THREE.Quaternion(), _aq3 = new THREE.Quaternion(), _am = new THREE.Matrix4(), _aA = V(0, 0, 0), _aF = V(0, 0, 0), _aN = V(0, 0, 0), _aP = V(0, 0, 0), _aW = V(0, 0, 0), _aZ = V(0, 0, 0), _aE = V(0, 0, 0), _aD = V(0, 0, 0), _aR = V(0, 0, 0), _aT = V(0, 0, 0);
 function initArms() {
   const rig = RIGS.arms; if (!rig) return;
   const root = new THREE.Group(); rig.rotation.set(0, Math.PI, 0); root.add(rig); root.scale.setScalar(ARM_SCALE); root.rotation.y = ARM_YAW; vmScene.add(root);
@@ -2245,45 +2251,84 @@ function initArms() {
     }
   });
   root.updateMatrixWorld(true);
-  const wp = b => b.getWorldPosition(V(0, 0, 0));
+  const wp = b => b.getWorldPosition(V(0, 0, 0)), wq = b => b.getWorldQuaternion(new THREE.Quaternion());
   const side = s => {
     const S = { up: B['upper_arm_' + s], lo: B['forearm_' + s], end: B['forearm_' + s + '_end'], ctl: B['hand_' + s + '_control'], right: s === 'R' };
     S.upRest = S.up.quaternion.clone(); S.loRest = S.lo.quaternion.clone();
     const W = wp(B['hand_' + s]), mid = wp(B['f_middle_01_' + s]), idx = wp(B['f_index_01_' + s]), pky = wp(B['f_pinky_01_' + s]);
     const F = mid.clone().sub(W).normalize(), A = idx.clone().sub(pky); A.addScaledVector(F, -A.dot(F)).normalize();
     const N = S.right ? A.clone().cross(F) : F.clone().cross(A);
-    const Qb = new THREE.Quaternion().setFromRotationMatrix(_am.makeBasis(A, N, A.clone().cross(N))), Qc = S.ctl.getWorldQuaternion(new THREE.Quaternion()); // right-handed basis for either hand
+    const Qb = new THREE.Quaternion().setFromRotationMatrix(_am.makeBasis(A, N, A.clone().cross(N))), Qc = wq(S.ctl); // right-handed basis for either hand
     S.off = Qb.clone().invert().multiply(Qc);
-    S.palm = W.clone().addScaledVector(F, .048 * ARM_SCALE).addScaledVector(N, .026 * ARM_SCALE).sub(wp(S.ctl)).applyQuaternion(Qc.clone().invert()).divideScalar(ARM_SCALE);
-    S.fingers = ['index', 'middle', 'ring', 'pinky', 'thumb'].map(f => {
+    S.palm = W.clone().addScaledVector(F, .072 * ARM_SCALE).sub(wp(S.ctl)).applyQuaternion(Qc.clone().invert()).divideScalar(ARM_SCALE);
+    S.nLo = N.clone().applyQuaternion(wq(S.lo).invert()); // palm direction as the forearm sees it at rest (for the forearm twist)
+    // four fingers: hinge axes so a positive angle curls toward the palm
+    S.fingers = ['index', 'middle', 'ring', 'pinky'].map(f => {
       const chain = [];
       for (let k = 1; k <= 3; k++) {
-        const b = B[(f === 'thumb' ? 'thumb_0' : 'f_' + f + '_0') + k + '_' + s], ch = b && b.children.find(c => c.isBone); if (!ch) continue;
+        const b = B['f_' + f + '_0' + k + '_' + s], ch = b && b.children.find(c => c.isBone); if (!ch) continue;
         const dir = wp(ch).sub(wp(b)).normalize(), ax = dir.clone().cross(N).normalize();
-        chain.push({ b, rest: b.quaternion.clone(), ax: ax.applyQuaternion(b.getWorldQuaternion(new THREE.Quaternion()).invert()).normalize() });
+        chain.push({ b, rest: b.quaternion.clone(), ax: ax.applyQuaternion(wq(b).invert()).normalize() });
       }
       return chain;
     });
+    // thumb: aimed as a whole at a point on the far side of the grip, the two outer joints bend a little
+    S.thumb = [1, 2, 3].map(k => B['thumb_0' + k + '_' + s]);
+    S.thumbTip = B['thumb_03_' + s + '_end'] || S.thumb[2];
+    S.thumbRest = S.thumb.map(b => b.quaternion.clone());
+    S.thumbAx = S.thumb.map((b, k) => { const ch = k < 2 ? S.thumb[k + 1] : S.thumbTip; const dir = wp(ch).sub(wp(b)).normalize(); return dir.cross(N).normalize().applyQuaternion(wq(b).invert()).normalize(); });
     return S;
   };
   ARMS.root = root; ARMS.R = side('R'); ARMS.L = side('L'); ARMS.ok = true;
 }
-// place one hand on a grip (or tuck it away below the screen) and bend the arm to it
-function poseHand(S, gun, g, curlK) {
+const FINGER_MAX = [1.35, 1.65, 1.05];
+// place one hand on a grip (or tuck it away below the screen) and bend the arm to it.
+// The knuckle line follows the grip axis; how far the hand rolls round that axis follows the forearm, so the wrist stays straight.
+function poseHand(S, gun, g) {
   if (g) { gun.localToWorld(_aP.set(...g.p)); gun.getWorldQuaternion(_aq); _aA.set(...g.a).applyQuaternion(_aq); _aF.set(...g.f).applyQuaternion(_aq); }
   else { _aP.set(S.right ? .42 : -.46, -.85, .08); _aA.set(0, 0, -1); _aF.set(S.right ? -.3 : .3, -1, -.2); } // tucked away below the screen
   _aA.normalize(); _aF.addScaledVector(_aA, -_aF.dot(_aA)).normalize();
+  S.ctl.scale.setScalar(HAND_K);
+  const hk = ARM_SCALE * HAND_K, pole = _pole.set(S.right ? .9 : -.9, -1.3, .35), rad = g && g.r !== undefined ? g.r : .015;
+  for (let it = 0; it < 3; it++) {
+    if (S.right) _aN.copy(_aA).cross(_aF); else _aN.copy(_aF).cross(_aA);
+    _aq2.setFromRotationMatrix(_am.makeBasis(_aA, _aN, _aZ.copy(_aA).cross(_aN))).multiply(S.off);
+    _aW.copy(S.palm).multiplyScalar(hk).applyQuaternion(_aq2).negate().add(_aP).addScaledVector(_aN, -(.0115 + rad)); // palm skin ~1.2 cm off the bones, then the grip's radius
+    S.up.quaternion.copy(S.upRest); S.lo.quaternion.copy(S.loRest); S.up.updateMatrixWorld(true);
+    solveArm(S.up, S.lo, S.end, _aW, pole);
+    if (it === 2 || !g) break;
+    S.lo.getWorldPosition(_aE); S.end.getWorldPosition(_aD); _aD.sub(_aE).normalize();
+    _aR.copy(_aD).addScaledVector(_aA, -_aD.dot(_aA));
+    if (_aR.lengthSq() > .05) _aF.lerp(_aR.normalize(), .85).addScaledVector(_aA, -_aF.dot(_aA)).normalize();
+    // a wrist only bends ~20 deg sideways: past that, let the knuckle line give a little instead of the joint
+    const dev = Math.asin(clamp(_aD.dot(_aA), -1, 1)), lim = .35;
+    if (Math.abs(dev) > lim) { if (S.right) _aN.copy(_aA).cross(_aF); else _aN.copy(_aF).cross(_aA); const turn = (Math.abs(dev) - lim) * Math.sign(dev) * (S.right ? -1 : 1); _aq3.setFromAxisAngle(_aN, turn); _aA.applyQuaternion(_aq3); _aF.applyQuaternion(_aq3); }
+  }
+  // forearm twist (pronation): roll the forearm round its own axis so it agrees with the palm, instead of wringing the wrist
+  S.lo.getWorldPosition(_aE); S.end.getWorldPosition(_aD); _aD.sub(_aE).normalize();
+  S.lo.getWorldQuaternion(_aq); _aR.copy(S.nLo).applyQuaternion(_aq); _aR.addScaledVector(_aD, -_aR.dot(_aD)); _aT.copy(_aN).addScaledVector(_aD, -_aN.dot(_aD));
+  if (_aR.lengthSq() > 1e-4 && _aT.lengthSq() > 1e-4) {
+    _aR.normalize(); _aT.normalize();
+    const ang = Math.atan2(_aZ.copy(_aR).cross(_aT).dot(_aD), _aR.dot(_aT));
+    _aq3.setFromAxisAngle(_aD, ang * .75).multiply(_aq); S.lo.parent.getWorldQuaternion(_aq2).invert(); S.lo.quaternion.copy(_aq2.multiply(_aq3)); S.lo.updateMatrixWorld(true);
+  }
+  // hand on the wrist the arm actually reached
   if (S.right) _aN.copy(_aA).cross(_aF); else _aN.copy(_aF).cross(_aA);
-  const Qc = _aq2.setFromRotationMatrix(_am.makeBasis(_aA, _aN, _aW.copy(_aA).cross(_aN))).multiply(S.off);
-  _aW.copy(S.palm).multiplyScalar(ARM_SCALE).applyQuaternion(Qc).negate().add(_aP);
-  S.up.quaternion.copy(S.upRest); S.lo.quaternion.copy(S.loRest); S.up.updateMatrixWorld(true);
-  solveArm(S.up, S.lo, S.end, _aW, _pole.set(S.right ? .9 : -.9, -1.3, .35));
+  const Qc = _aq2.setFromRotationMatrix(_am.makeBasis(_aA, _aN, _aZ.copy(_aA).cross(_aN))).multiply(S.off);
   S.end.getWorldPosition(_aW);
   const par = S.ctl.parent; S.ctl.position.copy(par.worldToLocal(_aW));
   par.getWorldQuaternion(_aq).invert(); S.ctl.quaternion.copy(_aq.multiply(Qc));
-  const curls = g ? g.c : [.25, .3, .35, .4, [.1, .1, .1]];
-  S.fingers.forEach((chain, i) => { const c = curls[i], per = Array.isArray(c) ? c : [c, c * 1.1, c * .75]; chain.forEach((j, k) => j.b.quaternion.copy(j.rest).multiply(_aq.setFromAxisAngle(j.ax, per[k] * curlK))); });
   S.ctl.updateMatrixWorld(true);
+  // fingers
+  const c = g ? g.c : OPEN;
+  S.fingers.forEach((chain, i) => chain.forEach((j, k) => j.b.quaternion.copy(j.rest).multiply(_aq.setFromAxisAngle(j.ax, Math.min(FINGER_MAX[k], c.fingers[i][k])))));
+  // thumb: slight bend, then swing the whole thumb so its tip lands on the far side of the grip
+  S.thumb.forEach((b, k) => { b.quaternion.copy(S.thumbRest[k]); if (k) b.quaternion.multiply(_aq.setFromAxisAngle(S.thumbAx[k], k === 1 ? .25 : .35)); });
+  S.ctl.updateMatrixWorld(true);
+  const th = c.th, base = S.thumb[0], ts = hk / .96;
+  _aT.copy(_aP).addScaledVector(_aN, th[0] * ts).addScaledVector(_aA, th[1] * ts).addScaledVector(_aF, th[2] * ts);
+  base.getWorldPosition(_aE); S.thumbTip.getWorldPosition(_aD);
+  turnBone(base, _aD.sub(_aE).normalize(), _aT.sub(_aE).normalize());
 }
 function poseArms(w, visible) {
   if (!ARMS.ok) return;
@@ -2293,17 +2338,17 @@ function poseArms(w, visible) {
   w.model.updateMatrixWorld(true);
   let L = G.L || null;
   // reloading: the support hand goes to the magazine (or the cylinder) and back
-  if (player.reloadT > 0 && w.mag && w.model.userData.mag) { const mg = w.model.userData.mag; mg.updateMatrixWorld(true); const p = mg.getWorldPosition(V(0, 0, 0)); gun.worldToLocal(p); L = { p: [p.x - .06, p.y - .01, p.z], a: [0, .1, -1], f: [1, -.2, .2], c: [.9, 1, 1.05, 1.1, [.3, .3, .3]] }; }
-  else if (player.reloadT > 0 && w.id === 'revolver') L = { p: [-.012, -.012, .035], a: [0, .1, -1], f: [1, .35, 0], c: SUPPORT }; // cradle the revolver while thumbing in rounds
+  if (player.reloadT > 0 && w.mag && w.model.userData.mag) { const mg = w.model.userData.mag; mg.updateMatrixWorld(true); const p = mg.getWorldPosition(V(0, 0, 0)); gun.worldToLocal(p); L = { p: [p.x - .06, p.y - .01, p.z], r: .012, a: [0, .1, -1], f: [1, -.2, .2], c: SUPPORT }; }
+  else if (player.reloadT > 0 && w.id === 'revolver') L = { p: [-.012, -.012, .035], r: .02, a: [0, .1, -1], f: [1, .35, 0], c: SUPPORT }; // cradle the revolver while thumbing in rounds
   let R = G.R || null;
   // bolt action: after each rifle shot the right hand leaves the wrist, works the bolt back and forth and returns
   if (w.id === 'rifle' && vm.act === 'bolt' && vm.actT > 0 && R) {
     const t = 1 - vm.actT / .9, b = clamp(Math.min((t - .1) / .14, (.95 - t) / .14), 0, 1), pull = Math.sin(Math.PI * clamp((t - .28) / .45, 0, 1)) * .085;
     const bp = [.042, .048, .1 + pull], ba = [0, 1, .15], bf = [-.25, .1, -1];
-    R = { p: R.p.map((v, i) => lerp(v, bp[i], b)), a: R.a.map((v, i) => lerp(v, ba[i], b)), f: R.f.map((v, i) => lerp(v, bf[i], b)), c: b > .5 ? [1.15, 1.3, 1.4, 1.45, [1, .7, .5]] : R.c };
+    R = { p: R.p.map((v, i) => lerp(v, bp[i], b)), a: R.a.map((v, i) => lerp(v, ba[i], b)), f: R.f.map((v, i) => lerp(v, bf[i], b)), c: b > .5 ? FIST : R.c };
   }
-  poseHand(ARMS.R, gun, R, 1);
-  poseHand(ARMS.L, gun, L, 1);
+  poseHand(ARMS.R, gun, R);
+  poseHand(ARMS.L, gun, L);
 }
 const muzzleSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: TX.muzzle, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, color: new THREE.Color(1.6, 1.3, 1) }));
 muzzleSprite.visible = false; vmScene.add(muzzleSprite);
