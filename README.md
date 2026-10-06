@@ -74,6 +74,7 @@ V menu i v pauze: citlivost a obrácení myši, FOV, hlasitost, velikost rozhran
 
 ## Novinky ve verzi 1.4
 
+- **Nové menu ve stylu moderních Wolfensteinů:** úvodní obrazovka „Stiskni libovolnou klávesu“, kovové logo, menu vlevo s červeným zvýrazněním (myš i šipky + Enter, Esc zpět, zvuky), panel s informacemi k vybrané položce, výběr mise s kartami epizod a stavem misí, nová obrazovka Titulky, filmové zrno a žhavé jiskry.
 - **Mise 2.4 · Zvláštní vlak:** probojuješ se jedoucím vlakem vagon po vagonu (služební vůz, otevřený vůz, krytý vůz, plošina s raketou, vůz s municí, protiletadlový vůz, tendr) až do lokomotivy. Tam převezmeš řízení: `W` regulátor, `S` brzda. V zatáčce a na mostě dodržuj rychlost, jinak vykolejíš, a ve Wolfsgrundu zastav u rampy dřív, než narazíš do zarážedla.
 - **Cutscéna na začátku každé mise:** jak se B. J. dostal dál – z kobek do štábu, po mostě do věže, lesem k nádraží, naskočení do vlaku za jízdy, výtahy do podzemní továrny a k laboratoři.
 - **Americké zbraně:** Thompson M1A1, M1 Garand, BAR M1918A2 a prototyp bazuky M1.

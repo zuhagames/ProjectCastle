@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Blázen z Londýna: Tajná Akce</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Oswald:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Oswald:wght@300;400;600;700&family=Anton&display=swap" rel="stylesheet">
 <style>
   :root { --gold:#c9a24c; --red:#a3180f; --ink:#f1e6c8; }
   html,body { margin:0; height:100%; background:#000; overflow:hidden; font-family:'Oswald',Impact,sans-serif; color:#eee; user-select:none; }
@@ -82,6 +82,63 @@
   .soon span { display:block; font:13px 'Special Elite',monospace; color:#c9a24c; }
   .soon i { position:absolute; right:-10px; top:-128px; font:700 13px 'Oswald',sans-serif; font-style:normal; letter-spacing:3px; color:#fff; background:#a3180f; padding:4px 12px; transform:rotate(12deg); box-shadow:0 3px 8px rgba(0,0,0,.6); animation:pulse 2.4s ease-in-out infinite; }
   @media (max-width:900px) { .soon { transform:scale(.7); transform-origin:right bottom; } }
+  /* ---- AAA front end: title screen, left-hand menu, info panel, key hints, film grain ---- */
+  #overlay > .aaa { zoom:1; }
+  .aaa { position:absolute; inset:0; overflow:hidden; text-align:left; font-family:'Oswald',sans-serif; animation:aaaIn .7s ease-out; }
+  @keyframes aaaIn { from { opacity:0; transform:translateX(-24px); } to { opacity:1; transform:none; } }
+  .aaa .shade { position:absolute; inset:0; background:linear-gradient(90deg, rgba(0,0,0,.92) 0%, rgba(0,0,0,.78) 30%, rgba(0,0,0,.2) 55%, rgba(0,0,0,0) 70%), linear-gradient(0deg, rgba(0,0,0,.85), transparent 22%); pointer-events:none; }
+  .grain { position:absolute; inset:-50%; pointer-events:none; opacity:.09; background-image:var(--grain); animation:grain .5s steps(4) infinite; mix-blend-mode:screen; }
+  @keyframes grain { 0% { transform:translate(0,0); } 25% { transform:translate(-3%,2%); } 50% { transform:translate(2%,-3%); } 75% { transform:translate(-1%,3%); } }
+  .aaa .vig { position:absolute; inset:0; pointer-events:none; box-shadow:inset 0 0 22vh rgba(0,0,0,.9); }
+  .logo { position:absolute; left:6vw; top:7vh; filter:drop-shadow(0 8px 14px rgba(0,0,0,.9)); }
+  .logo .l1 { font-family:'Anton','Impact',sans-serif; font-size:clamp(46px,6.6vw,118px); line-height:.86; letter-spacing:.02em; text-transform:uppercase;
+    background:linear-gradient(180deg,#ffffff 0%,#d9d4c8 38%,#8c8579 52%,#e6e0d2 70%,#9c9486 100%); -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-stroke:1px rgba(0,0,0,.35); }
+  .logo .l2 { display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .logo .l2 span { font:700 clamp(15px,1.7vw,28px) 'Oswald',sans-serif; letter-spacing:.55em; color:#fff; background:#b3150c; padding:5px 10px 5px 18px; box-shadow:0 0 0 2px #000, 6px 6px 0 rgba(0,0,0,.6); }
+  .logo .l2 i { width:clamp(30px,2.6vw,46px); height:clamp(30px,2.6vw,46px); border-radius:50%; flex:none; background:radial-gradient(circle,#c8102e 0 30%,#fff 31% 58%,#012169 59% 100%); box-shadow:0 0 0 2px #000; }
+  .logo .l3 { margin-top:8px; font:300 clamp(11px,.9vw,15px) 'Oswald',sans-serif; letter-spacing:.6em; color:#b9ad92; }
+  .logo.sm .l1 { font-size:clamp(30px,3.4vw,58px); } .logo.sm .l2 span { font-size:clamp(11px,1vw,16px); }
+  .mlist { position:absolute; left:6vw; top:clamp(270px,40vh,420px); display:flex; flex-direction:column; gap:2px; width:min(440px,80vw); }
+  .mi { position:relative; display:flex; align-items:baseline; gap:16px; width:100%; padding:7px 18px 7px 22px; background:transparent; border:0; border-left:4px solid transparent; cursor:pointer; text-align:left;
+    font:600 clamp(22px,2.2vw,38px) 'Oswald',sans-serif; letter-spacing:.06em; text-transform:uppercase; color:#b8b0a0; transition:color .15s, transform .18s, letter-spacing .2s, background .2s; }
+  .mi i { font:400 13px 'Oswald',sans-serif; letter-spacing:.2em; color:#7d735f; font-style:normal; min-width:22px; }
+  .mi small { margin-left:auto; font:400 12px 'Oswald',sans-serif; letter-spacing:.25em; color:#8f8571; }
+  .mi.on { color:#fff; transform:translateX(10px); letter-spacing:.1em; border-left-color:#ff3b24; background:linear-gradient(90deg, rgba(179,21,12,.85), rgba(179,21,12,.35) 55%, rgba(179,21,12,0)); text-shadow:0 2px 6px rgba(0,0,0,.7); }
+  .mi.on i { color:#ffd6c9; } .mi:disabled { color:#5a5448; cursor:default; } .mi.sm { font-size:clamp(15px,1.3vw,20px); }
+  .minfo { position:absolute; right:5vw; top:clamp(270px,40vh,420px); width:min(420px,32vw); padding:18px 22px 20px; background:linear-gradient(135deg, rgba(10,9,8,.86), rgba(20,14,10,.66)); border-top:3px solid #b3150c; box-shadow:0 20px 50px rgba(0,0,0,.6); }
+  .minfo h4 { margin:0 0 4px; font:700 22px 'Oswald',sans-serif; letter-spacing:.12em; color:#fff; text-transform:uppercase; }
+  .minfo h5 { margin:0 0 10px; font:400 12px 'Oswald',sans-serif; letter-spacing:.35em; color:#c9a24c; text-transform:uppercase; }
+  .minfo p { margin:0 0 8px !important; font:15px/1.55 'Special Elite',monospace !important; color:#cfc6b0 !important; max-width:none !important; }
+  .minfo .meter { height:6px; background:rgba(255,255,255,.08); margin-top:10px; } .minfo .meter b { display:block; height:100%; background:linear-gradient(90deg,#b3150c,#ff6a3d); }
+  .mbar { position:absolute; left:0; right:0; bottom:0; height:46px; display:flex; align-items:center; gap:28px; padding:0 6vw; background:linear-gradient(0deg, rgba(0,0,0,.85), rgba(0,0,0,.3)); border-top:1px solid rgba(201,162,76,.25);
+    font:400 13px 'Oswald',sans-serif; letter-spacing:.22em; color:#a99c80; }
+  .mbar kbd { display:inline-block; min-width:16px; padding:2px 7px; margin-right:7px; font:600 12px 'Oswald',sans-serif; color:#111; background:#d8d0bd; border-radius:3px; box-shadow:0 2px 0 #6d6553; text-align:center; letter-spacing:0; }
+  .mbar em { margin-left:auto; font-style:normal; color:#6f6756; }
+  .aaa .soon { right:5vw; bottom:64px; transform:none; }
+  .press { position:absolute; left:0; right:0; bottom:16vh; text-align:center; font:400 clamp(14px,1.3vw,20px) 'Oswald',sans-serif; letter-spacing:.6em; color:#e8e0cc; animation:blink 1.8s ease-in-out infinite; text-shadow:0 2px 8px #000; }
+  @keyframes blink { 50% { opacity:.25; } }
+  .title .logo { left:50%; top:22vh; transform:translateX(-50%); text-align:center; } .title .logo .l2 { justify-content:center; }
+  .spanel { position:absolute; left:6vw; top:clamp(200px,28vh,300px); right:6vw; bottom:70px; overflow:auto; max-width:1000px; }
+  .spanel h3 { margin:0 0 14px !important; font:700 30px 'Oswald',sans-serif !important; letter-spacing:.14em !important; color:#fff !important; text-transform:uppercase; padding-bottom:8px; border-bottom:2px solid #b3150c; }
+  .spanel h6 { margin:16px 0 8px; font:400 13px 'Oswald',sans-serif; letter-spacing:.35em; color:#c9a24c; }
+  .tabs { display:flex; gap:4px; flex-wrap:wrap; } .tabs .mi { width:auto; font-size:18px; padding:6px 16px; border-left:0; border-bottom:3px solid transparent; }
+  .tabs .mi.sel { color:#fff; border-bottom-color:#ff3b24; background:rgba(179,21,12,.35); }
+  .eprow { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; } .epc { text-align:left; padding:12px 14px; background:rgba(12,10,8,.75); border:1px solid rgba(201,162,76,.25); border-left:4px solid #3b342a; cursor:pointer; color:#cfc6b0; font-family:'Oswald',sans-serif; }
+  .epc span { display:block; font-size:11px; letter-spacing:.35em; color:#8f8571; } .epc b { display:block; font-size:20px; letter-spacing:.06em; color:#fff; margin:2px 0; } .epc small { font-size:12px; color:#a99c80; }
+  .epc.sel, .epc.on { border-left-color:#ff3b24; background:rgba(60,12,8,.8); } .epc:disabled { opacity:.35; cursor:default; }
+  .mrow { display:flex; align-items:center; gap:16px; width:100%; padding:9px 14px; margin-bottom:3px; background:rgba(12,10,8,.7); border:0; border-left:4px solid transparent; cursor:pointer; text-align:left; font-family:'Oswald',sans-serif; color:#cfc6b0; }
+  .mrow .no { font:700 22px 'Anton','Impact',sans-serif; color:#8f8571; min-width:44px; } .mrow b { font-size:19px; letter-spacing:.06em; color:#fff; font-weight:600; } .mrow small { display:block; font-size:12px; color:#a99c80; letter-spacing:.05em; }
+  .mrow .st { margin-left:auto; font-size:12px; letter-spacing:.25em; color:#7fa06a; } .mrow:disabled { opacity:.4; cursor:default; } .mrow:disabled .st { color:#8a6a5a; }
+  .mrow.sel, .mrow.on { border-left-color:#ff3b24; background:linear-gradient(90deg, rgba(179,21,12,.55), rgba(12,10,8,.7)); } .mrow.sel .no { color:#ff6a3d; }
+  .spanel .acts { display:flex; gap:10px; margin-top:16px; } .spanel .acts .mi { width:auto; }
+  .credits p { font:15px/1.7 'Special Elite',monospace !important; color:#cfc6b0 !important; max-width:780px !important; margin:0 0 10px !important; }
+  .title .shade { background:radial-gradient(ellipse at 50% 42%, rgba(0,0,0,.72), rgba(0,0,0,.25) 45%, rgba(0,0,0,.55) 100%); }
+  .title .press { color:#fff; font-weight:600; }
+  .aaa .set { background:rgba(10,9,8,.72); border:0; border-left:3px solid #b3150c; font-family:'Oswald',sans-serif; letter-spacing:.06em; font-size:17px; }
+  .aaa .seg .btn { margin:0 4px 0 0; font:600 15px 'Oswald',sans-serif; letter-spacing:.12em; padding:5px 14px; color:#cfc6b0; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.14); }
+  .aaa .seg .btn.sel { color:#fff; background:#b3150c; border-color:#ff3b24; box-shadow:none; }
+  .aaa .set input[type=range] { accent-color:#d0301e; } .aaa .set .rng span { color:#e8dcc0; }
+  @media (max-width:900px) { .minfo { display:none; } .mlist { top:auto; bottom:70px; } .eprow { grid-template-columns:1fr; } .mbar span:nth-child(n+3) { display:none; } }
   .mpanel { background:rgba(10,8,6,.72); border:1px solid rgba(201,162,76,.4); padding:10px 22px 16px; box-shadow:0 10px 40px rgba(0,0,0,.7); max-width:900px; }
   #overlay h1 { font-family:'Special Elite',monospace; font-size:clamp(34px,7vw,84px); margin:0; color:#e6d6aa; letter-spacing:3px; text-shadow:0 0 24px rgba(160,20,10,.6), 0 4px 0 #000; }
   #overlay h2 { margin:6px 0 18px; font-weight:400; letter-spacing:8px; color:#b52519; font-size:clamp(13px,2vw,18px); }
@@ -6198,7 +6255,8 @@ function showSettings(back) {
   const prev = game.state; game.state = prev === 'playing' ? 'paused' : prev;
   const rng = (k, min, max, step, fmt) => `<div class="rng"><input type="range" min="${min}" max="${max}" step="${step}" value="${SET[k]}" data-k="${k}" data-f="${fmt}"><span></span></div>`;
   const seg = (k, opts) => `<div class="seg">${opts.map(([v, l]) => `<button class="btn sm${SET[k] === v ? ' sel' : ''}" data-k="${k}" data-v='${JSON.stringify(v)}'>${l}</button>`).join('')}</div>`;
-  overlay.innerHTML = `<h1 style="font-size:clamp(28px,5vw,56px)">NASTAVENÍ</h1><div class="set">
+  const inMenu = prev === 'menu', B = inMenu ? 'mi sm' : 'btn', BS = inMenu ? 'mi sm' : 'btn sm';
+  const body = `<div class="set">
     <label>Citlivost myši</label>${rng('sens', .2, 3, .05, 'x')}
     <label>Obrátit osu Y</label>${seg('invertY', [[false, 'NE'], [true, 'ANO']])}
     <label>Zorné pole (FOV)</label>${rng('fov', 65, 105, 1, 'deg')}
@@ -6209,8 +6267,10 @@ function showSettings(back) {
     <label>Přikrčení [C]</label>${seg('crouchToggle', [[true, 'PŘEPÍNAT'], [false, 'DRŽET']])}
     <label>Minimapa</label>${seg('minimap', [[true, 'ZAP'], [false, 'VYP']])}
     <label>Pohupování kamery</label>${seg('bob', [[true, 'ZAP'], [false, 'VYP']])}
-  </div><div><button class="btn" data-back="1">ZPĚT</button><button class="btn sm" data-def="1">VÝCHOZÍ</button></div>`;
+  </div><div class="acts" style="display:flex;gap:10px;justify-content:${inMenu ? 'flex-start' : 'center'}"><button class="${B}" data-nav data-back="1">ZPĚT</button><button class="${BS}" data-nav data-def="1">VÝCHOZÍ</button></div>`;
+  overlay.innerHTML = inMenu ? `<div class="aaa">${FX}${titleHtml(true)}<div class="spanel"><h3>Nastavení</h3>${body}</div>${hintBar()}</div>` : `<h1 style="font-size:clamp(28px,5vw,56px)">NASTAVENÍ</h1>${body}`;
   overlay.style.display = 'flex'; $('hud').style.display = 'none';
+  if (inMenu) navInit(() => { game.state = prev; back(); });
   const label = el => { const v = +el.value, f = el.dataset.f; el.nextElementSibling.textContent = f === '%' ? Math.round(v * 100) + ' %' : f === 'deg' ? v + '°' : v.toFixed(2) + '×'; };
   overlay.querySelectorAll('input[type=range]').forEach(el => { label(el); el.oninput = () => { SET[el.dataset.k] = +el.value; label(el); saveSettings(); MUSIC.vol(); }; });
   overlay.querySelectorAll('.seg button').forEach(b => b.onclick = () => { SET[b.dataset.k] = JSON.parse(b.dataset.v); saveSettings(); showSettings(back); game.state = prev; });
@@ -6503,6 +6563,10 @@ function menuBG(t) {
     let fg = g.createLinearGradient(0, gy - 130 * u, 0, gy); fg.addColorStop(0, 'rgba(120,160,220,0)'); fg.addColorStop(1, 'rgba(130,170,230,.4)'); g.fillStyle = fg; g.fillRect(0, gy - 130 * u, W, 130 * u); // mist on the Thames
     g.fillStyle = '#01030a'; for (let i = 0; i < 4; i++) soldier(g, W * (.62 + i * .1), gy + 4 * u, 1.55 * u, 'uk', t + i, false, i % 2 === 0);
   });
+  // embers rising from the burning German lines
+  MB.emb = MB.emb || Array.from({ length: 70 }, () => ({ x: Math.random(), y: Math.random(), s: .4 + Math.random(), p: Math.random() * 6 }));
+  for (const e of MB.emb) { e.y -= .0011 * e.s; e.x += Math.sin(t * .8 + e.p) * .0004; if (e.y < 0) { e.y = 1; e.x = Math.random() * .55; }
+    const a = Math.min(1, e.y * 1.6) * (.5 + .5 * Math.sin(t * 6 + e.p)); g.fillStyle = `rgba(255,${140 + 60 * e.s | 0},60,${a * .8})`; g.fillRect(e.x * W, e.y * H, 2.4 * u * e.s, 2.4 * u * e.s); }
   // bombers crossing the front, snow/ash, the seam itself
   g.fillStyle = 'rgba(0,0,0,.85)'; for (let k = 0; k < 3; k++) { const x = ((t * 55 * u + k * 260 * u) % (W + 300 * u)) - 150 * u, y = H * (.12 + k * .05); g.fillRect(x - 22 * u, y - 2 * u, 44 * u, 5 * u); g.fillRect(x - 4 * u, y - 18 * u, 10 * u, 38 * u); g.fillRect(x - 20 * u, y - 6 * u, 6 * u, 12 * u); }
   g.fillStyle = 'rgba(240,236,226,.6)'; for (const f of MB.snow) { f[1] += .0009 * f[2]; if (f[1] > 1) f[1] = 0; g.fillRect(((f[0] + Math.sin(t * .5 + f[2] * 6) * .01) % 1) * W, f[1] * H, 2.2 * u * f[2], 2.2 * u * f[2]); }
@@ -6536,46 +6600,100 @@ if (!store.get('cg_lv2', false)) { const u = store.get('cg_unlocked', 0); if (u 
 function unlocked() { return clamp(store.get('cg_unlocked', 0), 0, LEVELS.length - 1); }
 let menuDiff = clamp(store.get('cg_diff', 1), 0, DIFFS.length - 1), menuLevel = 0;
 const TITLE = 'BLÁZEN Z LONDÝNA', SUBTITLE = 'TAJNÁ AKCE';
-const titleHtml = small => `<div class="gtitle${small ? ' sm' : ''}"><div class="gt1">${TITLE}</div><div class="gt2"><span>${SUBTITLE}</span></div></div>`;
+const titleHtml = small => `<div class="logo${small ? ' sm' : ''}"><div class="l1">Blázen<br>z Londýna</div><div class="l2"><i></i><span>TAJNÁ AKCE</span></div>${small ? '' : '<div class="l3">BAVORSKÉ ALPY · 1943</div>'}</div>`;
+// film grain: a small noise tile painted once, scrolled by CSS
+const GRAIN = (() => { const c = mkCanvas(160, 160), g = c.getContext('2d'), d = g.createImageData(160, 160); for (let i = 0; i < d.data.length; i += 4) { const v = Math.random() * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; } g.putImageData(d, 0, 0); return `url(${c.toDataURL()})`; })();
+document.documentElement.style.setProperty('--grain', GRAIN);
+const FX = '<div class="shade"></div><div class="grain"></div><div class="vig"></div>';
+const hintBar = (back = true) => `<div class="mbar"><span><kbd>↑</kbd><kbd>↓</kbd>VÝBĚR</span><span><kbd>ENTER</kbd>POTVRDIT</span>${back ? '<span><kbd>ESC</kbd>ZPĚT</span>' : ''}<em>v1.4 · ${Object.keys(FBX).length}/6 FBX${soldierTpl ? '' : ' · náhradní postavy'}</em></div>`;
+// keyboard + mouse navigation over every [data-nav] element of the current screen
+const NAV = { i: 0, back: null };
+function navInit(back = null, start = 0) {
+  NAV.back = back; const items = navItems(); NAV.i = clamp(start, 0, Math.max(0, items.length - 1));
+  items.forEach((el, k) => { el.onmouseenter = () => navSet(k); el.addEventListener('focus', () => navSet(k, true)); });
+  navSet(NAV.i, true);
+}
+const navItems = () => [...overlay.querySelectorAll('[data-nav]')].filter(el => !el.disabled);
+function navSet(k, quiet = false) {
+  const items = navItems(); if (!items.length) return; k = (k + items.length) % items.length;
+  if (k !== NAV.i && !quiet && sfx.ctx) sfx.click(sfx.master, 0, 2400, .12);
+  NAV.i = k; items.forEach((el, j) => el.classList.toggle('on', j === k));
+  const info = items[k].dataset.info; if (info && MENU_INFO[info]) { const box = overlay.querySelector('.minfo'); if (box) box.innerHTML = MENU_INFO[info](); }
+}
+addEventListener('keydown', e => {
+  if (game.state !== 'menu' || overlay.style.display === 'none' || e.target.tagName === 'INPUT') return;
+  if (overlay.querySelector('.title')) { e.preventDefault(); return showMainMenu(); }
+  const items = navItems(); if (!items.length) return;
+  if (['ArrowDown', 'KeyS', 'ArrowRight'].includes(e.code)) { e.preventDefault(); navSet(NAV.i + 1); }
+  else if (['ArrowUp', 'KeyW', 'ArrowLeft'].includes(e.code)) { e.preventDefault(); navSet(NAV.i - 1); }
+  else if (e.code === 'Enter' || e.code === 'Space') { e.preventDefault(); items[NAV.i] && items[NAV.i].click(); }
+  else if (e.code === 'Escape' || e.code === 'Backspace') { if (NAV.back) { e.preventDefault(); sfx.ctx && sfx.play('switch'); NAV.back(); } }
+});
+const okSound = () => { if (sfx.ctx) { sfx.play('switch'); sfx.click(sfx.master, 0, 1400, .3); } };
+// the right-hand panel: what the highlighted item does
+const MENU_INFO = {
+  cont: () => { const L = LEVELS[menuLevel]; return `<h5>Pokračovat · obtížnost ${DIFFS[menuDiff].name}</h5><h4>${L.name}</h4><p>${L.sub}.</p><p>${(L.brief && L.brief[0]) || ''}</p><div class="meter"><b style="width:${Math.round((unlocked() + 1) / LEVELS.length * 100)}%"></b></div><h5 style="margin:6px 0 0">Postup ${unlocked() + 1} / ${LEVELS.length} misí</h5>`; },
+  new: () => `<h5>Epizoda 1 · Útěk z Grimholdu</h5><h4>Nová hra</h4><p>Říjen 1943. Agent B. J. – „Orel“ – je chycen v Bavorských Alpách a odvlečen do kobek hradu Grimhold.</p><p>Uteč, ukradni plány operace Finsternis a zastav dr. Zemana dřív, než jeho rakety poletí na Londýn.</p>`,
+  missions: () => `<h5>3 epizody · ${LEVELS.length} misí</h5><h4>Výběr mise</h4><p>Hrad Grimhold, noční hvozd se zvláštním vlakem a podzemní továrna Wolfsgrund.</p><p>Odemčeno ${unlocked() + 1} z ${LEVELS.length}. Tady zvolíš i obtížnost – teď ${DIFFS[menuDiff].name}.</p>`,
+  settings: () => `<h5>Myš · obraz · zvuk</h5><h4>Nastavení</h4><p>Citlivost a obrácení myši, zorné pole, hlasitost zvuků i hudby, velikost rozhraní, rozlišení, přikrčení, minimapa a pohupování kamery.</p>`,
+  keys: () => `<h5>WASD · myš · F · TAB</h5><h4>Ovládání</h4><p>Plíž se ve stínu (C), tiše likviduj nožem zezadu, podrž TAB pro mapu s cíli mise.</p>`,
+  credits: () => `<h5>Kdo to udělal</h5><h4>Titulky</h4><p>Hra v jednom HTML souboru na three.js. Modely, zvuky a textury s licencí CC0.</p>`,
+  full: () => `<h4>Celá obrazovka</h4><p>Hra je vložená do jiné stránky. Na celé obrazovce se hraje nejlépe.</p>`,
+  tab: () => `<h4>Otevřít v novém okně</h4><p>Pokud vložená stránka nedovolí zamknout myš, otevři hru samostatně. Postup zůstane uložený.</p>`
+};
+function showTitle() {
+  game.state = 'menu'; menuScreen(true);
+  overlay.innerHTML = `<div class="aaa title">${FX}${titleHtml()}<div class="press">STISKNI LIBOVOLNOU KLÁVESU</div></div><div id="load"></div>`;
+  overlay.style.display = 'flex'; $('hud').style.display = 'none';
+  overlay.querySelector('.aaa').onclick = () => showMainMenu();
+}
 function showMainMenu() {
   game.state = 'menu'; sfx.flame(false); menuScreen(true);
   const un = unlocked(); menuLevel = clamp(menuLevel, 0, un);
-  overlay.innerHTML = `${titleHtml()}
-    <div class="mmenu">
-      <button class="btn big" data-go="start">START</button>
-      <div class="mnote">${LEVELS[menuLevel].name} · obtížnost ${DIFFS[menuDiff].name}</div>
-      <button class="btn" data-go="missions">VÝBĚR MISE</button>
-      <button class="btn" data-go="settings">NASTAVENÍ</button>
-      <button class="btn" data-go="keys">OVLÁDÁNÍ</button>
-      ${IN_FRAME ? '<button class="btn sm" data-go="full">CELÁ OBRAZOVKA</button><button class="btn sm" data-go="tab">OTEVŘÍT V NOVÉM OKNĚ</button>' : ''}
-    </div>
-    <div class="soon"><canvas id="soonc" width="300" height="168"></canvas><div class="st"><b>BONUS EXPANSION PACK</b><span>VE STOPÁCH ORLA</span><i>COMING SOON</i></div></div>
-    <p class="mfoot">v1.4 · agent B. J. z Londýna proti operaci Finsternis · 1943<br>Dabing: Piper TTS · Zbraně: CC0 z OpenGameArt · vojáci: nisu (CC0), three.js / Mixamo · ${Object.keys(FBX).length}/6 FBX načteno${soldierTpl ? '' : ' · náhradní postavy'}</p><div id="load"></div>`;
+  const it = (go, label, info, n) => `<button class="mi" data-nav data-go="${go}" data-info="${info}"><i>${String(n).padStart(2, '0')}</i>${label}</button>`;
+  let n = 0; const rows = [];
+  if (un > 0) rows.push(it('start', 'Pokračovat', 'cont', ++n));
+  rows.push(it('new', 'Nová hra', 'new', ++n), it('missions', 'Výběr mise', 'missions', ++n), it('settings', 'Nastavení', 'settings', ++n), it('keys', 'Ovládání', 'keys', ++n), it('credits', 'Titulky', 'credits', ++n));
+  if (IN_FRAME) rows.push(it('full', 'Celá obrazovka', 'full', ++n).replace('class="mi"', 'class="mi sm"'), it('tab', 'Otevřít v novém okně', 'tab', ++n).replace('class="mi"', 'class="mi sm"'));
+  overlay.innerHTML = `<div class="aaa">${FX}${titleHtml()}<nav class="mlist">${rows.join('')}</nav><aside class="minfo"></aside>
+    <div class="soon"><canvas id="soonc" width="300" height="168"></canvas><div class="st"><b>BONUS EXPANSION PACK</b><span>VE STOPÁCH ORLA</span><i>COMING SOON</i></div></div>${hintBar(false)}</div><div id="load"></div>`;
   overlay.style.display = 'flex'; $('hud').style.display = 'none';
-  const go = { start: () => startMission(menuLevel, true), missions: showMissionSelect, settings: () => showSettings(showMainMenu), keys: showControls, full: goFullscreen, tab: openStandalone };
-  overlay.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { sfx.play && sfx.ctx && sfx.play('switch'); go[b.dataset.go](); });
+  const go = { start: () => startMission(menuLevel, true), new: () => { menuLevel = 0; startMission(0, true); }, missions: showMissionSelect, settings: () => showSettings(showMainMenu), keys: showControls, credits: showCredits, full: goFullscreen, tab: openStandalone };
+  overlay.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { okSound(); go[b.dataset.go](); });
+  navInit(null, 0);
 }
-function showMissionSelect() {
+function showMissionSelect(focus = 'play') {
   game.state = 'menu'; menuScreen(true);
-  const un = unlocked(); menuLevel = clamp(menuLevel, 0, un);
-  overlay.innerHTML = `${titleHtml(true)}<div class="mpanel">
-    <h3>OBTÍŽNOST</h3><div>${DIFFS.map((d, i) => `<button class="btn sm${i === menuDiff ? ' sel' : ''}" data-d="${i}">${d.name}</button>`).join('')}</div><p style="font-size:13px;color:#a99c80;margin:6px 0 0">${DIFFS[menuDiff].desc}</p>
-    <h3>EPIZODY</h3><div class="eps">${EPISODES.map((E, k) => `<button class="ep${k === epOf(menuLevel) ? ' sel' : ''}" data-e="${k}" ${E.levels[0] > un ? 'disabled' : ''}><span>EPIZODA ${k + 1}</span><b>${E.title}</b><small>${E.sub}</small></button>`).join('')}</div>
-    <h3>MISE</h3><div>${EPISODES[epOf(menuLevel)].levels.map(i => `<button class="btn sm${i === menuLevel ? ' sel' : ''}" data-l="${i}" ${i > un ? 'disabled' : ''}>${LEVELS[i].name.replace('MISE ', '').replace(' · ', ' ')}</button>`).join('')}</div>
-    <p style="font-size:13px;color:#a99c80">Plížení: drž se ve stínu a přikrč se (C). Stráže tě nejdřív jen tuší <b style="color:#f2c53d">?</b> – teprve pak spustí poplach <b style="color:#ff3b24">!</b>. Zezadu nožem = tichá likvidace.</p>
-    <div><button class="btn" data-play="1">HRÁT</button><button class="btn sm" data-back="1">ZPĚT</button></div></div><div id="load"></div>`;
+  const un = unlocked(); menuLevel = clamp(menuLevel, 0, un); const ep = epOf(menuLevel);
+  overlay.innerHTML = `<div class="aaa">${FX}${titleHtml(true)}<div class="spanel"><h3>Výběr mise</h3>
+    <h6>OBTÍŽNOST</h6><div class="tabs">${DIFFS.map((d, i) => `<button class="mi${i === menuDiff ? ' sel' : ''}" data-nav data-d="${i}">${d.name}</button>`).join('')}</div><p style="font:14px 'Special Elite',monospace;color:#a99c80;margin:8px 0 0;max-width:none">${DIFFS[menuDiff].desc}</p>
+    <h6>EPIZODA</h6><div class="eprow">${EPISODES.map((E, k) => `<button class="epc${k === ep ? ' sel' : ''}" data-nav data-e="${k}" ${E.levels[0] > un ? 'disabled' : ''}><span>EPIZODA ${k + 1}</span><b>${E.title}</b><small>${E.sub}</small></button>`).join('')}</div>
+    <h6>MISE</h6>${EPISODES[ep].levels.map(i => { const L = LEVELS[i], m = L.name.match(/MISE ([\d.]+) · (.*)/) || [0, '', L.name]; return `<button class="mrow${i === menuLevel ? ' sel' : ''}" data-nav data-l="${i}" ${i > un ? 'disabled' : ''}><span class="no">${m[1]}</span><span><b>${m[2]}</b><small>${L.sub}</small></span><span class="st">${i > un ? 'ZAMČENO' : i < un ? '✓ SPLNĚNO' : 'NOVÁ'}</span></button>`; }).join('')}
+    <div class="acts"><button class="mi" data-nav data-play="1">▶ Hrát</button><button class="mi sm" data-nav data-back="1">Zpět</button></div></div>${hintBar()}</div><div id="load"></div>`;
   overlay.style.display = 'flex'; $('hud').style.display = 'none';
-  overlay.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { menuDiff = +b.dataset.d; store.set('cg_diff', menuDiff); showMissionSelect(); });
-  overlay.querySelectorAll('[data-l]').forEach(b => b.onclick = () => { menuLevel = +b.dataset.l; showMissionSelect(); });
-  overlay.querySelectorAll('[data-e]').forEach(b => b.onclick = () => { menuLevel = EPISODES[+b.dataset.e].levels[0]; showMissionSelect(); });
-  overlay.querySelector('[data-play]').onclick = () => startMission(menuLevel, true);
+  overlay.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { okSound(); menuDiff = +b.dataset.d; store.set('cg_diff', menuDiff); showMissionSelect('d' + menuDiff); });
+  overlay.querySelectorAll('[data-l]').forEach(b => b.onclick = () => { if (+b.dataset.l === menuLevel) return startMission(menuLevel, true); okSound(); menuLevel = +b.dataset.l; showMissionSelect('l' + menuLevel); });
+  overlay.querySelectorAll('[data-e]').forEach(b => b.onclick = () => { okSound(); menuLevel = EPISODES[+b.dataset.e].levels[0]; showMissionSelect('e' + b.dataset.e); });
+  overlay.querySelector('[data-play]').onclick = () => { okSound(); startMission(menuLevel, true); };
   overlay.querySelector('[data-back]').onclick = showMainMenu;
+  const items = navItems(), want = { d: 'data-d', l: 'data-l', e: 'data-e' }[focus[0]];
+  navInit(showMainMenu, Math.max(0, want ? items.findIndex(el => el.getAttribute(want) === focus.slice(1)) : items.findIndex(el => el.dataset.play)));
 }
 function showControls() {
   game.state = 'menu'; menuScreen(true);
-  overlay.innerHTML = `${titleHtml(true)}<div class="mpanel"><h3>OVLÁDÁNÍ</h3>${KEYS_HTML}<div><button class="btn sm" data-back="1">ZPĚT</button></div></div><div id="load"></div>`;
+  overlay.innerHTML = `<div class="aaa">${FX}${titleHtml(true)}<div class="spanel"><h3>Ovládání</h3>${KEYS_HTML}<div class="acts"><button class="mi sm" data-nav data-back="1">Zpět</button></div></div>${hintBar()}</div><div id="load"></div>`;
   overlay.style.display = 'flex'; $('hud').style.display = 'none';
-  overlay.querySelector('[data-back]').onclick = showMainMenu;
+  overlay.querySelector('[data-back]').onclick = showMainMenu; navInit(showMainMenu);
+}
+function showCredits() {
+  game.state = 'menu'; menuScreen(true);
+  overlay.innerHTML = `<div class="aaa">${FX}${titleHtml(true)}<div class="spanel credits"><h3>Titulky</h3>
+    <p><b style="color:#fff">BLÁZEN Z LONDÝNA: TAJNÁ AKCE</b> – hra od ZuhaGames, napsaná v jednom HTML souboru na three.js r160.</p>
+    <p>Zbraně: CC0 modely z OpenGameArt (Lucian Pavel, ege, elmerenges), ruce: para (CC0), němečtí vojáci: nisu (CC0), animace three.js / Mixamo. Textury: Poly Haven (CC0). Zvuky: Kenney a OpenGameArt (CC0).</p>
+    <p>Dabing: Piper TTS (hlasy „jirka“, „thorsten“, „thorsten_emotional“, „karlsson“), neuronové hlasy Microsoft přes edge-tts. Hudba v menu je syntetizovaná přímo v prohlížeči.</p>
+    <div class="acts"><button class="mi sm" data-nav data-back="1">Zpět</button></div></div>${hintBar()}</div><div id="load"></div>`;
+  overlay.style.display = 'flex'; $('hud').style.display = 'none';
+  overlay.querySelector('[data-back]').onclick = showMainMenu; navInit(showMainMenu);
 }
 async function startMission(i, fresh) {
   DIFF = DIFFS[menuDiff]; sfx.init(); menuScreen(false);
@@ -6737,7 +6855,7 @@ async function boot() {
   menuLevel = unlocked();
   newLoadout();
   await loadLevel(0);
-  showMainMenu();
+  showTitle();
 }
 const clock = new THREE.Clock(); let time = 0, frameNo = 0;
 function frame() {
