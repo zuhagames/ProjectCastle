@@ -1,0 +1,106 @@
+{
+ "bj_01": [
+  "bj",
+  "Tady Orel. Jsem na místě. Hrad Grimhold je hned za hřebenem."
+ ],
+ "lon_01": [
+  "lon",
+  "Rozumím, Orle. Buďte opatrný. Hory jsou plné hlídek."
+ ],
+ "off_01": [
+  "offA",
+  "Ruce vzhůru! Ani hnout!"
+ ],
+ "off_02": [
+  "off",
+  "Americký špion. Úplně sám v našich horách."
+ ],
+ "bj_02": [
+  "bj",
+  "Jen jsem si tu sbíral houby."
+ ],
+ "off_03": [
+  "offM",
+  "Doktor bude mít radost. Odveďte ho na Grimhold!"
+ ],
+ "grd_01": [
+  "grd",
+  "Vstávej, Amíku! Doktor tě chce vidět."
+ ],
+ "bj_03": [
+  "bj",
+  "Doktor si bude muset počkat."
+ ],
+ "bj_04": [
+  "bj",
+  "Revolver a klíče. A teď ven z téhle díry."
+ ],
+ "bj_05": [
+  "bj",
+  "Londýne, tady Orel. Jsem venku z Grimholdu. Mám plány i Zemanův deník."
+ ],
+ "lon_02": [
+  "lon",
+  "Výborně, Orle. A co je v tom deníku?"
+ ],
+ "bj_06": [
+  "bj",
+  "Wolfsgrund. Podzemní továrna, kam vede jen železnice. Tam stavějí Finsternis."
+ ],
+ "lon_03": [
+  "lon",
+  "Pak tam musíte vy. Spojka odboje na vás čeká v hájovně nad údolím. Hodně štěstí."
+ ],
+ "bj_07": [
+  "bj",
+  "Štěstí si nechte, plukovníku. Mně stačí náboje."
+ ],
+ "zem_01": [
+  "zem",
+  "Übersoldat Mk II je připraven, Standartenführere. Stačí ho jen probudit."
+ ],
+ "off_04": [
+  "off",
+  "A rakety, pane doktore?"
+ ],
+ "zem_02": [
+  "zem",
+  "Za tři dny poletí první na Londýn."
+ ],
+ "bj_08": [
+  "bj",
+  "Za tři dny. To mám času dost."
+ ],
+ "lon_04": [
+  "lon",
+  "Orle, tady Londýn. Slyšíte nás? Seismografy ve Švýcarsku právě zaznamenaly zemětřesení."
+ ],
+ "bj_09": [
+  "bj",
+  "To nebylo zemětřesení, Londýne. To byl Wolfsgrund. Operace Finsternis skončila."
+ ],
+ "lon_05": [
+  "lon",
+  "Skvělá práce, Orle. Je čas vrátit se domů."
+ ],
+ "bj_10": [
+  "bj",
+  "Domů. To zní dobře."
+ ],
+ "zem_03": [
+  "zem",
+  "Stráže! Zastavte ho!"
+ ],
+ "bj_obj1": [
+  "bj",
+  "Mám to."
+ ],
+ "bj_obj2": [
+  "bj",
+  "Další odškrtnuto."
+ ],
+ "bj_obj3": [
+  "bj",
+  "Tohle se bude v Londýně hodit."
+ ]
+}

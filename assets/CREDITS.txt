@@ -60,3 +60,20 @@ and converted to mono MP3.
 
 Optional web textures (Poly Haven, CC0) and three.js example textures are
 used when reachable; otherwise procedural textures are painted at start-up.
+
+Voice-over (assets/voices/*.mp3, embedded in assets/voices.js)
+Generated offline with Piper neural TTS (https://github.com/OHF-Voice/piper1-gpl) by
+tools/make_voices.py; trimmed, pitched per character, radio filter for London, MP3 mono.
+  cs_CZ-jirka-medium              B. J., London (Czech)          dataset licence: CC0
+  de_DE-thorsten-high             guard, soldier voice C (German) Thorsten-Voice, CC0
+  de_DE-thorsten_emotional-medium officers, soldier voice A        Thorsten-Voice, CC0
+  de_DE-karlsson-low              Dr. Zeman, soldier voice B       M-AILABS Speech Dataset
+  Voices: https://huggingface.co/rhasspy/piper-voices
+
+Photo textures for the outdoor missions (loaded at runtime when online, CC0, Poly Haven)
+  forest_floor, forrest_ground_01, leafy_grass, grass_ground, muddy_tracks, brown_mud_02,
+  gravel_floor, gravel, rock_face, mossy_rock, pine_bark, bark_brown_01,
+  weathered_plank_siding, weathered_planks, roof_slates_02, grey_roof_01,
+  concrete_wall_005, concrete_layers, corrugated_iron     https://polyhaven.com/
+  Every one has a procedural fallback painted in code. Trees, tents, towers, trains,
+  rockets, searchlights and the other outdoor props are built in code.
