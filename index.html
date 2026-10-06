@@ -4185,6 +4185,15 @@ function prepFBX(name, g) {
   g.userData.box = new THREE.Box3().setFromObject(g);
 }
 function b64ToBuf(b64) { const bin = atob(b64), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i); return u8.buffer; }
+// real lengths of the American guns: a downloaded model is turned barrel-forward (-Z) and scaled to it
+const US_LEN = { thompson: .81, garand: 1.1, bar: 1.21, bazooka: 1.38 };
+function fitUS(n, g) {
+  g.updateMatrixWorld(true); let bb = new THREE.Box3().setFromObject(g), sz = bb.getSize(V(0, 0, 0));
+  if (sz.x > sz.z && sz.x > sz.y) g.rotation.y = Math.PI / 2; else if (sz.y > sz.z) g.rotation.x = Math.PI / 2;
+  g.updateMatrixWorld(true); bb = new THREE.Box3().setFromObject(g); sz = bb.getSize(V(0, 0, 0));
+  g.scale.multiplyScalar(US_LEN[n] / Math.max(sz.x, sz.y, sz.z)); g.updateMatrixWorld(true);
+  const w = new THREE.Group(); w.add(g); const c = new THREE.Box3().setFromObject(w).getCenter(V(0, 0, 0)); g.position.sub(c); return w;
+}
 async function loadFBXModels() {
   const loader = new FBXLoader();
   const emb = window.CASTLE_FBX || {};
@@ -4197,6 +4206,10 @@ async function loadFBXModels() {
     if (!buf) continue;
     try { const g = loader.parse(buf, ''); prepFBX(n, g); FBX[n] = g; } catch (e) { console.warn('FBX parse failed', n, e); }
     await nextFrame();
+  }
+  // optional downloaded models of the American guns (assets/models/<name>.fbx): used instead of the built-in ones when present
+  if (location.protocol.startsWith('http')) for (const n of Object.keys(US_LEN)) {
+    try { const r = await fetch('assets/models/' + n + '.fbx'); if (!r.ok) continue; const g = loader.parse(await r.arrayBuffer(), ''); fitUS(n, g); prepFBX(n, g); FBX[n] = g; } catch (e) { console.warn('optional model', n, e); }
   }
   // rigged models: first-person arms and the German soldier (kept as parsed, no re-centring)
   for (const n of ['arms', 'german']) {
@@ -4294,59 +4307,110 @@ function buildDeLisle() {
   for (let i = 1; i < 4; i++) part(can, Cz(.0255, .0255, .003, 18), supRing, 0, 0, -len * i / 4);
   return g;
 }
-/* ---------- American weapons: a Thompson from an SOE drop, and US small arms the Germans took apart in their test labs ---------- */
-const olive = new THREE.MeshLambertMaterial({ color: new THREE.Color(.27, .3, .2) }), parker = new THREE.MeshLambertMaterial({ color: new THREE.Color(.22, .23, .22) });
-function buildThompson() {   // M1A1: flat-topped receiver, finned-free barrel, walnut stock/grip/handguard, 30-round stick
-  const g = new THREE.Group(), w = gm.wood, b = gm.blued;
-  part(g, new RoundedBoxGeometry(.044, .056, .27, 2, .006), parker, 0, .04, .0);                // receiver
-  part(g, Cz(.013, .013, .29, 12), b, 0, .046, -.27);                                            // barrel
-  part(g, Bx(.006, .016, .012), b, 0, .062, -.4); part(g, Bx(.016, .02, .02), b, 0, .07, .11); // sights
-  part(g, Cz(.006, .006, .02, 6), b, .026, .05, -.04, 0, 0, Math.PI / 2);                       // cocking knob
-  part(g, new RoundedBoxGeometry(.036, .03, .17, 2, .008), w, -.004, .028, -.2);                 // horizontal handguard
-  const grip = new THREE.Group(); grip.position.set(0, -.02, .15); grip.rotation.x = -.25; g.add(grip);
-  part(grip, new RoundedBoxGeometry(.03, .11, .045, 2, .01), w, 0, -.03, 0);                     // pistol grip
-  part(g, Bx(.008, .03, .07), b, 0, -.004, .09);                                                 // trigger guard
-  const st = new THREE.Mesh(new RoundedBoxGeometry(.04, .085, .3, 2, .012), w); st.position.set(0, .0, .3); st.rotation.x = .12; g.add(st);
-  part(g, Bx(.044, .1, .012), parker, 0, -.01, .45, .12);                                        // butt plate
-  const mag = part(g, Bx(.03, .19, .052), b, 0, -.075, -.045); mag.name = 'Magazine'; g.userData.mag = mag;
+/* ---------- American weapons: a Thompson from an SOE drop, and US small arms the Germans took apart in their test labs ----------
+   Built from side profiles of the real guns (extruded, bevelled walnut and steel), parkerised/blued finishes,
+   proper sights for aiming down them. Real sizes in metres, barrel along -Z, receiver at the origin. */
+const usTex = (() => {
+  const walnut = tex(paint(256, (x, y) => { const u = x / 256, v = y / 256, gr = Math.sin(v * 90 + fbm(u * 3, v * 12, 3, 801, 4) * 9) * .5 + .5, n = fbm(u * 8, v * 8, 8, 802, 4), k = (.62 + .25 * n) * (.82 + .26 * gr); return [118 * k, 66 * k, 38 * k, gr]; }, .6));
+  const parker = tex(paint(128, (x, y) => { const n = fbm(x / 128 * 16, y / 128 * 16, 16, 811, 4), s = hash2(x, y, 812), k = .8 + .3 * n + .12 * s; return [62 * k, 64 * k, 62 * k, n]; }, .3));
+  const od = tex(paint(128, (x, y) => { const n = fbm(x / 128 * 6, y / 128 * 6, 6, 821, 4), w = fbm(x / 128 * 20, y / 128 * 20, 20, 822, 3), k = .78 + .3 * n; return w > .7 ? [70, 66, 58, 1] : [72 * k, 80 * k, 50 * k, n]; }, .3));
+  for (const t of [walnut, parker, od]) t.repeat.set(5, 5);
+  return { walnut, parker, od };
+})();
+const usM = {
+  wood: new THREE.MeshPhongMaterial({ map: usTex.walnut, color: new THREE.Color(1.05, .95, .9), specular: new THREE.Color(.22, .18, .14), shininess: 38 }),
+  park: new THREE.MeshPhongMaterial({ map: usTex.parker, color: new THREE.Color(.95, .95, .95), specular: new THREE.Color(.28, .28, .28), shininess: 30 }),
+  blue: new THREE.MeshPhongMaterial({ color: new THREE.Color(.14, .15, .17), specular: new THREE.Color(.55, .58, .62), shininess: 70 }),
+  od: new THREE.MeshPhongMaterial({ map: usTex.od, color: new THREE.Color(.95, .95, .9), specular: new THREE.Color(.12, .12, .1), shininess: 14 }),
+  brass: new THREE.MeshPhongMaterial({ color: new THREE.Color(.78, .6, .3), specular: new THREE.Color(.8, .7, .4), shininess: 80 }),
+  dark: new THREE.MeshPhongMaterial({ color: new THREE.Color(.05, .05, .06), specular: new THREE.Color(.2, .2, .2), shininess: 30 })
+};
+const olive = usM.od, parker = usM.park;
+// side profile [[z, y], ...] (weapon space) extruded across X with a rounded edge
+function prof(g, pts, w, mat, bevel = .006, x = 0) {
+  const sh = new THREE.Shape(); pts.forEach(([z, y], i) => i ? sh.lineTo(-z, y) : sh.moveTo(-z, y));
+  const geo = new THREE.ExtrudeGeometry(sh, { depth: Math.max(.001, w - bevel * 2), bevelEnabled: true, bevelThickness: bevel, bevelSize: bevel * .9, bevelSegments: 3, curveSegments: 6 });
+  geo.translate(0, 0, -(w - bevel * 2) / 2); geo.rotateY(Math.PI / 2); geo.computeVertexNormals();
+  const m = new THREE.Mesh(geo, mat); m.position.x = x; g.add(m); return m;
+}
+const ring = (g, r, t, mat, x, y, z) => { const m = part(g, new THREE.TorusGeometry(r, t, 6, 14), mat, x, y, z); return m; };
+function swivel(g, y, z) { const s = part(g, new THREE.TorusGeometry(.012, .0025, 6, 12), usM.blue, 0, y, z); s.rotation.y = Math.PI / 2; }
+function buildThompson() {   // M1A1: flat-topped receiver, plain barrel, walnut stock / grip / handguard, 30-round box
+  const g = new THREE.Group(), b = usM.blue, p = usM.park, w = usM.wood;
+  part(g, new RoundedBoxGeometry(.044, .058, .27, 3, .006), p, 0, .04, 0);                                   // receiver
+  part(g, Bx(.012, .004, .2), usM.dark, 0, .0705, -.01);                                                     // top groove
+  part(g, Bx(.002, .016, .055), usM.dark, .0222, .05, -.02);                                                 // ejection port
+  part(g, Cz(.012, .006, .02, 10), p, .028, .055, .04, 0, 0, Math.PI / 2); part(g, Cz(.006, .006, .03, 8), p, .021, .055, .04, 0, 0, Math.PI / 2);   // cocking knob
+  for (const z of [.03, .085]) part(g, Cz(.006, .006, .006, 10), p, -.024, .03, z, 0, 0, Math.PI / 2);       // selector + safety
+  part(g, Bx(.018, .012, .03), p, 0, .074, .11); for (const s of [-1, 1]) part(g, Bx(.004, .016, .03), p, s * .008, .082, .11);   // rear sight with ears
+  part(g, Cz(.0125, .0115, .29, 16), b, 0, .046, -.275); part(g, Cz(.0135, .0135, .012, 16), b, 0, .046, -.415);   // barrel + crown
+  part(g, Cz(.016, .016, .02, 16), p, 0, .046, -.39); part(g, Bx(.003, .014, .01), b, 0, .063, -.395);       // front sight band + blade
+  prof(g, [[-.115, .044], [-.285, .044], [-.29, .03], [-.28, .012], [-.12, .012], [-.112, .03]], .036, w, .006);   // handguard
+  const grip = new THREE.Group(); grip.position.set(0, -.02, .15); grip.rotation.x = -.22; g.add(grip);
+  prof(grip, [[-.022, .02], [.022, .02], [.03, -.04], [.03, -.085], [.022, -.095], [-.02, -.09], [-.022, -.05]], .03, w, .007);   // pistol grip
+  const tg = part(g, new THREE.TorusGeometry(.024, .004, 6, 16, Math.PI), p, 0, .002, .1); tg.rotation.set(Math.PI, Math.PI / 2, 0); part(g, Bx(.004, .02, .006), b, 0, .006, .1);   // guard + trigger
+  prof(g, [[.135, .062], [.16, .06], [.44, .03], [.46, .028], [.47, -.07], [.44, -.075], [.3, -.03], [.18, -.015], [.135, -.01]], .04, w, .008);   // buttstock
+  part(g, Bx(.042, .108, .008), usM.dark, 0, -.02, .47);                                                      // butt plate
+  swivel(g, -.06, .4); swivel(g, .03, -.25);
+  const mag = new THREE.Group(); mag.position.set(0, -.08, -.045); g.add(mag); mag.name = 'Magazine'; g.userData.mag = mag;   // 30-round stick
+  part(mag, new RoundedBoxGeometry(.028, .19, .052, 2, .004), b, 0, 0, 0); for (let i = 0; i < 4; i++) part(mag, Bx(.03, .006, .046), b, 0, -.06 + i * .035, 0);
+  part(mag, Bx(.03, .012, .056), b, 0, -.097, 0);
   return g;
 }
-function rifleStock(g) {      // long walnut stock shared by the Garand and the BAR
-  const st = new THREE.Mesh(new RoundedBoxGeometry(.042, .06, .78, 2, .012), gm.wood); st.position.set(0, .03, -.08); g.add(st);   // fore-end + wrist
-  const bt = new THREE.Mesh(new RoundedBoxGeometry(.044, .11, .3, 2, .015), gm.wood); bt.position.set(0, -.005, .42); bt.rotation.x = .1; g.add(bt);
-  part(g, Bx(.006, .028, .06), parker, 0, -.01, .2);                                             // trigger guard
+function rifleStock(g, long = true) {      // full-length walnut stock with semi-pistol grip (Garand / BAR)
+  prof(g, [[-.46, .06], [-.46, .04], [-.3, .03], [-.05, .028], [.12, .025], [.17, .0], [.21, -.03], [.25, -.03], [.29, .01], [.52, -.02], [.54, -.09], [.53, -.11], [.42, -.075], [.25, .04], [.2, .055], [.05, .056], [-.1, .052], [-.3, .055]], .042, usM.wood, .009);
+  part(g, Bx(.044, .13, .01), usM.park, 0, -.045, .54, -.17, 0, 0);                                         // steel butt plate
+  const tg = part(g, new THREE.TorusGeometry(.026, .004, 6, 16, Math.PI), usM.park, 0, .022, .16); tg.rotation.set(Math.PI, Math.PI / 2, 0); part(g, Bx(.004, .022, .006), usM.blue, 0, .03, .16);
+  swivel(g, -.07, .42); swivel(g, .02, -.4);
 }
-function buildGarand() {     // M1: long walnut stock, op-rod on the right, en-bloc clip showing in the receiver
-  const g = new THREE.Group(), w = gm.wood, b = parker; rifleStock(g);
-  part(g, new RoundedBoxGeometry(.036, .04, .2, 2, .006), b, 0, .068, .08);                     // receiver
-  part(g, Bx(.03, .012, .07), gm.metal, 0, .093, .08);                                           // the clip of 8
-  part(g, Cz(.011, .011, .56, 10), b, 0, .07, -.36); part(g, Cz(.014, .014, .02, 10), b, 0, .07, -.63);
-  part(g, Bx(.008, .01, .4), b, .021, .06, -.15);                                                // operating rod
-  part(g, new RoundedBoxGeometry(.03, .022, .2, 2, .005), w, 0, .07, -.3);                       // upper handguard
-  part(g, Bx(.006, .02, .01), b, 0, .088, -.62); part(g, Bx(.018, .02, .02), b, 0, .095, .17);   // sights
-  for (const z of [-.47, -.23]) part(g, Cz(.024, .024, .012, 10), b, 0, .045, z);              // bands
+function buildGarand() {     // M1: walnut stock and handguards, receiver with the aperture sight, op-rod, gas cylinder, an en-bloc clip of .30-06
+  const g = new THREE.Group(), p = usM.park, b = usM.blue; rifleStock(g);
+  part(g, new RoundedBoxGeometry(.034, .036, .22, 2, .005), p, 0, .074, .07);                                 // receiver
+  part(g, Bx(.026, .006, .08), usM.dark, 0, .093, .07);                                                       // magazine well opening
+  for (let i = 0; i < 4; i++) part(g, Cz(.005, .005, .07, 8), usM.brass, (i - 1.5) * .006, .095, .07);       // the clip of .30-06
+  part(g, Bx(.028, .01, .028), p, 0, .09, .165); for (const s of [-1, 1]) part(g, Bx(.003, .014, .006), p, s * .007, .098, .166); ring(g, .0055, .0016, b, 0, .104, .166);   // rear aperture sight on its ears
+  for (const s of [-1, 1]) part(g, Cz(.008, .008, .006, 10), p, s * .02, .09, .165, 0, 0, Math.PI / 2);     // windage/elevation knobs
+  part(g, Bx(.008, .014, .05), p, .02, .085, .03);                                                            // bolt handle area
+  part(g, Cz(.011, .0105, .58, 12), b, 0, .076, -.37); part(g, Cz(.016, .016, .06, 12), p, 0, .062, -.62, 0, 0, 0);   // barrel + gas cylinder
+  part(g, Bx(.004, .02, .01), b, 0, .092, -.625); for (const s of [-1, 1]) part(g, Bx(.003, .016, .012), b, s * .006, .088, -.625);   // front sight + guards
+  part(g, Bx(.008, .012, .44), p, .02, .068, -.3);                                                            // operating rod
+  prof(g, [[-.07, .088], [-.27, .088], [-.27, .07], [-.07, .07]], .03, usM.wood, .006);                      // rear handguard
+  prof(g, [[-.33, .088], [-.56, .088], [-.56, .07], [-.33, .07]], .03, usM.wood, .006);                      // front handguard
+  for (const z of [-.3, -.58]) part(g, Cz(.024, .024, .014, 14), p, 0, .06, z);                              // bands
   return g;
 }
-function buildBAR() {        // M1918A2: heavy receiver, 20-round box underneath, long barrel with gas cylinder and folded bipod
-  const g = new THREE.Group(), b = parker; rifleStock(g);
-  part(g, new RoundedBoxGeometry(.05, .07, .3, 2, .006), b, 0, .06, .02);
-  part(g, Cz(.013, .013, .66, 10), b, 0, .075, -.42); part(g, Cz(.008, .008, .4, 8), b, 0, .045, -.38);
-  part(g, Cz(.02, .016, .06, 10), b, 0, .075, -.77);                                             // flash hider
-  const mag = part(g, Bx(.036, .12, .085), b, 0, -.035, -.03); mag.name = 'Magazine'; g.userData.mag = mag;
-  for (const s of [-1, 1]) part(g, Cz(.005, .005, .32, 6), b, s * .02, .03, -.55, .05 * s, 0, 0); // bipod legs, folded
-  part(g, Bx(.008, .03, .012), b, 0, .1, -.76); part(g, Bx(.02, .03, .03), b, 0, .105, .14);
+function buildBAR() {        // M1918A2: long receiver, 20-round box, gas cylinder under a heavy barrel, flash hider, folded bipod, leaf rear sight
+  const g = new THREE.Group(), p = usM.park, b = usM.blue; rifleStock(g);
+  part(g, new RoundedBoxGeometry(.046, .064, .34, 2, .006), p, 0, .064, .02);
+  part(g, Bx(.002, .022, .07), usM.dark, .0232, .07, .0); part(g, Cz(.006, .006, .03, 8), p, -.028, .07, -.05, 0, 0, Math.PI / 2);   // ejection port, cocking handle
+  part(g, Bx(.02, .022, .03), p, 0, .106, .14); part(g, Bx(.016, .006, .03), p, 0, .12, .14);                // leaf rear sight
+  part(g, Cz(.015, .013, .64, 14), b, 0, .078, -.46); part(g, Cz(.013, .013, .46, 12), p, 0, .043, -.36);   // barrel, gas cylinder
+  part(g, Cz(.021, .017, .075, 14), p, 0, .078, -.8); for (let i = 0; i < 4; i++) part(g, Bx(.003, .028, .03), usM.dark, Math.cos(i * 1.57) * .018, .078 + Math.sin(i * 1.57) * .018, -.81);   // flash hider
+  part(g, Bx(.004, .03, .012), b, 0, .1, -.77);                                                               // front sight
+  prof(g, [[-.2, .062], [-.5, .062], [-.5, .035], [-.2, .035]], .04, usM.wood, .007);                        // fore-end
+  for (const s of [-1, 1]) { part(g, Cz(.005, .005, .34, 6), b, s * .022, .05, -.6, .04 * s, 0, 0); part(g, Bx(.012, .006, .018), b, s * .022, .05, -.78); }   // bipod, folded
+  const mag = new THREE.Group(); mag.position.set(0, -.03, -.03); g.add(mag); mag.name = 'Magazine'; g.userData.mag = mag;
+  part(mag, new RoundedBoxGeometry(.034, .11, .088, 2, .004), b, 0, 0, 0); for (let i = 0; i < 3; i++) part(mag, Bx(.036, .005, .08), b, 0, -.035 + i * .03, 0);
+  swivel(g, .03, -.7);
   return g;
 }
-function buildBazooka() {    // M1 "bazooka": smoothbore tube, wooden shoulder stock, two grips, battery box, blast deflector
-  const g = new THREE.Group(), b = olive;
-  part(g, Cz(.043, .043, 1.38, 18), b, 0, .1, -.2);
-  part(g, Cz(.05, .05, .05, 18), b, 0, .1, .47); part(g, Cz(.058, .05, .07, 18), b, 0, .1, -.88);
-  part(g, new RoundedBoxGeometry(.05, .07, .3, 2, .015), gm.wood, 0, .055, .3);                  // shoulder stock
-  const r = new THREE.Group(); r.position.set(0, -.02, .15); r.rotation.x = -.15; g.add(r); part(r, new RoundedBoxGeometry(.03, .1, .04, 2, .008), gm.wood, 0, -.02, 0);
-  const l = new THREE.Group(); l.position.set(-.004, .03, -.18); l.rotation.x = -.1; g.add(l); part(l, new RoundedBoxGeometry(.03, .09, .04, 2, .008), gm.wood, 0, -.02, 0);
-  part(g, Bx(.04, .05, .1), b, -.048, .09, .1);                                                  // battery box
-  part(g, Bx(.01, .06, .012), gm.blued, .045, .15, -.35); part(g, Bx(.01, .03, .012), gm.blued, .045, .14, .2);   // sights
-  part(g, Cz(.03, .03, .2, 10), gm.gren, 0, .1, -.95);                                           // rocket nose showing at the muzzle
+function buildBazooka() {    // M1A1 'bazooka': OD tube with reinforcing bands, wooden shoulder stock with the battery box, two grips, frame front sight, peep rear sight
+  const g = new THREE.Group(), o = usM.od, b = usM.blue;
+  part(g, Cz(.042, .042, 1.38, 24), o, 0, .1, -.2); part(g, Cz(.036, .036, 1.39, 24), usM.dark, 0, .1, -.2);   // tube (dark bore)
+  for (const z of [.44, .2, -.2, -.6, -.86]) part(g, Cz(.046, .046, .03, 24), o, 0, .1, z);
+  part(g, Cz(.05, .046, .06, 24), o, 0, .1, .48); part(g, Cz(.047, .052, .05, 24), o, 0, .1, -.875);          // rear + muzzle rings
+  prof(g, [[.18, .06], [.44, .06], [.44, .02], [.3, -.02], [.18, .02]], .05, usM.wood, .008);                // shoulder stock
+  part(g, new RoundedBoxGeometry(.05, .06, .11, 2, .006), o, -.05, .095, .1);                                // battery box
+  for (const [z, r] of [[.15, -.18], [-.18, -.1]]) { const gp = new THREE.Group(); gp.position.set(0, .05, z); gp.rotation.x = r; g.add(gp); prof(gp, [[-.02, 0], [.02, 0], [.024, -.06], [.02, -.1], [-.018, -.1], [-.022, -.05]], .032, usM.wood, .007); }
+  const tg = part(g, new THREE.TorusGeometry(.022, .004, 6, 14, Math.PI), b, 0, .03, .12); tg.rotation.set(Math.PI, Math.PI / 2, 0);
+  // front sight: a rectangular wire frame with range posts, left side; rear peep on a small bracket
+  const fs = new THREE.Group(); fs.position.set(-.07, .19, -.35); g.add(fs);
+  for (const [w, h, x, y] of [[.004, .06, -.025, 0], [.004, .06, .025, 0], [.054, .004, 0, .03], [.054, .004, 0, -.03]]) part(fs, Bx(w, h, .004), b, x, y, 0);
+  for (const y of [-.015, 0, .015]) part(fs, Bx(.004, .004, .004), b, 0, y, 0);
+  part(g, Bx(.008, .1, .008), b, -.05, .14, -.35); part(g, Bx(.008, .07, .008), b, -.05, .125, .15);
+  ring(g, .006, .0018, b, -.07, .19, .15);
+  part(g, Cz(.03, .03, .2, 12), gm.gren, 0, .1, -.95);                                                       // rocket nose at the muzzle
+  part(g, Cz(.003, .003, .3, 4), usM.dark, -.03, .06, .25, 0, 0, 0);                                          // firing wire
   return g;
 }
 const FALLBACK = { thompson: buildThompson, garand: buildGarand, bar: buildBAR, bazooka: buildBazooka, machete: buildKnife, revolver: buildPistol, sten: buildSMG, rifle: buildRifle, grenade: buildGrenade, flamer: buildFlamer, welrod: buildWelrod, delisle: buildDeLisle };
@@ -4359,10 +4423,10 @@ const VMCFG = {
   grenade: { pos: [.17, -.15, -.42], rot: [-.4, .25, -.15], muzzle: [0, 0, -.15], rh: { p: [0, 0, .06], r: [0, 0, 0], e: [.08, -.28, .45] } },
   welrod: { pos: [.14, -.13, -.42], rot: [.02, .1, -.03], ads: { pos: [0, -.021, -.46], rot: [0, 0, 0] }, muzzle: [0, 0, -.258] },
   delisle: { pos: [.12, -.14, -.36], rot: [0, .03, 0], muzzle: [0, .069, -.635] },
-  thompson: { pos: [.14, -.185, -.47], rot: [0, .03, 0], muzzle: [0, .046, -.42] },
-  garand: { pos: [.13, -.175, -.43], rot: [0, .03, 0], muzzle: [0, .07, -.64] },
-  bar: { pos: [.13, -.18, -.43], rot: [0, .03, 0], muzzle: [0, .075, -.8] },
-  bazooka: { pos: [.2, -.25, -.34], rot: [0, .06, 0], muzzle: [0, .1, -.92] },
+  thompson: { pos: [.14, -.185, -.47], rot: [0, .03, 0], ads: { pos: [0, -.077, -.52], rot: [0, 0, 0] }, muzzle: [0, .046, -.42] },
+  garand: { pos: [.13, -.175, -.43], rot: [0, .03, 0], ads: { pos: [0, -.104, -.47], rot: [0, 0, 0] }, muzzle: [0, .076, -.66] },
+  bar: { pos: [.13, -.18, -.43], rot: [0, .03, 0], ads: { pos: [0, -.124, -.48], rot: [0, 0, 0] }, muzzle: [0, .078, -.84] },
+  bazooka: { pos: [.2, -.25, -.34], rot: [0, .06, 0], ads: { pos: [.07, -.19, -.42], rot: [0, 0, 0] }, muzzle: [0, .1, -.92] },
   flamer: { pos: [.11, -.19, -.45], rot: [0, .03, 0], muzzle: [0, .07, -.5], rh: { p: [0, -.06, .1], r: [-.3, 0, 0], e: [.13, -.3, .5] }, lh: { p: [-.01, -.03, -.16], r: [.1, 0, .3], e: [-.24, -.3, .25], left: true } }
 };
 const WEAPONS = [
