@@ -31,14 +31,6 @@ LINES = [
     # in-game: Zeman and B.J.
     ('zem_03', 'zem', 'Wachen! Haltet ihn auf!', 'Stráže! Zastavte ho!'),
     ('bj_obj1', 'bj', 'Mám to.'), ('bj_obj2', 'bj', 'Další odškrtnuto.'), ('bj_obj3', 'bj', 'Tohle se bude v Londýně hodit.'),
-    # transitions between missions (v1.4)
-    ('bj_t1', 'bj', 'Z kobek jsem venku. Teď štáb SS – a plány operace Finsternis.'),
-    ('bj_t2', 'bj', 'Plány mám. Zeman a jeho laboratoř jsou někde pod kaplí.'),
-    ('bj_t3', 'bj', 'Podle mapy: lesní tábor, pak trať. Žádné světlo, žádný hluk.'),
-    ('bj_t4', 'bj', 'Odtud jede zvláštní vlak. Bez čísla a bez cíle v papírech.'),
-    ('bj_t5', 'bj', 'Jsem uvnitř. Teď dopředu, vagon po vagonu – až k lokomotivě.'),
-    ('bj_t6', 'bj', 'Sto metrů pod horou. Tady stavějí Finsternis.'),
-    ('bj_t7', 'bj', 'Doktore Zemane. Konečně se poznáme.'),
 ]
 BARKS = {
     'sus': [('Was war das?', 'surprised'), ('Hallo? Ist da jemand?', 'surprised'), ('Hm? Wer ist da?', 'neutral'), ('Da hat sich was bewegt.', 'neutral')],
