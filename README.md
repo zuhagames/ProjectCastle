@@ -10,7 +10,7 @@ Proplížíš se a probojuješ hradem Grimhold přes tři mise:
 2. **Mise 2 · Velitelství**
 3. **Mise 3 · Krypta**
 
-![Vinný sklep – revolver s tlumičem, podezíravý důstojník a minimapa](docs/screenshot-cellar.jpg)
+![Vinný sklep – revolver, podezíravý důstojník a minimapa](docs/screenshot-cellar.jpg)
 
 ## Spuštění
 
@@ -37,17 +37,16 @@ Three.js se načítá z CDN (jsDelivr), takže je potřeba připojení k interne
 | `Q` / `E` | vyklonit se |
 | `Shift` | sprint |
 | `C` | přikrčit / plížit (přepínač, v nastavení lze změnit na držení) |
-| `T` | nasadit / sejmout tlumič (revolver, Sten, puška) |
-| `1`–`6` / kolečko | výběr zbraně |
+| `1`–`8` / kolečko | výběr zbraně |
 | `Tab` | úkoly mise |
 | `M` | zvuk on/off |
 | `Esc` | pauza |
 
 ## Zbraně
 
-Lee-Enfield No.4 (T) s puškohledem, revolver, Sten Mk II, plamenomet, mačeta a granát (Stielhandgranate).
+Lee-Enfield No.4 (T) s puškohledem, revolver, Sten Mk II, plamenomet, mačeta, granát (Stielhandgranate) a dvě tiché zbraně SOE: pistole **Welrod Mk I** (9 mm, integrovaný tlumič) a tlumená karabina **De Lisle (T)** s puškohledem (.45 ACP).
 
-- **Tlumiče** – sadu tlumičů najdeš ve strážnici v první misi. Tlumený výstřel uslyší jen stráže v těsné blízkosti a nemá záblesk, který by tě prozradil.
+- **Tiché zbraně** – Welrod leží ve strážnici první mise, De Lisle ve vinném sklepě. Jejich výstřel uslyší jen stráže v těsné blízkosti a nemají záblesk, který by tě prozradil. Obě se po každé ráně natahují ručně (otočný závěr Welrodu, závěr Lee-Enfieldu).
 - **Snazší získávání zbraní** – padlí vojáci upustí svou zbraň (Sten, puška), dokud ji ještě nemáš. Plamenomet je i ve zbrojnici druhé mise.
 
 ## Nastavení
@@ -62,7 +61,7 @@ V levém horním rohu je minimapa ve stylu Wolfensteinu, která odkrývá místn
 - Opravený Sten (zásobník už nelevituje) a nové textury Stenu a granátu.
 - Nepřátelé jsou němečtí vojáci 2. světové války (Wehrmacht, SS, důstojníci, odstřelovači v maskáči, nemrtví) se Stahlhelmem nebo čepicí.
 - Skutečné zvuky (kroky, dveře, výkřiky, výbuchy, siréna, oheň…), výstřely zůstaly původní.
-- Tlumiče, míření přes mířidla, snazší získávání zbraní, menu nastavení, škálování rozhraní, minimapa, přepínací krčení.
+- Tiché zbraně Welrod a De Lisle, míření přes mířidla, snazší získávání zbraní, menu nastavení, škálování rozhraní, minimapa, přepínací krčení.
 - Otazníky a vykřičníky nad mrtvými zmizí, padlí vojáci leží uvolněně a jsou vidět i po zabití mimo záběr.
 
 ## Struktura projektu

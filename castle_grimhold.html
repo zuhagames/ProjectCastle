@@ -651,9 +651,9 @@ const LEVELS = [
       ['sniper', 7, 11, PI / 2], ['sturm', 10, 15, 0], ['sturm', 12, 16, PI]
     ],
     pickups: [
-      ['p', 3, 1], ['h', 9, 3, .8, .8], ['p', 12, 1, 1, -1], ['x', 11, 2, 0, -1.2], ['W:sten', 11, 5, 0, -1], ['s', 9, 6], ['n', 12, 6],
+      ['p', 3, 1], ['h', 9, 3, .8, .8], ['p', 12, 1, 1, -1], ['W:welrod', 11, 2, 0, -1.2], ['W:sten', 11, 5, 0, -1], ['s', 9, 6], ['n', 12, 6],
       ['f', 21, 2, 0, .5], ['f', 22, 3], ['g', 18, 1, -1, -1], ['h', 23, 4, 1, 1],
-      ['f', 18, 6, -1, -1], ['f', 21, 7, 1, 1], ['n', 19, 6], ['k:brana', 22, 12, 0, .4], ['g', 17, 10, -1, -1], ['g', 23, 12, 1, 1], ['g', 20, 12, 0, 1.2], ['a', 18, 11],
+      ['f', 18, 6, -1, -1], ['f', 21, 7, 1, 1], ['n', 19, 6], ['k:brana', 22, 12, 0, .4], ['W:delisle', 18, 12, -.4, .6], ['q', 19, 10, 0, -1], ['q', 21, 11, 1, 0], ['g', 17, 10, -1, -1], ['g', 23, 12, 1, 1], ['g', 20, 12, 0, 1.2], ['a', 18, 11],
       ['g', 11, 11, 0, -.3], ['g', 13, 11, 0, .3], ['v', 7, 13], ['h', 8, 9], ['s', 14, 13, 1, 1], ['a', 10, 16], ['h', 13, 16]
     ]
   },
@@ -714,7 +714,7 @@ const LEVELS = [
       ['a', 1, 14, -1, -1], ['h', 4, 19, 1, 1],
       ['h', 7, 13, -1, -1], ['s', 20, 20, 1, 1], ['n', 13, 20, 0, 1],
       ['v', 26, 13, 1, -1], ['h', 23, 17, -1, 1], ['p', 26, 15, 1, 0],
-      ['W:rifle', 25, 20, 0, 0], ['W:flamer', 23, 20, -.5, .5], ['u', 24, 21, 0, 1], ['r', 23, 21, -1, 1], ['r', 26, 19, 1, -1], ['n', 24, 21], ['a', 23, 19, -1, -1],
+      ['W:rifle', 25, 20, 0, 0], ['q', 26, 20, 1, 0], ['q', 3, 18, 0, 1], ['W:flamer', 23, 20, -.5, .5], ['u', 24, 21, 0, 1], ['r', 23, 21, -1, 1], ['r', 26, 19, 1, -1], ['n', 24, 21], ['a', 23, 19, -1, -1],
       ['g', 10, 9, 0, -.4], ['g', 13, 9, 0, .4], ['h', 16, 11, 1, 1],
       ['f', 1, 9, -1, 0], ['s', 4, 7, 1, -1],
       ['g', 22, 7, 1, -1], ['h', 19, 11, -1, 1],
@@ -765,7 +765,7 @@ const LEVELS = [
       ['a', 1, 1, -1, -1], ['h', 4, 3, 1, 1],
       ['g', 14, 1, 1, -1], ['g', 14, 6, 1, 1], ['h', 8, 6, -1, 1], ['n', 8, 1, -1, -1],
       ['g', 8, 9, -1, -1], ['g', 14, 13, 1, 1], ['g', 8, 13, -1, 1], ['g', 14, 9, 1, -1], ['H', 11, 13, 0, 1.2],
-      ['W:flamer', 10, 16, 0, 0], ['u', 8, 17, -1, 1], ['u', 12, 15, 1, -1], ['a', 9, 15, -1, -1],
+      ['W:flamer', 10, 16, 0, 0], ['q', 9, 16, -1, 0], ['q', 26, 21, 0, 1], ['u', 8, 17, -1, 1], ['u', 12, 15, 1, -1], ['a', 9, 15, -1, -1],
       ['h', 22, 10, 1, 0],
       ['d:diary', 23, 17, .6, .6], ['v', 16, 12, -1, -1], ['h', 23, 12, 1, -1], ['u', 16, 15, -1, 0],
       ['a', 16, 21, -1, 1], ['h', 21, 19, 1, -1],
@@ -2365,6 +2365,8 @@ const sfx = {
       return;
     }
     switch (name) {
+      case 'welrod': this.nb(o, .04, 'lowpass', 800, 160, 1, .55); this.tn(o, 'sine', 125, 45, .06, .35); this.click(o, 0, 3200, .22); this.click(o, .3, 2400, .25); this.click(o, .52, 2900, .3); break;
+      case 'delisle': this.nb(o, .06, 'lowpass', 1000, 170, 1, .75); this.tn(o, 'sine', 140, 45, .09, .5); this.click(o, 0, 3000, .3); this.click(o, .45, 2200, .5); this.click(o, .62, 1800, .5); break;
       case 'supp': this.nb(o, .05, 'lowpass', 1100, 180, 1, .8); this.tn(o, 'sine', 170, 55, .07, .55); this.click(o, 0, 3400, .35); this.click(o, .045, 2300, .3); this.nb(o, .03, 'bandpass', 2600, 1800, 2, .25, .02); break;
       case 'revolver': this.nb(o, .06, 'bandpass', 2600, 1300, .8, 1.3); this.nb(o, .36, 'lowpass', 2100, 90, 1, 1.25); this.tn(o, 'sine', 130, 38, .2, 1.1); break;
       case 'sten': this.nb(o, .035, 'bandpass', 3200, 1700, .9, .9); this.nb(o, .13, 'lowpass', 1700, 160, 1, .8); this.tn(o, 'sine', 150, 55, .08, .6); this.click(o, .03, 2400, .25); break;
@@ -2514,7 +2516,45 @@ function buildSMG() { const g = new THREE.Group(); part(g, Cz(.019, .019, .3), g
 function buildRifle() { const g = new THREE.Group(); part(g, Cz(.01, .01, .55), gm.blued, 0, .03, -.3); part(g, Bx(.04, .045, .6), gm.wood, 0, .01, -.15); part(g, Bx(.035, .07, .35), gm.wood, 0, -.02, .38, .12); return g; }
 function buildGrenade() { const g = new THREE.Group(); part(g, Cz(.012, .012, .26, 6), gm.wood, 0, 0, .05); part(g, Cz(.034, .034, .09, 8), gm.gren, 0, 0, -.13); return g; }
 function buildFlamer() { const g = new THREE.Group(); part(g, Cz(.02, .02, .8), gm.metal, 0, .03, -.1); part(g, Cz(.07, .07, .3, 10), gm.gren, 0, -.08, .1); return g; }
-const FALLBACK = { machete: buildKnife, revolver: buildPistol, sten: buildSMG, rifle: buildRifle, grenade: buildGrenade, flamer: buildFlamer };
+const supMat = new THREE.MeshPhongMaterial({ map: TX.gunmetal, color: new THREE.Color(.62, .63, .66), specular: new THREE.Color(.32, .32, .34), shininess: 40 });
+const supRing = new THREE.MeshPhongMaterial({ color: new THREE.Color(.09, .09, .1), specular: new THREE.Color(.4, .4, .42), shininess: 60 });
+/* ---------- silent weapons: Welrod Mk I (SOE, 9 mm, integral suppressor, rotating bolt knob) and the scoped De Lisle carbine (.45 ACP) ---------- */
+const blued = new THREE.MeshPhongMaterial({ color: new THREE.Color(.15, .155, .17), specular: new THREE.Color(.42, .42, .45), shininess: 52 }); // parkerised black
+const rubber = new THREE.MeshPhongMaterial({ map: TX.tire, color: new THREE.Color(.95, .92, .88), specular: new THREE.Color(.04, .04, .04), shininess: 8 });
+function buildWelrod() {
+  const g = new THREE.Group();
+  part(g, Cz(.0165, .0165, .3, 18), blued, 0, 0, -.09);                                   // the tube: barrel + baffles in one
+  part(g, Cz(.0165, .011, .012, 18), blued, 0, 0, -.246);                                 // rounded muzzle cap
+  for (const z of [-.17, -.03]) part(g, Cz(.0172, .0172, .004, 18), supRing, 0, 0, z);   // seams
+  part(g, Bx(.003, .007, .006), supRing, 0, .0195, -.225);                                // front sight
+  const knob = new THREE.Group(); knob.position.z = .078; g.add(knob);                    // bolt knob: twist and pull to cycle
+  part(knob, Cz(.0175, .0175, .035, 18), blued, 0, 0, 0);
+  for (let i = 0; i < 4; i++) part(knob, Cz(.0184, .0184, .003, 18), supRing, 0, 0, -.012 + i * .008);
+  part(knob, Cz(.0145, .0165, .008, 18), blued, 0, 0, .021);
+  for (const sx of [-1, 1]) part(knob, Bx(.003, .007, .006), supRing, sx * .004, .0195, .004); // rear sight notch
+  g.userData.knob = knob;
+  part(g, Bx(.014, .022, .05), blued, 0, -.025, -.005);                                   // trigger housing
+  part(g, Bx(.004, .02, .006), supRing, 0, -.043, -.012, .35);                             // trigger
+  const tg = new THREE.TorusGeometry(.017, .0025, 6, 14, Math.PI); tg.rotateY(Math.PI / 2); tg.rotateX(Math.PI);
+  const tgm = new THREE.Mesh(tg, blued); tgm.position.set(0, -.034, -.016); g.add(tgm);    // trigger guard
+  const grip = new THREE.Group(); grip.position.set(0, -.072, .036); grip.rotation.x = -.2; g.add(grip);
+  part(grip, new RoundedBoxGeometry(.026, .1, .034, 2, .007), rubber, 0, 0, 0);           // rubber-covered magazine = the grip
+  part(grip, Bx(.028, .006, .036), blued, 0, -.052, 0);
+  part(grip, Bx(.02, .055, .006), blued, 0, .018, .02);                                    // grip safety
+  return g;
+}
+const DELISLE_CAN = [.069, .03, .66]; // can centre height, rear end z, length (rifle model space)
+function buildDeLisle() {
+  const g = fbxClone('rifle') || buildRifle();
+  const can = new THREE.Group(); can.position.set(0, DELISLE_CAN[0], DELISLE_CAN[1]); g.add(can);             // large integral suppressor over barrel and upper handguard
+  const len = DELISLE_CAN[2];
+  part(can, Cz(.025, .025, len, 18), blued, 0, 0, -len / 2);
+  part(can, Cz(.0262, .0262, .014, 18), supRing, 0, 0, -.006);
+  part(can, Cz(.026, .022, .016, 18), supRing, 0, 0, -len + .007);
+  for (let i = 1; i < 4; i++) part(can, Cz(.0255, .0255, .003, 18), supRing, 0, 0, -len * i / 4);
+  return g;
+}
+const FALLBACK = { machete: buildKnife, revolver: buildPistol, sten: buildSMG, rifle: buildRifle, grenade: buildGrenade, flamer: buildFlamer, welrod: buildWelrod, delisle: buildDeLisle };
 // view-model layout per weapon (camera space): FBX models are real size, barrel along -Z
 const VMCFG = {
   machete: { pos: [.16, -.16, -.5], rot: [-.1, .2, -.3], muzzle: [0, 0, -.27], rh: { p: [0, -.005, .2], r: [0, 0, 0], e: [.08, -.25, .62] } },
@@ -2522,23 +2562,26 @@ const VMCFG = {
   sten: { pos: [.135, -.16, -.39], rot: [0, .03, 0], ads: { pos: [0, -.089, -.44], rot: [0, 0, 0] }, muzzle: [0, .03, -.39], rh: { p: [.005, -.055, .035], r: [-.2, 0, 0], e: [.13, -.32, .48] }, lh: { p: [-.075, .02, -.12], r: [0, 0, 1.3], e: [-.28, -.3, .3], left: true } },
   rifle: { pos: [.12, -.14, -.36], rot: [0, .03, 0], muzzle: [0, .045, -.57], rh: { p: [.0, -.045, .17], r: [-.3, 0, 0], e: [.12, -.32, .55] }, lh: { p: [-.01, -.04, -.2], r: [.2, 0, .3], e: [-.22, -.32, .25], left: true } },
   grenade: { pos: [.17, -.15, -.42], rot: [-.4, .25, -.15], muzzle: [0, 0, -.15], rh: { p: [0, 0, .06], r: [0, 0, 0], e: [.08, -.28, .45] } },
+  welrod: { pos: [.14, -.13, -.42], rot: [.02, .1, -.03], ads: { pos: [0, -.021, -.46], rot: [0, 0, 0] }, muzzle: [0, 0, -.258] },
+  delisle: { pos: [.12, -.14, -.36], rot: [0, .03, 0], muzzle: [0, .069, -.635] },
   flamer: { pos: [.11, -.19, -.45], rot: [0, .03, 0], muzzle: [0, .07, -.5], rh: { p: [0, -.06, .1], r: [-.3, 0, 0], e: [.13, -.3, .5] }, lh: { p: [-.01, -.03, -.16], r: [.1, 0, .3], e: [-.24, -.3, .25], left: true } }
 };
 const WEAPONS = [
   { id: 'knife', name: 'MAČETA', melee: true, dmg: 45, rate: .5, fbx: 'machete', owned: true },
-  { id: 'revolver', name: 'REVOLVER', ammo: 'pistol', mag: 6, clip: 6, reload: 2.0, dmg: 34, rate: .3, auto: false, spread: .011, kick: .075, snd: 'revolver', fbx: 'revolver', owned: true, canSup: true, sup: false },
-  { id: 'sten', name: 'STEN Mk II', ammo: 'smg', mag: 32, clip: 0, reload: 2.2, dmg: 15, rate: .092, auto: true, spread: .03, kick: .026, snd: 'sten', fbx: 'sten', owned: false, canSup: true, sup: false },
-  { id: 'rifle', name: 'LEE-ENFIELD No.4 (T)', ammo: 'rifle', mag: 10, clip: 0, reload: 2.6, dmg: 92, rate: 1.15, auto: false, spread: .003, kick: .15, snd: 'rifle', fbx: 'rifle', owned: false, scope: true, canSup: true, sup: false },
+  { id: 'revolver', name: 'REVOLVER', ammo: 'pistol', mag: 6, clip: 6, reload: 2.0, dmg: 34, rate: .3, auto: false, spread: .011, kick: .075, snd: 'revolver', fbx: 'revolver', owned: true },
+  { id: 'sten', name: 'STEN Mk II', ammo: 'smg', mag: 32, clip: 0, reload: 2.2, dmg: 15, rate: .092, auto: true, spread: .03, kick: .026, snd: 'sten', fbx: 'sten', owned: false },
+  { id: 'rifle', name: 'LEE-ENFIELD No.4 (T)', ammo: 'rifle', mag: 10, clip: 0, reload: 2.6, dmg: 92, rate: 1.15, auto: false, spread: .003, kick: .15, snd: 'rifle', fbx: 'rifle', owned: false, scope: true },
   { id: 'grenade', name: 'STIELHANDGRANATE', ammo: 'gren', thrown: true, rate: 1.1, fbx: 'grenade', owned: true },
-  { id: 'flamer', name: 'PLAMENOMET', ammo: 'fuel', flame: true, rate: .06, dmg: 5, fbx: 'flamer', owned: false }
+  { id: 'flamer', name: 'PLAMENOMET', ammo: 'fuel', flame: true, rate: .06, dmg: 5, fbx: 'flamer', owned: false },
+  // silent weapons: no muzzle flash, only guards right next to you hear the shot
+  { id: 'welrod', name: 'WELROD Mk I', ammo: 'smg', mag: 6, clip: 0, reload: 2.6, dmg: 60, rate: .85, auto: false, spread: .008, kick: .035, snd: 'welrod', fbx: 'welrod', owned: false, sup: true, quiet: 3 },
+  { id: 'delisle', name: 'DE LISLE (T)', ammo: 'acp', mag: 8, clip: 0, reload: 2.8, dmg: 110, rate: 1.2, auto: false, spread: .002, kick: .07, snd: 'delisle', fbx: 'delisle', owned: false, scope: true, sup: true, quiet: 4 }
 ];
-const AMMO_MAX = { pistol: 72, smg: 256, rifle: 60, gren: 8, fuel: 300 };
+const AMMO_MAX = { pistol: 72, smg: 256, rifle: 60, gren: 8, fuel: 300, acp: 48 };
 const vmRoot = new THREE.Group(); vmScene.add(vmRoot);
 let vmMats = [];
 // screw-on suppressors (revolver: Nagant-style can, Sten Mk IIS-style sleeve, rifle: De Lisle-style can)
-const SUP = { revolver: { r: .0155, len: .135 }, sten: { r: .024, len: .2 }, rifle: { r: .022, len: .2 } };
-const supMat = new THREE.MeshPhongMaterial({ map: TX.gunmetal, color: new THREE.Color(.62, .63, .66), specular: new THREE.Color(.32, .32, .34), shininess: 40 });
-const supRing = new THREE.MeshPhongMaterial({ color: new THREE.Color(.09, .09, .1), specular: new THREE.Color(.4, .4, .42), shininess: 60 });
+const SUP = {};
 function buildSuppressor(s) {
   const g = new THREE.Group();
   part(g, Cz(s.r, s.r, s.len, 18), supMat, 0, 0, -s.len / 2);
@@ -2548,7 +2591,7 @@ function buildSuppressor(s) {
   return g;
 }
 function buildViewModels() {
-  vmMats = [gm.glove, gm.sleeve, gm.cuff, supMat, supRing];
+  vmMats = [gm.glove, gm.sleeve, gm.cuff, supMat, supRing, blued, rubber];
   if (!ARMS.ok) initArms();
   if (ARMS.ok) vmMats.push(ARMS.mat);
   for (const w of WEAPONS) {
@@ -2557,7 +2600,7 @@ function buildViewModels() {
     const mats = [];
     let gun = fbxClone(w.fbx, mats);
     if (!gun) { gun = FALLBACK[w.fbx](); gun.traverse(o => { if (o.isMesh) mats.push(o.material); }); }
-    root.add(gun); root.userData.gun = gun; root.userData.mag = gun.userData.mag || null;
+    root.add(gun); root.userData.gun = gun; root.userData.mag = gun.userData.mag || null; root.userData.knob = gun.userData.knob || null; if (root.userData.knob) root.userData.knobZ = root.userData.knob.position.z;
     if (root.userData.mag) { root.userData.magY = root.userData.mag.position.y; root.userData.magX = root.userData.mag.position.x; }
     if (w.scope && FBX.rifle) { // No.32 sniper scope on the receiver
       const sm = new THREE.MeshPhongMaterial({ color: new THREE.Color(.1, .1, .11), specular: new THREE.Color(.4, .4, .4), shininess: 60 }); mats.push(sm);
@@ -2587,14 +2630,18 @@ const FIST = { fingers: [[1.1, 1.3, .75], [1.15, 1.35, .8], [1.2, 1.4, .8], [1.2
 const OPEN = { fingers: [[.2, .25, .15], [.25, .3, .2], [.3, .35, .2], [.35, .4, .25]], th: [-.02, .07, .03] };
 const GRIPS = {
   machete: { R: { p: [0, -.012, .2], r: .013, a: [0, .08, -1], f: [0, 1, .3], c: FIST } },
-  revolver: { R: { p: [-.004, -.016, .095], r: .014, a: [0, 1, -.25], f: [-.1, .2, -1], c: TRIG } },
+  revolver: { R: { p: [-.004, -.012, .115], r: .014, t: [0, .011, .05], a: [0, 1, -.25], f: [-.1, .2, -1], c: { fingers: TRIG.fingers, th: [.02, -.005, .085] } } },
   sten: { R: { p: [0, -.02, .15], r: .012, a: [0, 1, -.4], f: [-.05, .3, -1], c: TRIG }, L: { p: [-.004, .03, -.18], r: .025, a: [0, .05, -1], f: [1, .45, .1], c: SUPPORT } },
   rifle: { R: { p: [0, .021, .24], r: .017, a: [0, .8, -.6], f: [-.05, .5, -1], c: TRIG }, L: { p: [0, .056, -.2], r: .021, a: [0, .04, -1], f: [1, .4, .05], c: SUPPORT } },
   grenade: { R: { p: [0, 0, .06], r: .013, a: [0, .1, -1], f: [0, 1, .3], c: FIST } },
+  welrod: { R: { p: [0, -.064, .036], r: .016, t: [0, -.043, -.012], a: [0, 1, -.2], f: [-.05, .2, -1], c: { fingers: TRIG.fingers, th: [.02, .0, .07] } } },
   flamer: { R: { p: [0, -.024, .25], r: .015, a: [0, 1, -.35], f: [-.05, .3, -1], c: TRIG }, L: { p: [0, .046, -.11], r: .016, a: [0, .05, -1], f: [1, .45, .1], c: SUPPORT } }
 };
+GRIPS.delisle = GRIPS.rifle; // same Lee-Enfield stock and fore-end under the can
 const ARM_ROOT = [0, -.165, .06], ARM_SCALE = 1.2, ARM_YAW = -.4; // bladed shooting stance: left shoulder forward; long arms to reach the fore-ends
 const HAND_K = .8; // ...but real-sized hands (1.2 × .8 ≈ 0.96)
+let PALM_F = .09;
+const ARM_POLE_R = [0, -1, .1], ARM_POLE_L = [-.9, -1.3, .35]; // right elbow tucked under the gun so the forearm runs along the bore // where a closed fist's tube sits along the hand (wrist -> knuckles), metres
 const _aq = new THREE.Quaternion(), _aq2 = new THREE.Quaternion(), _aq3 = new THREE.Quaternion(), _am = new THREE.Matrix4(), _aA = V(0, 0, 0), _aF = V(0, 0, 0), _aN = V(0, 0, 0), _aP = V(0, 0, 0), _aW = V(0, 0, 0), _aZ = V(0, 0, 0), _aE = V(0, 0, 0), _aD = V(0, 0, 0), _aR = V(0, 0, 0), _aT = V(0, 0, 0);
 function initArms() {
   const rig = RIGS.arms; if (!rig) return;
@@ -2627,7 +2674,7 @@ function initArms() {
     const N = S.right ? A.clone().cross(F) : F.clone().cross(A);
     const Qb = new THREE.Quaternion().setFromRotationMatrix(_am.makeBasis(A, N, A.clone().cross(N))), Qc = wq(S.ctl); // right-handed basis for either hand
     S.off = Qb.clone().invert().multiply(Qc);
-    S.palm = W.clone().addScaledVector(F, .072 * ARM_SCALE).sub(wp(S.ctl)).applyQuaternion(Qc.clone().invert()).divideScalar(ARM_SCALE);
+    S.palm = W.clone().addScaledVector(F, PALM_F * ARM_SCALE).sub(wp(S.ctl)).applyQuaternion(Qc.clone().invert()).divideScalar(ARM_SCALE);
     S.nLo = N.clone().applyQuaternion(wq(S.lo).invert()); // palm direction as the forearm sees it at rest (for the forearm twist)
     // four fingers: hinge axes so a positive angle curls toward the palm
     S.fingers = ['index', 'middle', 'ring', 'pinky'].map(f => {
@@ -2635,11 +2682,12 @@ function initArms() {
       for (let k = 1; k <= 3; k++) {
         const b = B['f_' + f + '_0' + k + '_' + s], ch = b && b.children.find(c => c.isBone); if (!ch) continue;
         const dir = wp(ch).sub(wp(b)).normalize(), ax = dir.clone().cross(N).normalize();
-        chain.push({ b, rest: b.quaternion.clone(), ax: ax.applyQuaternion(wq(b).invert()).normalize() });
+        chain.push({ b, rest: b.quaternion.clone(), ax: ax.applyQuaternion(wq(b).invert()).normalize(), ab: N.clone().applyQuaternion(wq(b).invert()).normalize() });
       }
       return chain;
     });
     // thumb: aimed as a whole at a point on the far side of the grip, the two outer joints bend a little
+    S.tips = ['index', 'middle', 'ring', 'pinky'].map(f => B['f_' + f + '_03_' + s + '_end'] || null);
     S.thumb = [1, 2, 3].map(k => B['thumb_0' + k + '_' + s]);
     S.thumbTip = B['thumb_03_' + s + '_end'] || S.thumb[2];
     S.thumbRest = S.thumb.map(b => b.quaternion.clone());
@@ -2656,7 +2704,7 @@ function poseHand(S, gun, g) {
   else { _aP.set(S.right ? .42 : -.46, -.85, .08); _aA.set(0, 0, -1); _aF.set(S.right ? -.3 : .3, -1, -.2); } // tucked away below the screen
   _aA.normalize(); _aF.addScaledVector(_aA, -_aF.dot(_aA)).normalize();
   S.ctl.scale.setScalar(HAND_K);
-  const hk = ARM_SCALE * HAND_K, pole = _pole.set(S.right ? .9 : -.9, -1.3, .35), rad = g && g.r !== undefined ? g.r : .015;
+  const hk = ARM_SCALE * HAND_K, pole = _pole.set(...(S.right ? ARM_POLE_R : ARM_POLE_L)), rad = g && g.r !== undefined ? g.r : .015;
   for (let it = 0; it < 3; it++) {
     if (S.right) _aN.copy(_aA).cross(_aF); else _aN.copy(_aF).cross(_aA);
     _aq2.setFromRotationMatrix(_am.makeBasis(_aA, _aN, _aZ.copy(_aA).cross(_aN))).multiply(S.off);
@@ -2686,9 +2734,29 @@ function poseHand(S, gun, g) {
   const par = S.ctl.parent; S.ctl.position.copy(par.worldToLocal(_aW));
   par.getWorldQuaternion(_aq).invert(); S.ctl.quaternion.copy(_aq.multiply(Qc));
   S.ctl.updateMatrixWorld(true);
-  // fingers
+  // fingers: each one closes until its tip meets the grip (a cylinder of the grip's radius round its axis);
+  // the trigger finger instead reaches for the trigger
   const c = g ? g.c : OPEN;
-  S.fingers.forEach((chain, i) => chain.forEach((j, k) => j.b.quaternion.copy(j.rest).multiply(_aq.setFromAxisAngle(j.ax, Math.min(FINGER_MAX[k], c.fingers[i][k])))));
+  S.fingers.forEach((chain, i) => {
+    const base = c.fingers[i], tip = S.tips[i];
+    const setCurl = (k, sp = 0) => {
+      chain.forEach((j, n) => { j.b.quaternion.copy(j.rest); if (!n && sp) j.b.quaternion.multiply(_aq3.setFromAxisAngle(j.ab, sp)); j.b.quaternion.multiply(_aq.setFromAxisAngle(j.ax, Math.min(FINGER_MAX[n], base[n] * k))); });
+      chain[0].b.updateMatrixWorld(true); return tip.getWorldPosition(_aE);
+    };
+    if (!g || !tip) { setCurl(1); return; }
+    let best = 1.45, bestD = 1e9, bestS = 0;
+    if (i === 0 && g.t) { // trigger finger: flex and spread until the pad sits on the trigger
+      gun.localToWorld(_aR.set(...g.t));
+      for (let sp = -.45; sp <= .451; sp += .09) for (let k = .2; k <= 1.6; k += .1) { const d = setCurl(k, sp).distanceTo(_aR); if (d < bestD) { bestD = d; best = k; bestS = sp; } }
+      setCurl(best, bestS); return;
+    } else {
+      for (let k = .4; k <= 1.6; k += .08) { // first contact with the grip surface
+        setCurl(k); _aD.copy(_aE).sub(_aP); const dist = _aD.addScaledVector(_aA, -_aD.dot(_aA)).length();
+        if (dist <= rad + .009) { best = k; break; }
+      }
+    }
+    setCurl(best);
+  });
   // thumb: slight bend, then swing the whole thumb so its tip lands on the far side of the grip
   S.thumb.forEach((b, k) => { b.quaternion.copy(S.thumbRest[k]); if (k) b.quaternion.multiply(_aq.setFromAxisAngle(S.thumbAx[k], k === 1 ? .25 : .35)); });
   S.ctl.updateMatrixWorld(true);
@@ -2709,7 +2777,8 @@ function poseArms(w, visible) {
   else if (player.reloadT > 0 && w.id === 'revolver') L = { p: [-.012, -.012, .035], r: .02, a: [0, .1, -1], f: [1, .35, 0], c: SUPPORT }; // cradle the revolver while thumbing in rounds
   let R = G.R || null;
   // bolt action: after each rifle shot the right hand leaves the wrist, works the bolt back and forth and returns
-  if (w.id === 'rifle' && vm.act === 'bolt' && vm.actT > 0 && R) {
+  if (w.id === 'welrod' && vm.act === 'cycle' && vm.actT > 0) { const t = 1 - vm.actT / .8; if (t > .05 && t < .95) L = { p: [0, .0, w.model.userData.knob.position.z + .005], r: .018, a: [0, 0, -1], f: [.6, 1, .2], c: SUPPORT }; }
+  if ((w.id === 'rifle' || w.id === 'delisle') && vm.act === 'bolt' && vm.actT > 0 && R) {
     const t = 1 - vm.actT / .9, b = clamp(Math.min((t - .1) / .14, (.95 - t) / .14), 0, 1), pull = Math.sin(Math.PI * clamp((t - .28) / .45, 0, 1)) * .085;
     const bp = [.042, .048, .1 + pull], ba = [0, 1, .15], bf = [-.25, .1, -1];
     R = { p: R.p.map((v, i) => lerp(v, bp[i], b)), a: R.a.map((v, i) => lerp(v, ba[i], b)), f: R.f.map((v, i) => lerp(v, bf[i], b)), c: b > .5 ? FIST : R.c };
@@ -2727,27 +2796,22 @@ pilotSprite.visible = false; pilotSprite.scale.set(.02, .04, 1); vmScene.add(pil
    ===================================================================== */
 const goldMat = new THREE.MeshLambertMaterial({ color: new THREE.Color(1, .78, .3), emissive: new THREE.Color(.18, .12, 0) });
 const chaliceG = new THREE.LatheGeometry([[0, 0], [.13, 0], [.13, .02], [.05, .045], [.03, .1], [.055, .13], [.028, .16], [.035, .2], [.11, .25], [.14, .36], [.13, .365], [.1, .27], [0, .24]].map(([x, y]) => new THREE.Vector2(x, y)), 10);
-const PICK_NAMES = { x: 'Sada tlumičů', h: 'Lékárnička +25', H: 'Velká lékárnička +50', f: 'Jídlo +10', v: 'Neprůstřelná vesta', a: 'Bedna munice', p: 'Náboje do revolveru', s: 'Zásobníky 9 mm', r: 'Náboje .303', n: 'Stielhandgranate ×2', u: 'Palivo do plamenometu' };
+const PICK_NAMES = { q: 'Náboje .45 ACP', h: 'Lékárnička +25', H: 'Velká lékárnička +50', f: 'Jídlo +10', v: 'Neprůstřelná vesta', a: 'Bedna munice', p: 'Náboje do revolveru', s: 'Zásobníky 9 mm', r: 'Náboje .303', n: 'Stielhandgranate ×2', u: 'Palivo do plamenometu' };
 function makePickupMesh(kind) {
   const g = new THREE.Group(), mats = [];
   const M = (opts) => { const m = new THREE.MeshLambertMaterial(opts); mats.push(m); return m; };
   const k0 = kind[0];
   if (kind.startsWith('W:')) {
-    const name = { sten: 'sten', rifle: 'rifle', flamer: 'flamer' }[kind.slice(2)];
+    const name = { sten: 'sten', rifle: 'rifle', flamer: 'flamer', welrod: 'welrod', delisle: 'delisle' }[kind.slice(2)];
     const w = fbxClone(name, mats) || (() => { const f = FALLBACK[name](); f.traverse(o => { if (o.isMesh) { o.material = o.material.clone(); mats.push(o.material); } }); return f; })();
     w.rotation.set(0, Math.PI / 2, Math.PI / 2 * .0); w.position.y = .12; g.add(w);
   }
   else if (kind.startsWith('k:')) { const m = M({ color: new THREE.Color(.95, .78, .35), emissive: new THREE.Color(.15, .1, 0) }); part(g, new THREE.TorusGeometry(.05, .014, 6, 12), m, 0, .09, 0); part(g, Bx(.012, .012, .16), m, 0, .09, -.11); part(g, Bx(.012, .04, .02), m, 0, .07, -.17); }
   else if (kind.startsWith('d:')) { const m = M({ map: TX.docs }); part(g, Bx(.32, .03, .42), m, 0, .03, 0); part(g, Bx(.3, .01, .4), M({ color: new THREE.Color(.85, .8, .7) }), .02, .055, .02, 0, .2, 0); }
   else if (k0 === 'h' || k0 === 'H') { const s = k0 === 'H' ? 1.4 : 1; part(g, Bx(.5 * s, .28 * s, .35 * s), M({ map: TX.medkit }), 0, .14 * s, 0); }
-  else if (k0 === 'x') { // canvas roll with two suppressors on top
-    const lea = M({ map: TX.cloth, color: new THREE.Color(.62, .6, .42) }), strap = M({ map: TX.leather, color: new THREE.Color(.7, .55, .4) });
-    part(g, Bx(.46, .07, .3), lea, 0, .035, 0); part(g, Bx(.05, .075, .31), strap, -.12, .04, 0); part(g, Bx(.05, .075, .31), strap, .12, .04, 0);
-    for (const [z, r] of [[-.06, .024], [.07, .018]]) { const c = buildSuppressor({ r, len: .26 }); c.rotation.y = -Math.PI / 2; c.position.set(-.13, .07 + r, z); c.traverse(o => { if (o.isMesh) { o.material = o.material.clone(); mats.push(o.material); } }); g.add(c); }
-  }
   else if (k0 === 'f') { const r = Math.random(); const plate = M({ color: new THREE.Color(.75, .72, .66) }); part(g, Cyl(.2, .17, .03, 14), plate, 0, .015, 0); if (r < .33) part(g, new THREE.SphereGeometry(.12, 8, 6), M({ color: new THREE.Color(.75, .5, .25) }), 0, .09, 0).scale.set(1.5, .7, 1); else if (r < .66) { const s = M({ color: new THREE.Color(.55, .2, .14) }); for (let i = 0; i < 2; i++) part(g, new THREE.CapsuleGeometry(.03, .16, 3, 6), s, i * .07 - .035, .05, 0, 0, 0, Math.PI / 2); } else part(g, new THREE.CylinderGeometry(.11, .11, .09, 3), M({ color: new THREE.Color(.95, .8, .35) }), 0, .07, 0); }
   else if (k0 === 'v') { const m = M({ map: TX.cloth, color: new THREE.Color(.55, .58, .45) }); part(g, Bx(.46, .06, .36), m, 0, .04, 0); part(g, Bx(.3, .06, .2), m, 0, .09, -.05); }
-  else if ('aprs'.includes(k0)) { const m = M({ map: TX.ammo }); part(g, Bx(.46, .26, .28), m, 0, .13, 0); if (k0 === 'a') part(g, Bx(.3, .18, .2), m, .05, .35, 0, 0, .5); }
+  else if ('aprsq'.includes(k0)) { const m = M({ map: TX.ammo }); part(g, Bx(.46, .26, .28), m, 0, .13, 0); if (k0 === 'a') part(g, Bx(.3, .18, .2), m, .05, .35, 0, 0, .5); }
   else if (k0 === 'u') { const m = M({ map: TX.fuel }); part(g, Bx(.34, .46, .16), m, 0, .23, 0); part(g, Cyl(.03, .03, .08, 6), M({ color: new THREE.Color(.3, .3, .3) }), .1, .49, 0); }
   else if (k0 === 'n') { const w = M({ map: TX.floorwood, color: new THREE.Color(.9, .7, .5) }), mt = M({ color: new THREE.Color(.3, .34, .26) }); for (let i = 0; i < 2; i++) { part(g, new THREE.CylinderGeometry(.012, .012, .22, 6), w, i * .12 - .06, .03, 0, 0, 0, Math.PI / 2); part(g, new THREE.CylinderGeometry(.034, .034, .09, 8), mt, i * .12 - .06 + .14, .034, 0, 0, 0, Math.PI / 2); } }
   else if (k0 === 'g') {
@@ -2762,7 +2826,7 @@ function addPickup(kind, pos, y = null, dropped = false) {
   const { g, mats } = makePickupMesh(kind), fy = y === null ? floorAt(pos.x, pos.z) : y;
   g.position.set(pos.x, fy, pos.z); g.rotation.y = Math.random() * 6; levelRoot.add(g);
   const blob = new THREE.Mesh(blobGeo, blobMat); blob.position.set(pos.x, fy + .01, pos.z); blob.scale.setScalar(kind.startsWith('W:') ? 1.1 : .6); levelRoot.add(blob);
-  const p = { kind, mesh: g, blob, mats, x: pos.x, z: pos.z, y: fy, active: true, dropped, phase: Math.random() * 6, spin: 'gkdWx'.includes(kind[0]) };
+  const p = { kind, mesh: g, blob, mats, x: pos.x, z: pos.z, y: fy, active: true, dropped, phase: Math.random() * 6, spin: 'gkdW'.includes(kind[0]) };
   tintMats(mats, pos.x, pos.z, kind[0] === 'g' || kind[0] === 'k' ? 1.3 : 1.05);
   pickups.push(p); return p;
 }
@@ -3195,11 +3259,11 @@ const keys = {}; let mouseDown = false, rightDown = false;
 const vm = { recoil: 0, swayX: 0, swayY: 0, switchT: 0, pending: -1, flashT: 0, actT: 0, act: '', adsK: 0 };
 const after = (t, fn) => timers.push({ t, fn });
 function newLoadout() {
-  WEAPONS.forEach((w, i) => { w.owned = i === 0 || i === 1 || i === 4; if (w.mag) w.clip = i === 1 ? w.mag : 0; w.sup = false; });
-  player.ammo = { pistol: 30, smg: 0, rifle: 0, gren: 3, fuel: 0 }; player.armor = 0; player.score = 0; player.weapon = 1; player.keys = new Set(); player.supKit = false;
+  WEAPONS.forEach((w, i) => { w.owned = i === 0 || i === 1 || i === 4; if (w.mag) w.clip = i === 1 ? w.mag : 0; });
+  player.ammo = { pistol: 30, smg: 0, rifle: 0, gren: 3, fuel: 0, acp: 0 }; player.armor = 0; player.score = 0; player.weapon = 1; player.keys = new Set(); player.supKit = false;
 }
 function snapshotLoadout() { game.snapshot = { owned: WEAPONS.map(w => w.owned), clip: WEAPONS.map(w => w.clip || 0), sup: WEAPONS.map(w => !!w.sup), ammo: { ...player.ammo }, armor: player.armor, score: player.score, weapon: player.weapon, supKit: !!player.supKit }; }
-function restoreLoadout() { const s = game.snapshot; if (!s) return newLoadout(); WEAPONS.forEach((w, i) => { w.owned = s.owned[i]; if (w.mag) w.clip = s.clip[i]; if (w.canSup) w.sup = !!(s.sup && s.sup[i]); }); player.ammo = { ...s.ammo }; player.armor = s.armor; player.score = s.score; player.supKit = !!s.supKit; player.weapon = WEAPONS[s.weapon].owned ? s.weapon : 1; }
+function restoreLoadout() { const s = game.snapshot; if (!s) return newLoadout(); WEAPONS.forEach((w, i) => { w.owned = !!s.owned[i]; if (w.mag) w.clip = s.clip[i] || 0; }); player.ammo = { acp: 0, ...s.ammo }; player.armor = s.armor; player.score = s.score; player.supKit = !!s.supKit; player.weapon = WEAPONS[s.weapon].owned ? s.weapon : 1; }
 function placePlayerAtStart() {
   const [sx, sz, syaw] = LV.start, p = C(sx, sz);
   Object.assign(player, { yaw: syaw, pitch: 0, recoilPitch: 0, vy: 0, onGround: true, hp: 100, stamina: 100, crouch: 0, crouchOn: false, lean: 0, kills: 0, treasure: 0, fireT: 0, reloadT: 0, shake: 0, dmgFlash: 0, burn: 0, dead: false, time: 0, queued: false, zoom: false, fallV: 0 });
@@ -3239,7 +3303,7 @@ function updateHud() {
     lastHud = s;
     hud.hp.textContent = Math.max(0, Math.ceil(player.hp)); hud.hp.style.color = player.hp < 30 ? '#ff5a45' : '';
     hud.hpb.style.width = Math.max(0, player.hp) + '%'; hud.stb.style.width = player.stamina + '%'; hud.ar.textContent = Math.ceil(player.armor); hud.arb.style.width = player.armor + '%';
-    hud.ammo.innerHTML = ammoStr; hud.wname.textContent = w.name + (w.sup ? ' · TLUMIČ' : '');
+    hud.ammo.innerHTML = ammoStr; hud.wname.textContent = w.name;
     hud.score.textContent = player.score; hud.kills.textContent = `${player.kills}/${game.totalEnemies}`; hud.treas.textContent = `${player.treasure}/${game.totalTreasure}`;
     hud.keysel.textContent = [...player.keys].map(k => '🗝 ' + (KEY_NAMES[k] || k)).join('  ');
   }
@@ -3349,9 +3413,10 @@ function fire() {
   if (w.flame) { flameTick(w); return; }
   if (w.clip <= 0) { if (player.ammo[w.ammo] > 0) startReload(); else { sfx.play('empty'); player.fireT = .3; const alt = [2, 1, 3].find(i => WEAPONS[i].owned && (WEAPONS[i].clip > 0 || player.ammo[WEAPONS[i].ammo] > 0)); if (alt !== undefined && alt !== player.weapon) switchWeapon(alt); } return; }
   const sup = !!w.sup;
-  w.clip--; player.fireT = w.rate; sfx.play(sup ? 'supp' : w.snd);
+  w.clip--; player.fireT = w.rate; sfx.play(w.snd || 'supp');
   vm.recoil = Math.min(.35, vm.recoil + w.kick * (sup ? .8 : 1)); vm.flashT = sup ? .03 : .05; player.recoilPitch += w.kick * (player.zoom ? .15 : .35) * (sup ? .8 : 1);
   if (w.scope) { vm.act = 'bolt'; vm.actT = .9; }
+  if (w.id === 'welrod') { vm.act = 'cycle'; vm.actT = .8; }
   if (w.id === 'revolver') { vm.act = 'hammer'; vm.actT = .25; }
   muzzleSprite.material.rotation = Math.random() * 6.28;
   const d0 = camFwd(), right = V(1, 0, 0).applyQuaternion(camera.quaternion), up = V(0, 1, 0).applyQuaternion(camera.quaternion);
@@ -3376,7 +3441,7 @@ function fire() {
     if (Math.random() < .25) sfx.play('ric', hit.point, sup ? .4 : .7);
     if (sup) makeNoise(hit.point.x, hit.point.y - 1, hit.point.z, 4); // the bullet still smacks into the wall
   }
-  if (sup) makeNoise(player.pos.x, player.pos.y, player.pos.z, 5); else wakeNearby();
+  if (sup) makeNoise(player.pos.x, player.pos.y, player.pos.z, w.quiet || 5); else wakeNearby();
 }
 let flameOn = 0;
 function flameTick(w) {
@@ -3722,9 +3787,10 @@ function updatePickups(dt) {
       const id = p.kind.slice(2), wi = WEAPONS.findIndex(w => w.id === id), w = WEAPONS[wi];
       if (!w.owned) { w.owned = true; if (w.mag) w.clip = w.mag; log(`Máš novou zbraň: ${w.name}`); sfx.play('weapon'); switchWeapon(wi); }
       else log(`${w.name}: munice`);
+      if (id === 'welrod') A.smg = Math.min(AMMO_MAX.smg, A.smg + 18); if (id === 'delisle') A.acp = Math.min(AMMO_MAX.acp, A.acp + 16);
       if (id === 'sten') A.smg = Math.min(AMMO_MAX.smg, A.smg + 64); if (id === 'rifle') A.rifle = Math.min(AMMO_MAX.rifle, A.rifle + 20); if (id === 'flamer') A.fuel = Math.min(AMMO_MAX.fuel, A.fuel + 150);
       took = true;
-    } else if (k0 === 'x') { player.supKit = true; const w = WEAPONS[player.weapon]; if (w.canSup) w.sup = true; log('Sada tlumičů — <b>[T]</b> nasadí / sejme tlumič (revolver, Sten, puška)'); sfx.play('weapon'); took = true; }
+    }
     else if (p.kind.startsWith('k:')) { const k = p.kind.slice(2); player.keys.add(k); log(`Sebral jsi: ${KEY_NAMES[k] || k}`); sfx.play('treasure'); completeObjective({ brana: 'key', knihovna: 'libkey' }[k]); took = true; }
     else if (p.kind.startsWith('d:')) { const d = p.kind.slice(2); log(d === 'plans' ? 'Plány operace Finsternis jsou tvoje' : 'Deník dr. Zemana'); sfx.play('treasure'); completeObjective(d); player.score += 1000; took = true; }
     else switch (k0) {
@@ -3732,7 +3798,8 @@ function updatePickups(dt) {
       case 'H': if (player.hp < 100) { player.hp = Math.min(100, player.hp + 50); log(PICK_NAMES.H); took = true; } break;
       case 'f': if (player.hp < 100) { player.hp = Math.min(100, player.hp + 10); log(PICK_NAMES.f); sfx.play('eat'); took = true; } break;
       case 'v': if (player.armor < 100) { player.armor = Math.min(100, player.armor + 50); log(PICK_NAMES.v); took = true; } break;
-      case 'a': A.pistol = Math.min(AMMO_MAX.pistol, A.pistol + 12); A.smg = Math.min(AMMO_MAX.smg, A.smg + 32); if (WEAPONS[3].owned) A.rifle = Math.min(AMMO_MAX.rifle, A.rifle + 10); if (WEAPONS[5].owned) A.fuel = Math.min(AMMO_MAX.fuel, A.fuel + 40); log(PICK_NAMES.a); took = true; break;
+      case 'q': if (A.acp < AMMO_MAX.acp) { A.acp = Math.min(AMMO_MAX.acp, A.acp + 8); log(PICK_NAMES.q); took = true; } break;
+      case 'a': if (WEAPONS[7].owned) A.acp = Math.min(AMMO_MAX.acp, A.acp + 8); A.pistol = Math.min(AMMO_MAX.pistol, A.pistol + 12); A.smg = Math.min(AMMO_MAX.smg, A.smg + 32); if (WEAPONS[3].owned) A.rifle = Math.min(AMMO_MAX.rifle, A.rifle + 10); if (WEAPONS[5].owned) A.fuel = Math.min(AMMO_MAX.fuel, A.fuel + 40); log(PICK_NAMES.a); took = true; break;
       case 'p': if (A.pistol < AMMO_MAX.pistol) { A.pistol = Math.min(AMMO_MAX.pistol, A.pistol + 12); log(PICK_NAMES.p); took = true; } break;
       case 's': if (A.smg < AMMO_MAX.smg) { A.smg = Math.min(AMMO_MAX.smg, A.smg + 24); log(PICK_NAMES.s); took = true; } break;
       case 'r': if (A.rifle < AMMO_MAX.rifle) { A.rifle = Math.min(AMMO_MAX.rifle, A.rifle + 8); log(PICK_NAMES.r); took = true; } break;
@@ -3740,7 +3807,7 @@ function updatePickups(dt) {
       case 'u': if (A.fuel < AMMO_MAX.fuel) { A.fuel = Math.min(AMMO_MAX.fuel, A.fuel + 60); log(PICK_NAMES.u); took = true; } break;
       case 'g': player.score += 500; player.treasure++; log('Poklad +500'); sfx.play('treasure'); took = true; if (player.treasure >= game.totalTreasure) completeObjective('tre'); break;
     }
-    if (took) { p.active = false; p.mesh.visible = false; p.blob.visible = false; if (!'gkdWx'.includes(k0) && k0 !== 'f') sfx.play('pickup'); }
+    if (took) { p.active = false; p.mesh.visible = false; p.blob.visible = false; if (!'gkdW'.includes(k0) && k0 !== 'f') sfx.play('pickup'); }
   }
 }
 function updateGrenades(dt) {
@@ -3797,6 +3864,7 @@ function updateViewModel(dt) {
     else if (vm.act === 'throw') { const t = 1 - vm.actT / .5; const k = t < .35 ? -t / .35 : (t - .35) / .65; pz += .1 * (t < .35 ? t / .35 : 1 - k) - .1 * Math.max(0, k); py += .08 * (t < .35 ? t / .35 : 1 - k); rx -= .8 * Math.max(0, k); if (t > .4) ud.gun.visible = false; }
     else if (vm.act === 'sup') { const k = Math.sin(Math.PI * (1 - vm.actT / .7)); rz += .7 * k; ry -= .35 * k; py -= .05 * k; px -= .04 * k; }
     else if (vm.act === 'bolt') { const t = 1 - vm.actT / .9; const k = t > .3 && t < .85 ? Math.sin(Math.PI * (t - .3) / .55) : 0; rz += .35 * k; py -= .03 * k; px -= .02 * k; pz += .03 * k; }
+    else if (vm.act === 'cycle' && ud.knob) { const t = 1 - vm.actT / .8, k = Math.sin(Math.PI * clamp((t - .12) / .76, 0, 1)); ud.knob.position.z = ud.knobZ + .045 * Math.min(1, k * 1.6); ud.knob.rotation.z = -1.1 * Math.min(1, k * 2.5); rz += .12 * k; py += .01 * k; }
     else if (vm.act === 'hammer') { const k = Math.sin(Math.PI * (1 - vm.actT / .25)); rx += .15 * k; }
   }
   if (w.flame && flameOn > 0) { px += (Math.random() - .5) * .004; py += (Math.random() - .5) * .004; }
@@ -3994,22 +4062,13 @@ function mmDraw() {
   g.font = `bold ${Math.round(11 * k)}px Oswald, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#c9a24c'; g.fillText('N', nx, ny);
   const vg = g.createRadialGradient(S / 2, S / 2, S * .3, S / 2, S / 2, S * .72); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.65)'); g.fillStyle = vg; g.fillRect(0, 0, S, S);
 }
-function toggleSup() {
-  const w = WEAPONS[player.weapon];
-  if (!w.canSup) { log('Na tuhle zbraň tlumič nenasadíš'); return; }
-  if (!player.supKit) { log('Nemáš tlumič — hledej sadu tlumičů'); return; }
-  if (player.reloadT > 0 || vm.switchT > 0 || vm.actT > 0) return;
-  vm.act = 'sup'; vm.actT = .7; player.fireT = Math.max(player.fireT, .7); sfx.play('sup');
-  after(.35, () => { w.sup = !w.sup; log(w.sup ? 'Tlumič nasazen — výstřely jsou slyšet jen zblízka' : 'Tlumič sejmut'); });
-}
-
 const canvas = renderer.domElement;
 addEventListener('keydown', e => {
   keys[e.code] = true;
-  if (game.state === 'playing' && !e.repeat) { if (e.code === 'KeyC' && SET.crouchToggle) player.crouchOn = !player.crouchOn; if (e.code === 'KeyT') toggleSup(); }
+  if (game.state === 'playing' && !e.repeat) { if (e.code === 'KeyC' && SET.crouchToggle) player.crouchOn = !player.crouchOn; }
   if (e.code === 'Tab') { e.preventDefault(); if (game.state === 'playing') game.showObj = !game.showObj; return; }
   if (game.state !== 'playing') return;
-  const n = { Digit1: 0, Digit2: 1, Digit3: 2, Digit4: 3, Digit5: 4, Digit6: 5 }[e.code]; if (n !== undefined) switchWeapon(n);
+  const n = { Digit1: 0, Digit2: 1, Digit3: 2, Digit4: 3, Digit5: 4, Digit6: 5, Digit7: 6, Digit8: 7 }[e.code]; if (n !== undefined) switchWeapon(n);
   if (e.code === 'KeyR') startReload();
   if (e.code === 'KeyF' && !e.repeat) useAction();
   if (e.code === 'KeyM') { sfx.muted = !sfx.muted; if (sfx.master) sfx.master.gain.value = sfx.muted ? 0 : sfx.vol; log(sfx.muted ? 'Zvuk vypnut' : 'Zvuk zapnut'); }
@@ -4037,7 +4096,7 @@ addEventListener('wheel', e => {
 });
 canvas.addEventListener('click', () => { if (game.state === 'playing' && document.pointerLockElement !== canvas) { const p = canvas.requestPointerLock(); if (p && p.catch) p.catch(() => { }); } });
 document.addEventListener('pointerlockchange', () => { if (document.pointerLockElement !== canvas && game.state === 'playing') pauseGame(); });
-const KEYS_HTML = `<div class="keys"><span><b>WASD</b> pohyb · <b>SPACE</b> skok</span><span><b>LMB</b> střelba · <b>RMB</b> mířidla / puškohled</span><span><b>R</b> přebít · <b>F</b> použít / dveře</span><span><b>Q / E</b> vyklonit se</span><span><b>SHIFT</b> sprint · <b>C</b> přikrčit / plížit</span><span><b>1–6 / kolečko</b> zbraně · <b>T</b> tlumič</span><span><b>TAB</b> úkoly mise</span><span><b>M</b> zvuk · <b>ESC</b> pauza</span></div>`;
+const KEYS_HTML = `<div class="keys"><span><b>WASD</b> pohyb · <b>SPACE</b> skok</span><span><b>LMB</b> střelba · <b>RMB</b> mířidla / puškohled</span><span><b>R</b> přebít · <b>F</b> použít / dveře</span><span><b>Q / E</b> vyklonit se</span><span><b>SHIFT</b> sprint · <b>C</b> přikrčit / plížit</span><span><b>1–8 / kolečko</b> zbraně</span><span><b>TAB</b> úkoly mise</span><span><b>M</b> zvuk · <b>ESC</b> pauza</span></div>`;
 function setOverlay(html, buttons) {
   overlay.innerHTML = html + '<div>' + buttons.map((b, i) => `<button class="btn ${b.cls || ''}" data-i="${i}" ${b.disabled ? 'disabled' : ''}>${b.label}</button>`).join('') + '</div><div id="load"></div>';
   overlay.style.display = 'flex'; $('hud').style.display = 'none';
@@ -4067,8 +4126,8 @@ async function startMission(i, fresh) {
   for (const e of enemies) { e.maxHp = Math.round(e.T.hp * DIFF.hp); e.hp = e.maxHp; }
   if (fresh) {   // starting a later mission from the menu: hand out the weapons found earlier
     newLoadout();
-    if (i >= 1) { WEAPONS[2].owned = true; WEAPONS[2].clip = WEAPONS[2].mag; player.ammo.smg = 96; player.ammo.gren = 4; player.supKit = true; }
-    if (i >= 2) { WEAPONS[3].owned = true; WEAPONS[3].clip = 10; player.ammo.rifle = 20; player.armor = 50; }
+    if (i >= 1) { WEAPONS[2].owned = true; WEAPONS[2].clip = WEAPONS[2].mag; WEAPONS[6].owned = true; WEAPONS[6].clip = 6; WEAPONS[7].owned = true; WEAPONS[7].clip = 8; player.ammo.smg = 96; player.ammo.acp = 16; player.ammo.gren = 4; }
+    if (i >= 2) { WEAPONS[3].owned = true; WEAPONS[3].clip = 10; player.ammo.rifle = 20; player.ammo.acp = 24; player.armor = 50; }
     snapshotLoadout();
   } else if (!game.snapshot) snapshotLoadout();
   restoreLoadout(); placePlayerAtStart();
@@ -4128,7 +4187,8 @@ function initGrid() {
   }
 }
 const TIPS = [
-  'Sadu tlumičů najdeš ve strážnici. Klávesou T tlumič nasadíš – tlumený výstřel uslyší jen stráže v těsné blízkosti.',
+  'Tichá pistole Welrod leží ve strážnici, tlumená karabina De Lisle s puškohledem ve vinném sklepě. Jejich výstřel uslyší jen stráže těsně u tebe.',
+  'Welrod i De Lisle se po každé ráně musí ručně natáhnout – miř pečlivě, druhá šance nebývá.',
   'Padlí vojáci upustí Sten nebo pušku, pokud je ještě nemáš.',
   'C přepíná přikrčení. Přikrčený ve stínu jsi skoro neviditelný a tvoje kroky nejsou slyšet.',
   'Minimapa vlevo nahoře odkrývá místnosti, kterými jsi prošel. Červené tečky jsou vojáci, kteří o tobě vědí.',
@@ -4239,7 +4299,7 @@ function tick(dt) {
 window.__errs = [];
 addEventListener('error', e => window.__errs.push(String(e.message) + ' @' + e.lineno));
 addEventListener('unhandledrejection', e => window.__errs.push('rejection: ' + (e.reason && e.reason.message || e.reason)));
-window.__castle = { step(n = 1, dt = 1 / 60) { for (let i = 0; i < n; i++) tick(dt); }, THREE, ARMS, GRIPS, RIGS, FBX, sfx, SET, P_, get pickups() { return pickups; }, damageEnemy, aim(v) { rightDown = v; }, player, enemies, WEAPONS, VMCFG, POSES, game, renderer, scene, camera, vmScene, vmCamera, get LV() { return LV; }, get lmB() { return lmB; }, get doors() { return doors; }, get patches() { return patches; }, get wallFaces() { return wallFaces; }, get ROOMS() { return ROOMS; }, get roomAt() { return roomAt; }, get wallTop() { return wallTop; }, floorAt, topAt, tp(x, z) { const p = C(x, z); player.pos.copy(p); player.viewY = p.y; }, give() { WEAPONS.forEach(w => { w.owned = true; if (w.mag) w.clip = w.mag; }); Object.assign(player.ammo, AMMO_MAX); }, loadLevel, startMission, buildViewModels, async quick(i = 0) { await startMission(i, true); startPlaying(); } };
+window.__castle = { step(n = 1, dt = 1 / 60) { for (let i = 0; i < n; i++) tick(dt); }, THREE, ARMS, GRIPS, RIGS, FBX, sfx, SET, P_, ARM_POLE_R, ARM_POLE_L, DELISLE_CAN, buildViewModels2: () => buildViewModels(), get pickups() { return pickups; }, damageEnemy, aim(v) { rightDown = v; }, player, enemies, WEAPONS, VMCFG, POSES, game, renderer, scene, camera, vmScene, vmCamera, get LV() { return LV; }, get lmB() { return lmB; }, get doors() { return doors; }, get patches() { return patches; }, get wallFaces() { return wallFaces; }, get ROOMS() { return ROOMS; }, get roomAt() { return roomAt; }, get wallTop() { return wallTop; }, floorAt, topAt, tp(x, z) { const p = C(x, z); player.pos.copy(p); player.viewY = p.y; }, give() { WEAPONS.forEach(w => { w.owned = true; if (w.mag) w.clip = w.mag; }); Object.assign(player.ammo, AMMO_MAX); }, loadLevel, startMission, buildViewModels, async quick(i = 0) { await startMission(i, true); startPlaying(); } };
 frame();
 boot().catch(err => { console.error(err); setLoad('Chyba při načítání: ' + err.message); });
 </script>
