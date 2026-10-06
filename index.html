@@ -71,6 +71,13 @@
   @keyframes pulse { 50% { box-shadow:0 0 22px rgba(230,190,90,.55), 0 0 0 2px #e6c36a inset; } }
   .mnote { font-family:'Special Elite',monospace; font-size:13px; color:#cfc4a8; text-shadow:0 1px 2px #000; margin-bottom:6px; }
   .mfoot { position:absolute; bottom:10px; left:0; right:0; margin:0 auto !important; font-size:11px !important; color:#8d8571 !important; text-shadow:0 1px 2px #000; }
+  .soon { position:absolute; right:18px; bottom:16px; width:300px; border:2px solid var(--gold); background:#000; box-shadow:0 0 0 1px #000, 0 10px 30px rgba(0,0,0,.8); transform:rotate(1.5deg); }
+  .soon canvas { display:block; width:300px; height:168px; }
+  .soon .st { position:absolute; left:0; right:0; bottom:0; padding:6px 10px 7px; background:linear-gradient(transparent, rgba(0,0,0,.9) 40%); text-align:left; }
+  .soon b { display:block; font:600 15px 'Oswald',sans-serif; letter-spacing:3px; color:#f0e3bd; }
+  .soon span { display:block; font:13px 'Special Elite',monospace; color:#c9a24c; }
+  .soon i { position:absolute; right:-10px; top:-128px; font:700 13px 'Oswald',sans-serif; font-style:normal; letter-spacing:3px; color:#fff; background:#a3180f; padding:4px 12px; transform:rotate(12deg); box-shadow:0 3px 8px rgba(0,0,0,.6); animation:pulse 2.4s ease-in-out infinite; }
+  @media (max-width:900px) { .soon { transform:scale(.7); transform-origin:right bottom; } }
   .mpanel { background:rgba(10,8,6,.72); border:1px solid rgba(201,162,76,.4); padding:10px 22px 16px; box-shadow:0 10px 40px rgba(0,0,0,.7); max-width:900px; }
   #overlay h1 { font-family:'Special Elite',monospace; font-size:clamp(34px,7vw,84px); margin:0; color:#e6d6aa; letter-spacing:3px; text-shadow:0 0 24px rgba(160,20,10,.6), 0 4px 0 #000; }
   #overlay h2 { margin:6px 0 18px; font-weight:400; letter-spacing:8px; color:#b52519; font-size:clamp(13px,2vw,18px); }
@@ -6139,6 +6146,28 @@ function menuBG(t) {
   g.strokeStyle = `rgba(255,230,170,${.35 + .25 * Math.sin(t * 9) * Math.sin(t * 2.3)})`; g.lineWidth = 3 * u; g.beginPath(); for (let y = 0; y <= H; y += 20) y ? g.lineTo(seam(y), y) : g.moveTo(seam(y), y); g.stroke();
   const vg = g.createRadialGradient(mid, H * .45, H * .2, mid, H * .5, H * .95); vg.addColorStop(0, 'rgba(0,0,0,.45)'); vg.addColorStop(.5, 'rgba(0,0,0,.15)'); vg.addColorStop(1, 'rgba(0,0,0,.75)'); g.fillStyle = vg; g.fillRect(0, 0, W, H);
 }
+// teaser for the bonus episode: a German officer with a torch follows the Eagle's tracks through the snow
+function soonArt(t) {
+  const cv = $('soonc'); if (!cv) return; const g = cv.getContext('2d'), W = cv.width, H = cv.height;
+  let gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#060b18'); gr.addColorStop(.7, '#1a2338'); gr.addColorStop(1, '#2c3346'); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  g.fillStyle = 'rgba(255,240,200,.85)'; g.beginPath(); g.arc(240, 34, 13, 0, 7); g.fill();
+  g.fillStyle = '#04070d'; for (let i = 0; i < 9; i++) { const x = i * 38 - 6, h = 70 + 30 * hash2(i, 1, 3); g.beginPath(); g.moveTo(x, H - 40); g.lineTo(x + 15, H - 40 - h); g.lineTo(x + 30, H - 40); g.fill(); }
+  g.fillStyle = '#b9c2d4'; g.fillRect(0, H - 42, W, 42);   // snow
+  const ox = 70 + ((t * 9) % 30), fy = H - 30;
+  g.fillStyle = 'rgba(40,50,70,.55)'; for (let i = 0; i < 9; i++) { const x = ox + 40 + i * 24, y = fy + (i % 2 ? 5 : -2); g.beginPath(); g.ellipse(x, y, 5, 2, 0, 0, 7); g.fill(); }   // the Eagle's footprints
+  const a = Math.sin(t * .9) * .18 - .05, bx = ox + 14, by = H - 76;      // torch cone sweeping over the tracks
+  const lg = g.createLinearGradient(bx, by, bx + 160, by + 40); lg.addColorStop(0, 'rgba(255,236,170,.55)'); lg.addColorStop(1, 'rgba(255,236,170,0)'); g.fillStyle = lg;
+  g.beginPath(); g.moveTo(bx, by); g.lineTo(bx + Math.cos(a + .2) * 190, by + Math.sin(a + .2) * 190 + 40); g.lineTo(bx + Math.cos(a - .1) * 190, by + Math.sin(a - .1) * 190 + 40); g.fill();
+  g.save(); g.translate(ox, H - 30); g.fillStyle = '#05060a';   // officer: peaked cap, long leather coat
+  const sw = Math.sin(t * 4) * 3;
+  g.fillRect(-6 + sw * .4, -22, 5, 22); g.fillRect(2 - sw * .4, -22, 5, 22);
+  g.beginPath(); g.moveTo(-12, -20); g.lineTo(13, -20); g.lineTo(9, -62); g.lineTo(-8, -62); g.fill();
+  g.beginPath(); g.arc(0, -68, 6, 0, 7); g.fill(); g.fillRect(-9, -76, 17, 4); g.beginPath(); g.moveTo(-6, -76); g.quadraticCurveTo(2, -86, 9, -76); g.fill(); g.fillRect(-1, -73, 12, 2);
+  g.lineWidth = 4; g.strokeStyle = '#05060a'; g.beginPath(); g.moveTo(6, -56); g.lineTo(14, -48); g.stroke();
+  g.fillStyle = '#ffe9a8'; g.fillRect(13, -50, 4, 4); g.restore();
+  g.fillStyle = 'rgba(255,255,255,.75)'; for (let i = 0; i < 40; i++) { const x = (hash2(i, 2, 5) * W + t * 6) % W, y = (hash2(i, 3, 5) * H + t * (14 + 10 * hash2(i, 4, 5))) % H; g.fillRect(x, y, 1.6, 1.6); }
+  g.fillStyle = 'rgba(160,20,10,.85)'; g.font = 'bold 34px Georgia,serif'; g.globalAlpha = .18 + .06 * Math.sin(t * 2); g.fillText('✠', 250, 120); g.globalAlpha = 1;
+}
 function menuScreen(on) { MB.cv.style.display = on ? 'block' : 'none'; overlay.classList.toggle('menu', on); if (on) MUSIC.start(); else MUSIC.stop(); }
 function unlocked() { return clamp(store.get('cg_unlocked', 0), 0, LEVELS.length - 1); }
 let menuDiff = clamp(store.get('cg_diff', 1), 0, DIFFS.length - 1), menuLevel = 0;
@@ -6156,6 +6185,7 @@ function showMainMenu() {
       <button class="btn" data-go="keys">OVLÁDÁNÍ</button>
       ${IN_FRAME ? '<button class="btn sm" data-go="full">CELÁ OBRAZOVKA</button><button class="btn sm" data-go="tab">OTEVŘÍT V NOVÉM OKNĚ</button>' : ''}
     </div>
+    <div class="soon"><canvas id="soonc" width="300" height="168"></canvas><div class="st"><b>BONUS EXPANSION PACK</b><span>VE STOPÁCH ORLA</span><i>COMING SOON</i></div></div>
     <p class="mfoot">v1.3 · agent B. J. z Londýna proti operaci Finsternis · 1943<br>Dabing: Piper TTS · Zbraně: CC0 z OpenGameArt · vojáci: nisu (CC0), three.js / Mixamo · ${Object.keys(FBX).length}/6 FBX načteno${soldierTpl ? '' : ' · náhradní postavy'}</p><div id="load"></div>`;
   overlay.style.display = 'flex'; $('hud').style.display = 'none';
   const go = { start: () => startMission(menuLevel, true), missions: showMissionSelect, settings: () => showSettings(showMainMenu), keys: showControls, full: goFullscreen, tab: openStandalone };
@@ -6389,7 +6419,7 @@ function tick(dt) {
   if (Math.abs(player.burn - lastBurn) > .01) { hud.burn.style.opacity = player.burn; lastBurn = player.burn; }
   if (hitTimer > 0) { hitTimer -= dt; if (hitTimer <= 0) hud.hitm.style.opacity = 0; }
   if (game.state === 'playing') { updateHud(); mmDraw(); if (TM.on) tmDraw(); } else if (TM.on) tabMap(false);
-  if (MB.cv.style.display === 'block') menuBG(time);
+  if (MB.cv.style.display === 'block') { menuBG(time); soonArt(time); }
   renderer.clear(); renderer.render(scene, camera);
   if (!player.zoom && game.state !== 'menu' && game.state !== 'loading' && game.state !== 'briefing' && game.state !== 'cutscene') { renderer.clearDepth(); renderer.render(vmScene, vmCamera); }
 }
