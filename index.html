@@ -126,13 +126,14 @@
   .aaa .soon { right:5vw; bottom:64px; transform:none; }
   .minfo.up { top:auto; bottom:330px; }
   .xp { position:absolute; right:5vw; bottom:62px; width:360px; display:flex; flex-direction:column; gap:8px; }
-  .xp .cw { position:relative; padding:9px 14px; background:linear-gradient(90deg, rgba(10,14,22,.92), rgba(30,40,60,.75)); border-left:4px solid #4a78c0; font-family:'Oswald',sans-serif; }
+  .xp .cw { position:relative; display:block; width:100%; text-align:left; cursor:pointer; border:0; transition:transform .18s, box-shadow .18s; padding:9px 14px; background:linear-gradient(90deg, rgba(10,14,22,.92), rgba(30,40,60,.75)); border-left:4px solid #4a78c0; font-family:'Oswald',sans-serif; }
   .xp .cw b { display:block; font-size:13px; letter-spacing:.14em; color:#dfe6f2; } .xp .cw span { font-size:12px; color:#8fa3c4; letter-spacing:.08em; }
   .xp .cw i { position:absolute; right:10px; top:50%; transform:translateY(-50%) rotate(-4deg); font:700 11px 'Oswald',sans-serif; font-style:normal; letter-spacing:.2em; color:#fff; background:#2d4f8a; padding:3px 8px; }
   .dlc { position:relative; display:block; width:360px; padding:0; border:2px solid var(--gold); background:#000; cursor:pointer; text-align:left; box-shadow:0 14px 40px rgba(0,0,0,.8); transition:transform .18s, box-shadow .18s; }
   .dlc canvas { display:block; width:356px; height:188px; } .dlc.on { transform:translateY(-4px) scale(1.02); box-shadow:0 0 0 2px #ff3b24, 0 18px 50px rgba(0,0,0,.9); }
   .dlc .st { position:absolute; left:0; right:0; bottom:38px; padding:0 14px; font-family:'Oswald',sans-serif; text-shadow:0 2px 6px #000; }
   .dlc .st small { display:block; font-size:11px; letter-spacing:.4em; color:#c9a24c; } .dlc .st b { display:block; font:400 40px/1 'Anton','Impact',sans-serif; letter-spacing:.04em; color:#fff; }
+  .xp .cw.on { transform:translateX(-4px); box-shadow:0 0 0 2px #4a78c0, 0 10px 30px rgba(0,0,0,.8); }
   .dlc .st span { display:block; margin-top:6px; font-size:12px; letter-spacing:.12em; color:#d8cfbb; }
   .dlc em { position:absolute; left:0; right:0; bottom:0; height:34px; line-height:34px; text-align:center; font:700 17px 'Oswald',sans-serif; font-style:normal; letter-spacing:.3em; color:#fff; background:linear-gradient(90deg,#8e1209,#d0301e,#8e1209); animation:pulse 2.4s ease-in-out infinite; }
   .press { position:absolute; left:0; right:0; bottom:16vh; text-align:center; font:400 clamp(14px,1.3vw,20px) 'Oswald',sans-serif; letter-spacing:.6em; color:#e8e0cc; animation:blink 1.8s ease-in-out infinite; text-shadow:0 2px 8px #000; }
@@ -6837,7 +6838,8 @@ const MENU_INFO = {
   keys: () => `<h5>WASD · myš · F · TAB</h5><h4>Ovládání</h4><p>Plíž se ve stínu (C), tiše likviduj nožem zezadu, podrž TAB pro mapu s cíli mise.</p>`,
   credits: () => `<h5>Kdo to udělal</h5><h4>Titulky</h4><p>Hra v jednom HTML souboru na three.js. Modely, zvuky a textury s licencí CC0.</p>`,
   full: () => `<h4>Celá obrazovka</h4><p>Hra je vložená do jiné stránky. Na celé obrazovce se hraje nejlépe.</p>`,
-  dlc: () => `<h5>Rozšíření · 2 epizody · 6 misí</h5><h4>Zajetí Orla</h4><p>Hauptmann Erich Brandt přežil Orlův útok v údolí. Teď jde po jeho stopě – přes spálený tábor, zvláštní vlak až do srdce hory Wolfsgrund.</p><p>Hraješ za Němce. Proti tobě stojí partyzáni a komando SOE. Na konci tě čeká Orel.</p>`,
+  cold: () => `<h5>Připravujeme · Coming soon</h5><h4>Studená Válka</h4><p>Berlín, 1961. Válka skončila, ale Orel nikdy nepřestal pracovat. Ve městě rozděleném drátem a betonem hledá muže, kterého měl dávno pohřbít.</p><p>Druhé rozšíření série Blázen z Londýna. Zase hraješ za Orla.</p>`,
+  dlc: () => `<h5>Blázen z Londýna · rozšíření · 2 epizody · 6 misí</h5><h4>Zajetí Orla</h4><p>Hauptmann Erich Brandt přežil Orlův útok v údolí. Teď jde po jeho stopě – přes spálený tábor, zvláštní vlak až do srdce hory Wolfsgrund.</p><p>Hraješ za Němce. Proti tobě stojí partyzáni a komando SOE. Na konci tě čeká Orel.</p>`,
   tab: () => `<h4>Otevřít v novém okně</h4><p>Pokud vložená stránka nedovolí zamknout myš, otevři hru samostatně. Postup zůstane uložený.</p>`
 };
 function showTitle() {
@@ -6855,10 +6857,10 @@ function showMainMenu() {
   rows.push(it('new', 'Nová hra', 'new', ++n), it('missions', 'Výběr mise', 'missions', ++n), it('settings', 'Nastavení', 'settings', ++n), it('keys', 'Ovládání', 'keys', ++n), it('credits', 'Titulky', 'credits', ++n));
   if (IN_FRAME) rows.push(it('full', 'Celá obrazovka', 'full', ++n).replace('class="mi"', 'class="mi sm"'), it('tab', 'Otevřít v novém okně', 'tab', ++n).replace('class="mi"', 'class="mi sm"'));
   overlay.innerHTML = `<div class="aaa">${FX}${titleHtml()}<nav class="mlist">${rows.join('')}</nav><aside class="minfo up"></aside>
-    <div class="xp"><div class="cw"><b>BLÁZEN Z LONDÝNA: STUDENÁ VÁLKA</b><span>Orel se vrací · Berlín 1961</span><i>COMING SOON</i></div>
-      <button class="dlc" data-nav data-go="dlc" data-info="dlc"><canvas id="soonc" width="360" height="190"></canvas><div class="st"><small>ROZŠÍŘENÍ</small><b>ZAJETÍ ORLA</b><span>Hraj za Hauptmanna Brandta · 2 epizody</span></div><em>HRAJ NYNÍ ▶</em></button></div>${hintBar(false)}</div><div id="load"></div>`;
+    <div class="xp"><button class="cw" data-nav data-go="cold" data-info="cold"><b>BLÁZEN Z LONDÝNA: STUDENÁ VÁLKA</b><span>Orel se vrací · Berlín 1961</span><i>COMING SOON</i></button>
+      <button class="dlc" data-nav data-go="dlc" data-info="dlc"><canvas id="soonc" width="360" height="190"></canvas><div class="st"><small>BLÁZEN Z LONDÝNA · ROZŠÍŘENÍ</small><b>ZAJETÍ ORLA</b><span>Hraj za Hauptmanna Brandta · 2 epizody</span></div><em>HRAJ NYNÍ ▶</em></button></div>${hintBar(false)}</div><div id="load"></div>`;
   overlay.style.display = 'flex'; $('hud').style.display = 'none';
-  const go = { start: () => startMission(menuLevel, true), new: () => { menuLevel = 0; startMission(0, true); }, missions: () => showMissionSelect('play', ''), dlc: () => { menuLevel = unlocked('zo'); showMissionSelect('play', 'zo'); }, settings: () => showSettings(showMainMenu), keys: showControls, credits: showCredits, full: goFullscreen, tab: openStandalone };
+  const go = { start: () => startMission(menuLevel, true), new: () => { menuLevel = 0; startMission(0, true); }, missions: () => showMissionSelect('play', ''), dlc: () => { menuLevel = unlocked('zo'); showMissionSelect('play', 'zo'); }, settings: () => showSettings(showMainMenu), keys: showControls, credits: showCredits, cold: () => {}, full: goFullscreen, tab: openStandalone };
   overlay.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { okSound(); go[b.dataset.go](); });
   navInit(null, 0);
 }
