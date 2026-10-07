@@ -16,6 +16,21 @@ Epizoda 1 se odehrává v hradu. Epizoda 2 je venku, v noci a daleko od hradu: s
 
 ![Úvodní cutscéna – B. J. obklíčený hlídkou s baterkami](docs/screenshot-cutscene.jpg)
 
+## Rozšíření: Blázen z Londýna – Zajetí Orla
+
+Hlavní menu má vpravo dole velký banner **ZAJETÍ ORLA – HRAJ NYNÍ**. V rozšíření hraješ za **Hauptmanna Brandta**, německého důstojníka, kterého Orel málem zastřelil u údolní stanice lanovky (mise 2.1 hlavní hry). Brandt přežije a vydá se Orla najít. Proti němu stojí partyzáni, britská komanda, jejich velitelé a odstřelovači.
+
+| Epizoda | Mise |
+| --- | --- |
+| **1 · Ve stopách Orla** | 1.1 Ráno po útoku · 1.2 Spálený tábor · 1.3 Odjezd zvláštního vlaku |
+| **2 · Zajetí Orla** | 2.1 Brána Wolfsgrund · 2.2 Podzemní továrna · 2.3 Srdce temnoty |
+
+- V každé misi najdeš tři Orlovy stopy a pak se dostaneš k východu.
+- **Úvodní cutscéna:** Orel u lanovky postřílí Brandtovy muže a Brandta těžce zraní. Brandt přísahá pomstu.
+- **Závěrečná cutscéna:** hned po porážce Übersoldata Mk II a výbuchu hory čeká Brandt na Orla před štolou. Následuje asi 15sekundový souboj na nože a Orel vyhraje.
+- Mise rozšíření se odemykají zvlášť a postup se ukládá v prohlížeči.
+- Vedle banneru je upoutávka na druhé rozšíření **Blázen z Londýna: Studená válka** (Orel, Berlín 1961, coming soon).
+
 ## Cutscény a dabing
 
 - Cutscény běží přímo v enginu na skutečných mapách. B. J. má vlastní model hráče (olivová americká uniforma, pletená čepice), Němci mají zbraně a baterky a kamera se pohybuje po trase. Obraz má černé pruhy a titulky. Mezerníkem se scéna přeskočí.
@@ -76,7 +91,7 @@ V menu i v pauze: citlivost a obrácení myši, FOV, hlasitost, velikost rozhran
 - **Dev menu (F8 nebo `):** zbraně a munice, nesmrtelnost, nekonečná munice, průchod zdmi (Space/C nahoru/dolů), zmrazení/zabití/uklidnění nepřátel, spawn libovolného nepřítele, splnění úkolů, dokončení mise, skok na libovolnou misi, odemknutí všech misí.
 - **Mise 2.4 · Zvláštní vlak:** probojuješ se jedoucím vlakem vagon po vagonu (služební vůz, otevřený vůz, krytý vůz, plošina s raketou, vůz s municí, protiletadlový vůz, tendr) až do lokomotivy. Tam převezmeš řízení: `W` regulátor, `S` brzda. V zatáčce a na mostě dodržuj rychlost, jinak vykolejíš, a ve Wolfsgrundu zastav u rampy dřív, než narazíš do zarážedla.
 - **Realističtější dabing:** nový generátor s neuronovými hlasy (viz *Cutscény a dabing*).
-- V menu vpravo dole upoutávka na **Bonus Expansion Pack – Ve stopách Orla** (coming soon).
+- V menu vpravo dole banner rozšíření **Zajetí Orla** (viz výše) a upoutávka na **Studenou válku** (coming soon).
 
 ## Novinky ve verzi 1.3
 
