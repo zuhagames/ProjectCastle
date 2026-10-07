@@ -1781,7 +1781,7 @@ LEVELS.push(asciiLevel({
   start: [6, 21, 0],
   exit: { cell: [15, 4], side: '-z', kind: 'door', text: 'ÚNIKOVÁ ŠTOLA' },
   objectives: [
-    { id: 'rampa', text: 'Zabij komando na rampě', kill: true },
+    { id: 'rampa', text: 'Probij se rampou (zneškodni komando)', kill: true },
     { id: 'funk', text: 'Znič vysílačku komanda (bunkr na západě)' },
     { id: 'stola', text: 'Dostaň se k únikové štole pod skálou' }
   ],
@@ -1849,7 +1849,7 @@ LEVELS.push(asciiLevel({
   start: [13, 20, 0],
   exit: { cell: [13, 3], side: '-z', kind: 'door', text: 'POČKAT NA ORLA U ŠTOLY' },
   objectives: [
-    { id: 'stola', text: 'Zabij komando u východu ze štoly', kill: true },
+    { id: 'stola', text: 'Probij se k východu ze štoly', kill: true },
     { id: 'exit', text: 'Počkej na Orla u štoly' }
   ],
   squad: [['zo_kruger', 13, 21, PI, { name: 'Feldwebel Krüger', wounded: true, ox: 1.2 }]],
@@ -6655,7 +6655,7 @@ function squadInit() {
   }
   SQ.list.filter(a => a.joined).forEach((a, k) => a.slot = k);
   SNAV.ok = null; if (SQ.on) navBuild();
-  for (const o of LV.objectives) if (o.kill) { o.count = enemies.filter(e => e.tag === o.id && e.state !== 'dead').length; o.n = 0; }   // "kill them all" objectives count the tagged men
+  for (const o of LV.objectives) if (o.kill) { const n = enemies.filter(e => e.tag === o.id && e.state !== 'dead').length; o.count = Math.max(1, Math.ceil(n * (o.kill === true ? .6 : o.kill))); o.n = 0; }   // "fight your way through": a few of the tagged men, not every last one
 }
 const squadUp = () => SQ.list.filter(a => a.state !== 'down');
 function nearRecruit() {
@@ -7100,7 +7100,7 @@ function objectiveSpots(o) {   // where in the level an objective can be done
   for (const d of destructibles) if (d.alive && d.obj === o.id && !(d.charge && d.planted)) pk(d.pos);
   for (const e of enemies) if (e.state !== 'dead' && ((o.id === 'uber' && e.T.boss) || (o.id === 'zeman' && e.T.zeman))) pk(e);
   if (o.id === 'exit') for (const ex of exits) pk(ex.pos);
-  for (const e of enemies) if (e.tag === o.id && e.state !== 'dead') pk(e);   // the men you still have to kill
+  if (!o.done) for (const e of enemies) if (e.tag === o.id && e.state !== 'dead') pk(e);   // the men in your way
   if (SQ.on) for (const a of SQ.list) if (!a.joined && ((o.id === 'druzstvo' && !a.leader) || (o.id === LV.leaderObj && a.leader))) pk(a);   // your men waiting to be found
   for (const g of LV.trig || []) if (g.obj === o.id && !g.done) {   // places that finish an objective when you get there
     if (g.at) pk({ x: (g.at[0] + .5) * CELL, z: (g.at[1] + .5) * CELL });
