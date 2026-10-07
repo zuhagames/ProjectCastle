@@ -20,16 +20,19 @@ Epizoda 1 se odehrává v hradu. Epizoda 2 je venku, v noci a daleko od hradu: s
 
 Série: **Blázen z Londýna: Tajná Akce** (hlavní hra) → **Blázen z Londýna: Zajetí Orla** (rozšíření, hratelné) → **Blázen z Londýna: Studená Válka** (připravuje se, v menu je upoutávka).
 
-Hlavní menu má vpravo dole velký banner **ZAJETÍ ORLA – HRAJ NYNÍ**. V rozšíření hraješ za **Hauptmanna Brandta**, německého důstojníka, kterého Orel málem zastřelil u údolní stanice lanovky (mise 2.1 hlavní hry). Brandt přežije a vydá se Orla najít. Proti němu stojí partyzáni, britská komanda, jejich velitelé a odstřelovači.
+Hlavní menu má vpravo dole velký banner **ZAJETÍ ORLA – HRAJ NYNÍ**. Hraješ za **Gefreitera Ericha Brandta** z posádky hradu Grimhold. Tu noc, kdy Orel utekl z kobek, vtrhl do strážnice, postřílel Brandtovu hlídku a Brandta nechal ležet v krvi. Brandt přežije, sežene zbytek družstva a s **Feldwebelem Krügerem** jde Orla najít.
 
 | Epizoda | Mise |
 | --- | --- |
-| **1 · Ve stopách Orla** | 1.1 Ráno po útoku · 1.2 Spálený tábor · 1.3 Odjezd zvláštního vlaku |
-| **2 · Zajetí Orla** | 2.1 Brána Wolfsgrund · 2.2 Podzemní továrna · 2.3 Srdce temnoty |
+| **1 · Poplach na Grimholdu** | 1.1 Probuzení · 1.2 Horní stanice · 1.3 Sjezd |
+| **2 · Zajetí Orla** | 2.1 Hájovna · 2.2 Wolfsgrund · 2.3 Pod hořící horou |
 
-- V každé misi najdeš tři Orlovy stopy a pak se dostaneš k východu.
-- **Úvodní cutscéna:** Orel u lanovky postřílí Brandtovy muže a Brandta těžce zraní. Brandt přísahá pomstu.
-- **Závěrečná cutscéna:** hned po porážce Übersoldata Mk II a výbuchu hory čeká Brandt na Orla před štolou. Následuje asi 15sekundový souboj na nože a Orel vyhraje.
+- **Úvodní cutscéna** ve strážnici hradu: Orel zastřelí Kesslera a Vogta a Brandta málem zabije.
+- **Tvoje družstvo:** v misi 1.1 posbíráš své muže po hradě (`F` u vojáka) a hlásíš se u Krügera. Družstvo tě pak následuje, samo si hledá cíle a střílí. Nepřítel může střílet i po nich – zraněný voják chvíli leží a pak se zase zvedne. Nad tvými muži je zelená značka, ať je omylem nepostřelíš (tvoje kulky jimi stejně projdou).
+- **Nepřátelé:** v hradu vězni, které Orel pustil z cel, pod hradem partyzáni (křičí česky). Angličané (výsadek SOE, který si pro Orla přiletěl) přijdou až ve 2. epizodě.
+- **Lanovka:** na horní stanici vidíš Orla odjíždět v první kabině. Přivoláš druhou a během sjezdu do údolí střílíš z kabiny po partyzánech na pasekách pod lany.
+- **Dabing:** Brandt, Krüger a vojáci mluví německy s českými titulky, Orel a partyzáni česky (Piper TTS, `python tools/make_voices.py --missing`).
+- **Závěrečná cutscéna:** hora vybuchne, Brandt čeká u únikové štoly – a když z ní Orel vyběhne, následuje asi 15sekundový souboj na nože. Orel vyhraje.
 - Mise rozšíření se odemykají zvlášť a postup se ukládá v prohlížeči.
 - Vedle banneru je upoutávka na další díl **Blázen z Londýna: Studená Válka**. Hraješ za Orla v Berlíně roku 1961 (coming soon); po výběru se v panelu ukáže upoutávka.
 
@@ -81,7 +84,7 @@ Fotografické textury (Poly Haven) jsou volitelné – když nejsou dostupné, h
 
 ## Zbraně
 
-Lee-Enfield No.4 (T) s puškohledem, revolver, Sten Mk II, plamenomet, mačeta, granát (Stielhandgranate) a dvě tiché zbraně SOE: pistole **Welrod Mk I** (9 mm, integrovaný tlumič) a tlumená karabina **De Lisle (T)** s puškohledem (.45 ACP). Když začneš pozdější misi z menu, dostaneš zbraně, které bys měl touto dobou mít.
+Lee-Enfield No.4 (T) s puškohledem, revolver, Sten Mk II (dvě rány do těla nebo jedna do hlavy, ale jen 20 nábojů v zásobníku), plamenomet, mačeta, granát (Stielhandgranate) a dvě tiché zbraně SOE: pistole **Welrod Mk I** (9 mm, integrovaný tlumič) a tlumená karabina **De Lisle (T)** s puškohledem (.45 ACP). Když začneš pozdější misi z menu, dostaneš zbraně, které bys měl touto dobou mít.
 
 ## Nastavení
 
