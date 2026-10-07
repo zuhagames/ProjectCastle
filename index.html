@@ -6554,6 +6554,92 @@ const angD = (a, b) => ((b - a + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math
 TX.markAlly = markTex('V', '#8be070');
 const SAY = { q: [], t: 0, hide: 0 };
 const RIDE = { on: false, t: 0 };
+/* ---------- squad pathfinding: a 0.5 m walk grid that knows every table, crate and pillar, A* over it, string-pulled paths ----------
+   The enemy's flow fields work on whole 4 m cells, which is fine for chasing but walks your men straight into furniture. */
+const SNAV = { k: 8, s: CELL / 8, w: 0, h: 0, ok: null, fy: null, g: null, from: null, seen: null, gen: 0, heap: null, hf: null };
+const NAV_R = .34, NAV_H = 1.7, NAV_STEP = .62;
+function navBuild() {
+  const k = SNAV.k, s = SNAV.s, W = MW * k, H = MH * k, N = W * H; SNAV.w = W; SNAV.h = H;
+  SNAV.ok = new Uint8Array(N); SNAV.fy = new Float32Array(N); SNAV.g = new Float32Array(N); SNAV.from = new Int32Array(N); SNAV.seen = new Uint32Array(N); SNAV.heap = new Int32Array(N); SNAV.hf = new Float32Array(N); SNAV.gen = 0;
+  const wallAt = (x, z) => { const cx = toCell(x), cz = toCell(z); return !inside(cx, cz) || roomAt[cidx(cx, cz)] === -1; };
+  for (let gz = 0; gz < H; gz++) for (let gx = 0; gx < W; gx++) {
+    const x = (gx + .5) * s, z = (gz + .5) * s, cx = toCell(x), cz = toCell(z), i = gz * W + gx;
+    if (roomAt[cidx(cx, cz)] === -1) continue;
+    const fy = floorAt(x, z); SNAV.fy[i] = fy;
+    if (topAt(x, z) < fy + NAV_H) continue;
+    if (wallAt(x + NAV_R, z) || wallAt(x - NAV_R, z) || wallAt(x, z + NAV_R) || wallAt(x, z - NAV_R) || wallAt(x + NAV_R * .7, z + NAV_R * .7) || wallAt(x - NAV_R * .7, z + NAV_R * .7) || wallAt(x + NAV_R * .7, z - NAV_R * .7) || wallAt(x - NAV_R * .7, z - NAV_R * .7)) continue;
+    let ok = true;
+    for (let dz = -1; dz <= 1 && ok; dz++) for (let dx = -1; dx <= 1 && ok; dx++) {
+      const nx = cx + dx, nz = cz + dz; if (!inside(nx, nz)) continue;
+      for (const c of cellCols[cidx(nx, nz)]) {
+        const o = c.occ; if (o && (!o.active || o.max.y <= fy + STEP_UP || o.min.y >= fy + NAV_H)) continue;
+        if (Math.abs(x - c.x) < c.hx + NAV_R && Math.abs(z - c.z) < c.hz + NAV_R) { ok = false; break; }
+      }
+    }
+    SNAV.ok[i] = ok ? 1 : 0;
+  }
+}
+const navIdx = (x, z) => { const gx = Math.floor(x / SNAV.s), gz = Math.floor(z / SNAV.s); return gx < 0 || gz < 0 || gx >= SNAV.w || gz >= SNAV.h ? -1 : gz * SNAV.w + gx; };
+// nearest walkable square to a point (a slot behind you may be inside a table), preferring the same floor
+function navSnap(x, z, y) {
+  const i0 = navIdx(x, z); if (i0 < 0) return -1;
+  if (SNAV.ok[i0] && Math.abs(SNAV.fy[i0] - y) < 1.5) return i0;
+  const gx0 = i0 % SNAV.w, gz0 = (i0 / SNAV.w) | 0;
+  for (let r = 1; r <= 5; r++) { let best = -1, bd = 1e9;
+    for (let dz = -r; dz <= r; dz++) for (let dx = -r; dx <= r; dx++) {
+      if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) continue; const gx = gx0 + dx, gz = gz0 + dz; if (gx < 0 || gz < 0 || gx >= SNAV.w || gz >= SNAV.h) continue;
+      const i = gz * SNAV.w + gx; if (!SNAV.ok[i] || Math.abs(SNAV.fy[i] - y) > 1.5) continue; const d = dx * dx + dz * dz; if (d < bd) { bd = d; best = i; }
+    }
+    if (best >= 0) return best; }
+  return -1;
+}
+// can a man walk straight from a to b? (every 0.25 m: walkable, no step taller than a stair)
+function navLine(ax, az, bx, bz) {
+  const L = Math.hypot(bx - ax, bz - az), n = Math.max(1, Math.ceil(L / .25)); let prev = navIdx(ax, az); if (prev < 0) return false;
+  for (let k = 1; k <= n; k++) { const t = k / n, i = navIdx(ax + (bx - ax) * t, az + (bz - az) * t); if (i < 0 || !SNAV.ok[i] || Math.abs(SNAV.fy[i] - SNAV.fy[prev]) > NAV_STEP) return false; prev = i; }
+  return true;
+}
+// A* with 8 neighbours (no cutting corners), capped so a hopeless search never stalls a frame
+function navPath(sx, sz, sy, tx, tz, ty) {
+  const W = SNAV.w, a = navSnap(sx, sz, sy), b = navSnap(tx, tz, ty); if (a < 0 || b < 0) return null; if (a === b) return [];
+  const gen = ++SNAV.gen, G = SNAV.g, F = SNAV.from, S = SNAV.seen, hp = SNAV.heap, hf = SNAV.hf, ok = SNAV.ok, fy = SNAV.fy, bx = b % W, bz = (b / W) | 0;
+  let hn = 0;
+  const h = i => { const dx = Math.abs(i % W - bx), dz = Math.abs(((i / W) | 0) - bz); return (dx + dz) + (Math.SQRT2 - 2) * Math.min(dx, dz); };
+  const push = (i, f) => { let k = hn++; while (k > 0) { const p = (k - 1) >> 1; if (hf[p] <= f) break; hp[k] = hp[p]; hf[k] = hf[p]; k = p; } hp[k] = i; hf[k] = f; };
+  const pop = () => { const top = hp[0], li = hp[--hn], lf = hf[hn]; let k = 0; for (;;) { let c = 2 * k + 1; if (c >= hn) break; if (c + 1 < hn && hf[c + 1] < hf[c]) c++; if (hf[c] >= lf) break; hp[k] = hp[c]; hf[k] = hf[c]; k = c; } hp[k] = li; hf[k] = lf; return top; };
+  S[a] = gen * 2; G[a] = 0; F[a] = -1; push(a, h(a));
+  let it = 0, found = false;
+  while (hn > 0 && it++ < 12000) {
+    const i = pop(); if (S[i] === gen * 2 + 1) continue; S[i] = gen * 2 + 1; if (i === b) { found = true; break; }
+    const gx = i % W, gz = (i / W) | 0;
+    for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
+      if (!dx && !dz) continue; const nx = gx + dx, nz = gz + dz; if (nx < 0 || nz < 0 || nx >= W || nz >= SNAV.h) continue;
+      const j = nz * W + nx; if (!ok[j] || Math.abs(fy[j] - fy[i]) > NAV_STEP || S[j] === gen * 2 + 1) continue;
+      if (dx && dz && (!ok[gz * W + nx] || !ok[nz * W + gx])) continue;
+      const ng = G[i] + (dx && dz ? Math.SQRT2 : 1) + Math.abs(fy[j] - fy[i]) * .5;
+      if (S[j] === gen * 2 && ng >= G[j]) continue;
+      S[j] = gen * 2; G[j] = ng; F[j] = i; push(j, ng + h(j));
+    }
+  }
+  if (!found) return null;
+  const out = []; for (let i = b; i !== a && i >= 0; i = F[i]) out.push({ x: (i % W + .5) * SNAV.s, z: (((i / W) | 0) + .5) * SNAV.s });
+  return out.reverse();
+}
+// walk towards (gx, gz): straight if the way is clear, else along a fresh A* path, string-pulled as he goes
+function navGo(e, gx, gz, sp, goTo) {
+  if (!SNAV.ok) return goTo(gx, gz, sp);
+  if (navLine(e.x, e.z, gx, gz)) { e.path = null; return goTo(gx, gz, sp); }
+  const moved = !e.pathGoal || Math.hypot(e.pathGoal.x - gx, e.pathGoal.z - gz) > 1.5;
+  if (!e.path || time > e.pathT || moved) {
+    const ty = Math.abs(player.pos.x - gx) + Math.abs(player.pos.z - gz) < 8 ? player.pos.y : e.y;
+    e.path = navPath(e.x, e.z, e.y, gx, gz, ty); e.pathT = time + .8 + Math.random() * .3; e.pathGoal = { x: gx, z: gz };
+  }
+  const P = e.path;
+  if (!P || !P.length) { const n = flowNext(e.x, e.z, flowDist); return goTo(n ? n.x : gx, n ? n.z : gz, sp); }
+  for (let k = Math.min(P.length - 1, 6); k > 0; k--) if (navLine(e.x, e.z, P[k].x, P[k].z)) { P.splice(0, k); break; }
+  if (Math.hypot(P[0].x - e.x, P[0].z - e.z) < .3 && P.length > 1) P.shift();
+  return goTo(P[0].x, P[0].z, sp);
+}
 function squadInit() {
   SQ.list = []; SQ.on = !!(LV.squad && LV.squad.length); SAY.q = []; SAY.t = 0; LV.zt = 0;
   if (LV.dlc && window.CASTLE_VOX && sfx.ctx) vox.preload(Object.keys(window.CASTLE_VOX).filter(k => k.startsWith('zo_') || k.startsWith('czb_')));
@@ -6565,6 +6651,7 @@ function squadInit() {
     SQ.list.push(e);
   }
   SQ.list.filter(a => a.joined).forEach((a, k) => a.slot = k);
+  SNAV.ok = null; if (SQ.on) navBuild();
 }
 const squadUp = () => SQ.list.filter(a => a.state !== 'down');
 function nearRecruit() {
@@ -6625,11 +6712,8 @@ function updateAlly(e, dt) {
     // a loose wedge behind you; out of sight they find their way along the same flow field the enemy uses
     const k = e.slot, ang = player.yaw + (k % 2 ? 1 : -1) * (.55 + .3 * (k >> 1)), back = 2.4 + 1.2 * (k >> 1);
     const sx = player.pos.x + Math.sin(ang) * back, sz = player.pos.z + Math.cos(ang) * back;
-    const see = pd < 10 && Math.abs(player.pos.y - e.y) < 1.2 && losClear(e.x, e.y + 1.5, e.z, player.pos.x, player.pos.y + 1.4, player.pos.z);
-    if (pd > 2.6 || Math.hypot(sx - e.x, sz - e.z) > 1.4) {
-      const sp = pd > 7 ? T.run * 1.1 : pd > 4.5 ? T.run * .8 : T.walk * 1.4;
-      if (see) goTo(sx, sz, sp); else { const n = flowNext(e.x, e.z, flowDist); goTo(n ? n.x : sx, n ? n.z : sz, sp); }
-    }
+    if (pd > 2.6 || Math.hypot(sx - e.x, sz - e.z) > 1.4) navGo(e, sx, sz, pd > 7 ? T.run * 1.1 : pd > 4.5 ? T.run * .8 : T.walk * 1.4, goTo);
+    for (const d of doors) if (d.target === 0 && !doorLocked(d) && Math.abs(d.y - e.y) < 1.5 && Math.hypot(d.c.x - e.x, d.c.z - e.z) < 2.6) openDoor(d, e.x, e.z);
     if (tg && pd < 12) speed *= .4;                                                   // advance slowly while they shoot
     if (pd > 40 && !e.root.visible) { e.x = player.pos.x + Math.sin(player.yaw) * 1.5; e.z = player.pos.z + Math.cos(player.yaw) * 1.5; e.y = player.pos.y; }   // never left behind for good
   }
@@ -6644,7 +6728,8 @@ function updateAlly(e, dt) {
   } else { e.burst = 0; e.cooldown = Math.max(e.cooldown - dt, .4); face = mx || mz ? { x: mx, z: mz } : e.joined ? { x: -Math.sin(player.yaw), z: -Math.cos(player.yaw) } : null; }
   if (!(RIDE.on && e.ride)) {
     const ox = e.x, oz = e.z; e.x += mx * speed * dt; e.z += mz * speed * dt; collide(e, e.r, e.y, e.h, .62);
-    if (speed > 0 && Math.hypot(e.x - ox, e.z - oz) < speed * dt * .2) { e.stuckT = (e.stuckT || 0) + dt; if (e.stuckT > .8) { e.stuckT = 0; e.x += (Math.random() - .5) * .6; e.z += (Math.random() - .5) * .6; collide(e, e.r, e.y, e.h, .62); } } else e.stuckT = 0;
+    if (speed > 0 && Math.hypot(e.x - ox, e.z - oz) < speed * dt * .25) { e.stuckT = (e.stuckT || 0) + dt; if (e.stuckT > .45) { e.stuckT = 0; e.pathT = 0; e.path = null; e.x -= mz * .25; e.z += mx * .25; collide(e, e.r, e.y, e.h, .62); } } else e.stuckT = 0;   // blocked: sidestep and plan again
+    for (const o of SQ.list) { if (o === e || o.state === 'down' || (RIDE.on && o.ride)) continue; const ax = e.x - o.x, az = e.z - o.z, d = Math.hypot(ax, az); if (d < .85 && d > 1e-3 && Math.abs(o.y - e.y) < 1.5) { e.x += ax / d * (.85 - d) * .5; e.z += az / d * (.85 - d) * .5; } }   // don't bunch up
     const gy = groundAt(e.x, e.z, e.y + .3); e.y = gy < e.y ? Math.max(gy, e.y - 9 * dt) : gy;
   }
   if (face) e.yaw = angLerp(e.yaw, Math.atan2(face.x, face.z), 1 - Math.exp(-9 * dt));
@@ -6979,7 +7064,8 @@ function objectiveSpots(o) {   // where in the level an objective can be done
 function tmDraw() {
   if (!LV || !MM.seen.length) return;
   if (MM.dirty) { mmRebuild(); MM.dirty = false; }
-  const P = MM.P, dpr = Math.min(2, devicePixelRatio || 1), maxW = innerWidth * .62, maxH = innerHeight * .8, sc = Math.min(maxW / (MW * P), maxH / (MH * P));
+  // the HUD is zoomed by the UI scale, so size the map in un-zoomed pixels or it overflows and looks blown up
+  const u = uiScale(), P = MM.P, dpr = Math.min(2, devicePixelRatio || 1) * u, maxW = Math.max(160, Math.min(innerWidth * .6 / u, innerWidth / u - 420)), maxH = innerHeight * .78 / u, sc = Math.min(maxW / (MW * P), maxH / (MH * P));
   const W = Math.round(MW * P * sc), Hh = Math.round(MH * P * sc), cv = TM.cv;
   if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(Hh * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(Hh * dpr); cv.style.width = W + 'px'; cv.style.height = Hh + 'px'; }
   const g = cv.getContext('2d'), k = sc * dpr, wx = x => x / CELL * P * k, t = performance.now() / 1000;
