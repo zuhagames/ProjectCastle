@@ -16,6 +16,23 @@ Epizoda 1 se odehrává v hradu. Epizoda 2 je venku, v noci a daleko od hradu: s
 
 ![Úvodní cutscéna – B. J. obklíčený hlídkou s baterkami](docs/screenshot-cutscene.jpg)
 
+## Rozšíření: Blázen z Londýna: Zajetí Orla
+
+Série: **Blázen z Londýna: Tajná Akce** (hlavní hra) → **Blázen z Londýna: Zajetí Orla** (rozšíření, hratelné) → **Blázen z Londýna: Studená Válka** (připravuje se, v menu je upoutávka).
+
+Hlavní menu má vpravo dole velký banner **ZAJETÍ ORLA – HRAJ NYNÍ**. V rozšíření hraješ za **Hauptmanna Brandta**, německého důstojníka, kterého Orel málem zastřelil u údolní stanice lanovky (mise 2.1 hlavní hry). Brandt přežije a vydá se Orla najít. Proti němu stojí partyzáni, britská komanda, jejich velitelé a odstřelovači.
+
+| Epizoda | Mise |
+| --- | --- |
+| **1 · Ve stopách Orla** | 1.1 Ráno po útoku · 1.2 Spálený tábor · 1.3 Odjezd zvláštního vlaku |
+| **2 · Zajetí Orla** | 2.1 Brána Wolfsgrund · 2.2 Podzemní továrna · 2.3 Srdce temnoty |
+
+- V každé misi najdeš tři Orlovy stopy a pak se dostaneš k východu.
+- **Úvodní cutscéna:** Orel u lanovky postřílí Brandtovy muže a Brandta těžce zraní. Brandt přísahá pomstu.
+- **Závěrečná cutscéna:** hned po porážce Übersoldata Mk II a výbuchu hory čeká Brandt na Orla před štolou. Následuje asi 15sekundový souboj na nože a Orel vyhraje.
+- Mise rozšíření se odemykají zvlášť a postup se ukládá v prohlížeči.
+- Vedle banneru je upoutávka na další díl **Blázen z Londýna: Studená Válka**. Hraješ za Orla v Berlíně roku 1961 (coming soon); po výběru se v panelu ukáže upoutávka.
+
 ## Cutscény a dabing
 
 - Cutscény běží přímo v enginu na skutečných mapách. B. J. má vlastní model hráče (olivová americká uniforma, pletená čepice), Němci mají zbraně a baterky a kamera se pohybuje po trase. Obraz má černé pruhy a titulky. Mezerníkem se scéna přeskočí.
@@ -66,8 +83,6 @@ Fotografické textury (Poly Haven) jsou volitelné – když nejsou dostupné, h
 
 Lee-Enfield No.4 (T) s puškohledem, revolver, Sten Mk II, plamenomet, mačeta, granát (Stielhandgranate) a dvě tiché zbraně SOE: pistole **Welrod Mk I** (9 mm, integrovaný tlumič) a tlumená karabina **De Lisle (T)** s puškohledem (.45 ACP). Když začneš pozdější misi z menu, dostaneš zbraně, které bys měl touto dobou mít.
 
-Americké zbraně: samopal **Thompson M1A1** z kontejneru SOE (mise 1.3) a zbraně, které Němci ukořistili a zkoumali ve Wolfsgrundu – puška **M1 Garand** (mise 2.1, prázdný klip po posledním náboji cinkne), kulomet **BAR M1918A2** (mise 2.3) a prototyp **bazuky M1** (mise 3.2) s raketami, které vybuchují. Klávesy `9`, `0`, `-`, `=` nebo kolečko. Všechny čtyři mají podrobné modely (pažby a rukojeti tvarované podle skutečných zbraní, ořechové dřevo, parkerizovaná ocel, olivový lak) a míří se s nimi pravým tlačítkem přes jejich mířidla. Kdo chce skutečné modely z internetu, stačí do `assets/models/` dát `thompson.fbx`, `garand.fbx`, `bar.fbx` nebo `bazooka.fbx` – hra je sama otočí, zmenší na skutečnou délku a použije místo vestavěných.
-
 ## Nastavení
 
 V menu i v pauze: citlivost a obrácení myši, FOV, hlasitost, velikost rozhraní, rozlišení vykreslování, způsob přikrčení, minimapa a pohupování kamery. Nastavení se ukládá v prohlížeči. Minimapa ve stylu Wolfensteinu odkrývá místnosti, jak jimi procházíš (les je zelený, budovy hnědé).
@@ -77,9 +92,8 @@ V menu i v pauze: citlivost a obrácení myši, FOV, hlasitost, velikost rozhran
 - **Nové menu ve stylu moderních Wolfensteinů:** úvodní obrazovka „Stiskni libovolnou klávesu“, kovové logo, menu vlevo s červeným zvýrazněním (myš i šipky + Enter, Esc zpět, zvuky), panel s informacemi k vybrané položce, výběr mise s kartami epizod a stavem misí, nová obrazovka Titulky, filmové zrno a žhavé jiskry. Pozadí menu je živá 3D scéna: vlevo hrad Grimhold pod rudým nebem s reflektory a pochodujícími německými vojáky, vpravo Londýn (Big Ben se svítícími ciferníky, parlament, St Paul's, Tower Bridge, Temže, balóny) s britskými vojáky; obě vlajky vlají, kamera jemně pluje a reaguje na myš.
 - **Dev menu (F8 nebo `):** zbraně a munice, nesmrtelnost, nekonečná munice, průchod zdmi (Space/C nahoru/dolů), zmrazení/zabití/uklidnění nepřátel, spawn libovolného nepřítele, splnění úkolů, dokončení mise, skok na libovolnou misi, odemknutí všech misí.
 - **Mise 2.4 · Zvláštní vlak:** probojuješ se jedoucím vlakem vagon po vagonu (služební vůz, otevřený vůz, krytý vůz, plošina s raketou, vůz s municí, protiletadlový vůz, tendr) až do lokomotivy. Tam převezmeš řízení: `W` regulátor, `S` brzda. V zatáčce a na mostě dodržuj rychlost, jinak vykolejíš, a ve Wolfsgrundu zastav u rampy dřív, než narazíš do zarážedla.
-- **Americké zbraně:** Thompson M1A1, M1 Garand, BAR M1918A2 a prototyp bazuky M1.
 - **Realističtější dabing:** nový generátor s neuronovými hlasy (viz *Cutscény a dabing*).
-- V menu vpravo dole upoutávka na **Bonus Expansion Pack – Ve stopách Orla** (coming soon).
+- V menu vpravo dole banner rozšíření **Zajetí Orla** (viz výše) a upoutávka na **Studenou Válku** (coming soon).
 
 ## Novinky ve verzi 1.3
 
