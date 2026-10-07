@@ -21,6 +21,7 @@
   #tml .n { display:inline-block; width:22px; height:22px; line-height:22px; border-radius:50%; background:#f2c53d; color:#1a1408; font:700 13px 'Oswald',sans-serif; text-align:center; margin-right:8px; }
   #tml .done { color:#7f9a6a; text-decoration:line-through; } #tml .done .n { background:#55663f; } #tml .opt { color:#a99c80; }
   #tml .leg { margin-top:14px; font-size:13px; color:#a99c80; line-height:1.6; }
+  #cmp { position:absolute; top:8px; left:50%; transform:translateX(-50%); width:680px; height:62px; }
   #hud.mm #mmap { display:block; } #hud.mm #obj { top:202px; }
   #cross { position:absolute; left:50%; top:50%; width:4px; height:4px; margin:-2px 0 0 -2px; background:#fff; box-shadow:0 0 0 1px #000; border-radius:50%; }
   #cross i { position:absolute; background:#fff; box-shadow:0 0 0 1px rgba(0,0,0,.6); }
@@ -48,7 +49,7 @@
   #intro { position:absolute; top:22%; width:100%; text-align:center; opacity:0; transition:opacity 1.2s; }
   #introT { font-family:'Special Elite',monospace; font-size:clamp(26px,4.5vw,52px); color:#e6d6aa; text-shadow:0 0 18px rgba(160,20,10,.6),0 3px 0 #000; }
   #introS { margin-top:6px; letter-spacing:6px; color:#c23b2c; font-size:clamp(12px,1.6vw,16px); text-shadow:0 2px 2px #000; }
-  #boss { position:absolute; top:58px; left:50%; width:420px; margin-left:-210px; text-align:center; display:none; font:600 13px 'Oswald'; letter-spacing:4px; color:#e9c2b5; text-shadow:0 2px 2px #000; }
+  #boss { position:absolute; top:76px; left:50%; width:420px; margin-left:-210px; text-align:center; display:none; font:600 13px 'Oswald'; letter-spacing:4px; color:#e9c2b5; text-shadow:0 2px 2px #000; }
   #boss .bar { width:100%; height:9px; margin-top:4px; } #boss .bar b { background:linear-gradient(#b8231a,#5e0b06); }
   #drive { position:absolute; right:22px; top:120px; width:230px; display:none; font-family:'Special Elite',monospace; color:#f0e2b6; background:rgba(10,8,6,.62); border:1px solid rgba(201,162,76,.5); padding:10px 14px; text-shadow:0 1px 2px #000; }
   #drive .dv { font-size:46px; line-height:1; color:#fff; } #drive .dv small { font-size:16px; color:#c9a24c; }
@@ -217,6 +218,7 @@
   <div id="scope"></div><div id="dmg"></div><div id="burn"></div>
   <div id="cross"><i></i><i></i><i></i><i></i></div><div id="hitm"></div>
   <canvas id="mmap"></canvas>
+  <canvas id="cmp"></canvas>
   <div id="tabmap"><div class="tmw"><h4 id="tmt"></h4><canvas id="tmc"></canvas></div><div id="tml"></div></div>
   <div id="obj"></div>
   <div id="top">SKÓRE <b id="score">0</b><br>ZABITO <b id="kills">0</b> · POKLADY <b id="treas">0</b></div>
@@ -1779,7 +1781,7 @@ LEVELS.push(asciiLevel({
   start: [6, 21, 0],
   exit: { cell: [15, 4], side: '-z', kind: 'door', text: 'ÚNIKOVÁ ŠTOLA' },
   objectives: [
-    { id: 'rampa', text: 'Vyčisti rampu od Angličanů' },
+    { id: 'rampa', text: 'Zabij komando na rampě', kill: true },
     { id: 'funk', text: 'Znič vysílačku komanda (bunkr na západě)' },
     { id: 'stola', text: 'Dostaň se k únikové štole pod skálou' }
   ],
@@ -1787,7 +1789,7 @@ LEVELS.push(asciiLevel({
   squad: ZO_SQUAD({ k: [6, 20, 0], m: [4, 21, 0], w: [8, 21, 0], h: [5, 22, 0] }),
   trig: [
     { t: 1, say: ['zo_500', 'zo_501'] },
-    { clear: [0, 15, 29, 19], t: 4, obj: 'rampa', say: ['zo_506'] },
+    { after: 'rampa', delay: .5, say: ['zo_506'] },
     { after: 'funk', delay: .5, say: ['zo_502'] },
     { after: ['rampa', 'funk'], delay: 1, say: ['zo_503'] },
     { at: [15, 5], r: 1.6, after: ['rampa', 'funk'], obj: 'stola', fn: 'quake', say: ['zo_504'] },
@@ -1802,7 +1804,7 @@ LEVELS.push(asciiLevel({
   ],
   enemies: [
     ['soldat', 9, 15, PI / 2, { dead: true }], ['sturm', 14, 16, 0, { dead: true }], ['soldat', 21, 15, -PI / 2, { dead: true }], ['offizier', 11, 10, PI, { dead: true }],
-    ['komando', 7, 16, PI], ['komando', 13, 15, PI], ['komando', 18, 16, PI / 2], ['komando', 24, 15, -PI / 2], ['odstrelovac', 18, 18, PI, { yo: 1.4 }],
+    ['komando', 7, 16, PI, { tag: 'rampa' }], ['komando', 13, 15, PI, { tag: 'rampa' }], ['komando', 18, 16, PI / 2, { tag: 'rampa' }], ['komando', 24, 15, -PI / 2, { tag: 'rampa' }], ['velitel', 15, 16, PI, { tag: 'rampa' }],
     ['velitel', 15, 9, PI], ['komando', 10, 7, PI / 2], ['komando', 19, 6, -PI / 2], ['komando', 16, 12, PI],
     ['komando', 6, 9, PI / 2], ['komando', 2, 8, PI / 2], ['odstrelovac', 7, 12, PI, { yo: 4.6 }],
     ['komando', 14, 5, PI], ['komando', 17, 5, PI], ['odstrelovac', 25, 6, -PI / 2, { hold: true }]
@@ -1847,14 +1849,14 @@ LEVELS.push(asciiLevel({
   start: [13, 20, 0],
   exit: { cell: [13, 3], side: '-z', kind: 'door', text: 'POČKAT NA ORLA U ŠTOLY' },
   objectives: [
-    { id: 'stola', text: 'Probij se k východu ze štoly' },
+    { id: 'stola', text: 'Zabij komando u východu ze štoly', kill: true },
     { id: 'exit', text: 'Počkej na Orla u štoly' }
   ],
   squad: [['zo_kruger', 13, 21, PI, { name: 'Feldwebel Krüger', wounded: true, ox: 1.2 }]],
   trig: [
     { t: .8, say: ['zo_601', 'zo_602'] },
     { at: [13, 10], r: 1.8, say: ['zo_604'] },
-    { clear: [0, 0, 25, 9], at: [13, 7], r: 2.5, obj: 'stola', say: ['zo_603'] }
+    { after: 'stola', delay: .5, say: ['zo_603'] }
   ],
   props: [
     ['campfire', 6, 17, 0, 0], ['campfire', 19, 13, 0, 0], ['campfire', 10, 12, .5, 0], ['campfire', 17, 5, 0, 0], ['campfire', 4, 5, 0, 0], ['campfire', 22, 8, 0, 0],
@@ -1863,7 +1865,7 @@ LEVELS.push(asciiLevel({
   enemies: [
     ['komando', 12, 17, PI], ['komando', 7, 14, PI / 2], ['komando', 19, 15, -PI / 2],
     ['komando', 5, 10, PI / 2], ['komando', 20, 10, -PI / 2], ['odstrelovac', 13, 9, PI, { hold: true }],
-    ['komando', 9, 7, PI], ['komando', 17, 7, PI], ['velitel', 13, 5, PI], ['komando', 11, 4, PI], ['komando', 15, 4, PI], ['odstrelovac', 21, 5, -PI / 2, { hold: true }], ['odstrelovac', 4, 5, PI / 2, { hold: true }]
+    ['komando', 9, 7, PI, { tag: 'stola' }], ['komando', 17, 7, PI, { tag: 'stola' }], ['velitel', 13, 5, PI, { tag: 'stola' }], ['komando', 11, 4, PI, { tag: 'stola' }], ['komando', 15, 4, PI, { tag: 'stola' }], ['odstrelovac', 21, 5, -PI / 2, { hold: true }], ['odstrelovac', 4, 5, PI / 2, { hold: true }]
   ],
   pickups: [
     ['h', 11, 20, -1, 0], ['a', 15, 20, 1, 0], ['h', 4, 14, 0, 0], ['s', 21, 14, 0, 0], ['H', 13, 11, 0, 0], ['a', 6, 8, 0, 0], ['h', 20, 7, 0, 0], ['n', 13, 13, 0, 0]
@@ -5241,7 +5243,7 @@ function makeEnemy(type, cx, cz, yaw, opts = {}) {
   e.mark.scale.set(.32, .4, 1); e.mark.position.y = T.h + .45; e.mark.renderOrder = 5; root.add(e.mark);
   if (opts.torch) addFlashlight(e);
   if (opts.dead) { e.corpse = true; e.fallSide = .2; }
-  e.hold = !!opts.hold;
+  e.hold = !!opts.hold; e.tag = opts.tag;
   enemies.push(e); resetEnemy(e); return e;
 }
 function resetEnemy(e) {
@@ -5508,7 +5510,7 @@ function setPrompt(t) { if (t !== lastPrompt) { lastPrompt = t; hud.prompt.textC
 function completeObjective(id) {
   if (!LV) return; const o = LV.objectives.find(o => o.id === id); if (!o || o.done) return;
   o.done = true; game.objT = 5; sfx.play('objective');
-  if (!o.optional && id !== 'exit' && Math.random() < .55) { const k = 'bj_obj' + (1 + (Math.random() * 3 | 0)); vox.get(k).then(b => { if (b && game.state === 'playing') { vox.play(k); log('<span style="color:#c9a24c">B. J.:</span> ' + VOX_SUB[k][1]); } }); } log('<span style="color:#e6c36a">Úkol splněn:</span> ' + o.text);
+  if (!o.optional && id !== 'exit' && Math.random() < .55) { const k = (LV.dlc ? 'zo_obj' : 'bj_obj') + (1 + (Math.random() * 3 | 0)); vox.get(k).then(b => { if (b && game.state === 'playing') { vox.play(k); log(`<span style="color:#c9a24c">${LV.dlc ? 'Brandt' : 'B. J.'}:</span> ` + VOX_SUB[k][1]); } }); }   // in the expansion it is Brandt who talks, not the Eagle log('<span style="color:#e6c36a">Úkol splněn:</span> ' + o.text);
 }
 const objectivesDone = () => LV.objectives.every(o => o.done || o.optional || o.id === 'exit');
 
@@ -5532,6 +5534,7 @@ function damageEnemy(e, dmg, dir, opts = {}) {
     if (gw && !gw.owned && !pickups.some(p => p.active && p.kind === 'W:' + gw.id)) addPickup('W:' + gw.id, at, null, true);   // dead men's guns are yours
     else if (e.T.drop && Math.random() < .9) addPickup(e.T.drop, at, null, true);
     if (e.T.zeman) { completeObjective('zeman'); log('Dr. Zeman je mrtvý'); }
+    if (e.tag) { const o = LV.objectives.find(q => q.id === e.tag); if (o && !o.done) { o.n = (o.n || 0) + 1; if (o.n >= o.count) completeObjective(o.id); else log(`<span style="color:#e6c36a">${o.text}:</span> ${o.n}/${o.count}`); } }
     if (e.T.boss) {
       for (let i = 0; i < 60; i++) sparks.spawn(_v.set(e.x, e.y + 1.5, e.z), rand(-5, 5), rand(0, 8), rand(-5, 5), 2.2, 1.2, .5, .08, rand(.5, 1.2), 9, 1);
       completeObjective('uber'); player.keys.add(LV.bossKey || 'strojovna'); log(LV.bossLog || 'Übersoldat padl — strojovna je odemčená'); game.bossE = null;
@@ -6554,6 +6557,92 @@ const angD = (a, b) => ((b - a + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math
 TX.markAlly = markTex('V', '#8be070');
 const SAY = { q: [], t: 0, hide: 0 };
 const RIDE = { on: false, t: 0 };
+/* ---------- squad pathfinding: a 0.5 m walk grid that knows every table, crate and pillar, A* over it, string-pulled paths ----------
+   The enemy's flow fields work on whole 4 m cells, which is fine for chasing but walks your men straight into furniture. */
+const SNAV = { k: 8, s: CELL / 8, w: 0, h: 0, ok: null, fy: null, g: null, from: null, seen: null, gen: 0, heap: null, hf: null };
+const NAV_R = .34, NAV_H = 1.7, NAV_STEP = .62;
+function navBuild() {
+  const k = SNAV.k, s = SNAV.s, W = MW * k, H = MH * k, N = W * H; SNAV.w = W; SNAV.h = H;
+  SNAV.ok = new Uint8Array(N); SNAV.fy = new Float32Array(N); SNAV.g = new Float32Array(N); SNAV.from = new Int32Array(N); SNAV.seen = new Uint32Array(N); SNAV.heap = new Int32Array(N); SNAV.hf = new Float32Array(N); SNAV.gen = 0;
+  const wallAt = (x, z) => { const cx = toCell(x), cz = toCell(z); return !inside(cx, cz) || roomAt[cidx(cx, cz)] === -1; };
+  for (let gz = 0; gz < H; gz++) for (let gx = 0; gx < W; gx++) {
+    const x = (gx + .5) * s, z = (gz + .5) * s, cx = toCell(x), cz = toCell(z), i = gz * W + gx;
+    if (roomAt[cidx(cx, cz)] === -1) continue;
+    const fy = floorAt(x, z); SNAV.fy[i] = fy;
+    if (topAt(x, z) < fy + NAV_H) continue;
+    if (wallAt(x + NAV_R, z) || wallAt(x - NAV_R, z) || wallAt(x, z + NAV_R) || wallAt(x, z - NAV_R) || wallAt(x + NAV_R * .7, z + NAV_R * .7) || wallAt(x - NAV_R * .7, z + NAV_R * .7) || wallAt(x + NAV_R * .7, z - NAV_R * .7) || wallAt(x - NAV_R * .7, z - NAV_R * .7)) continue;
+    let ok = true;
+    for (let dz = -1; dz <= 1 && ok; dz++) for (let dx = -1; dx <= 1 && ok; dx++) {
+      const nx = cx + dx, nz = cz + dz; if (!inside(nx, nz)) continue;
+      for (const c of cellCols[cidx(nx, nz)]) {
+        const o = c.occ; if (o && (!o.active || o.max.y <= fy + STEP_UP || o.min.y >= fy + NAV_H)) continue;
+        if (Math.abs(x - c.x) < c.hx + NAV_R && Math.abs(z - c.z) < c.hz + NAV_R) { ok = false; break; }
+      }
+    }
+    SNAV.ok[i] = ok ? 1 : 0;
+  }
+}
+const navIdx = (x, z) => { const gx = Math.floor(x / SNAV.s), gz = Math.floor(z / SNAV.s); return gx < 0 || gz < 0 || gx >= SNAV.w || gz >= SNAV.h ? -1 : gz * SNAV.w + gx; };
+// nearest walkable square to a point (a slot behind you may be inside a table), preferring the same floor
+function navSnap(x, z, y) {
+  const i0 = navIdx(x, z); if (i0 < 0) return -1;
+  if (SNAV.ok[i0] && Math.abs(SNAV.fy[i0] - y) < 1.5) return i0;
+  const gx0 = i0 % SNAV.w, gz0 = (i0 / SNAV.w) | 0;
+  for (let r = 1; r <= 5; r++) { let best = -1, bd = 1e9;
+    for (let dz = -r; dz <= r; dz++) for (let dx = -r; dx <= r; dx++) {
+      if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) continue; const gx = gx0 + dx, gz = gz0 + dz; if (gx < 0 || gz < 0 || gx >= SNAV.w || gz >= SNAV.h) continue;
+      const i = gz * SNAV.w + gx; if (!SNAV.ok[i] || Math.abs(SNAV.fy[i] - y) > 1.5) continue; const d = dx * dx + dz * dz; if (d < bd) { bd = d; best = i; }
+    }
+    if (best >= 0) return best; }
+  return -1;
+}
+// can a man walk straight from a to b? (every 0.25 m: walkable, no step taller than a stair)
+function navLine(ax, az, bx, bz) {
+  const L = Math.hypot(bx - ax, bz - az), n = Math.max(1, Math.ceil(L / .25)); let prev = navIdx(ax, az); if (prev < 0) return false;
+  for (let k = 1; k <= n; k++) { const t = k / n, i = navIdx(ax + (bx - ax) * t, az + (bz - az) * t); if (i < 0 || !SNAV.ok[i] || Math.abs(SNAV.fy[i] - SNAV.fy[prev]) > NAV_STEP) return false; prev = i; }
+  return true;
+}
+// A* with 8 neighbours (no cutting corners), capped so a hopeless search never stalls a frame
+function navPath(sx, sz, sy, tx, tz, ty) {
+  const W = SNAV.w, a = navSnap(sx, sz, sy), b = navSnap(tx, tz, ty); if (a < 0 || b < 0) return null; if (a === b) return [];
+  const gen = ++SNAV.gen, G = SNAV.g, F = SNAV.from, S = SNAV.seen, hp = SNAV.heap, hf = SNAV.hf, ok = SNAV.ok, fy = SNAV.fy, bx = b % W, bz = (b / W) | 0;
+  let hn = 0;
+  const h = i => { const dx = Math.abs(i % W - bx), dz = Math.abs(((i / W) | 0) - bz); return (dx + dz) + (Math.SQRT2 - 2) * Math.min(dx, dz); };
+  const push = (i, f) => { let k = hn++; while (k > 0) { const p = (k - 1) >> 1; if (hf[p] <= f) break; hp[k] = hp[p]; hf[k] = hf[p]; k = p; } hp[k] = i; hf[k] = f; };
+  const pop = () => { const top = hp[0], li = hp[--hn], lf = hf[hn]; let k = 0; for (;;) { let c = 2 * k + 1; if (c >= hn) break; if (c + 1 < hn && hf[c + 1] < hf[c]) c++; if (hf[c] >= lf) break; hp[k] = hp[c]; hf[k] = hf[c]; k = c; } hp[k] = li; hf[k] = lf; return top; };
+  S[a] = gen * 2; G[a] = 0; F[a] = -1; push(a, h(a));
+  let it = 0, found = false;
+  while (hn > 0 && it++ < 12000) {
+    const i = pop(); if (S[i] === gen * 2 + 1) continue; S[i] = gen * 2 + 1; if (i === b) { found = true; break; }
+    const gx = i % W, gz = (i / W) | 0;
+    for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
+      if (!dx && !dz) continue; const nx = gx + dx, nz = gz + dz; if (nx < 0 || nz < 0 || nx >= W || nz >= SNAV.h) continue;
+      const j = nz * W + nx; if (!ok[j] || Math.abs(fy[j] - fy[i]) > NAV_STEP || S[j] === gen * 2 + 1) continue;
+      if (dx && dz && (!ok[gz * W + nx] || !ok[nz * W + gx])) continue;
+      const ng = G[i] + (dx && dz ? Math.SQRT2 : 1) + Math.abs(fy[j] - fy[i]) * .5;
+      if (S[j] === gen * 2 && ng >= G[j]) continue;
+      S[j] = gen * 2; G[j] = ng; F[j] = i; push(j, ng + h(j));
+    }
+  }
+  if (!found) return null;
+  const out = []; for (let i = b; i !== a && i >= 0; i = F[i]) out.push({ x: (i % W + .5) * SNAV.s, z: (((i / W) | 0) + .5) * SNAV.s });
+  return out.reverse();
+}
+// walk towards (gx, gz): straight if the way is clear, else along a fresh A* path, string-pulled as he goes
+function navGo(e, gx, gz, sp, goTo) {
+  if (!SNAV.ok) return goTo(gx, gz, sp);
+  if (navLine(e.x, e.z, gx, gz)) { e.path = null; return goTo(gx, gz, sp); }
+  const moved = !e.pathGoal || Math.hypot(e.pathGoal.x - gx, e.pathGoal.z - gz) > 1.5;
+  if (!e.path || time > e.pathT || moved) {
+    const ty = Math.abs(player.pos.x - gx) + Math.abs(player.pos.z - gz) < 8 ? player.pos.y : e.y;
+    e.path = navPath(e.x, e.z, e.y, gx, gz, ty); e.pathT = time + .8 + Math.random() * .3; e.pathGoal = { x: gx, z: gz };
+  }
+  const P = e.path;
+  if (!P || !P.length) { const n = flowNext(e.x, e.z, flowDist); return goTo(n ? n.x : gx, n ? n.z : gz, sp); }
+  for (let k = Math.min(P.length - 1, 6); k > 0; k--) if (navLine(e.x, e.z, P[k].x, P[k].z)) { P.splice(0, k); break; }
+  if (Math.hypot(P[0].x - e.x, P[0].z - e.z) < .3 && P.length > 1) P.shift();
+  return goTo(P[0].x, P[0].z, sp);
+}
 function squadInit() {
   SQ.list = []; SQ.on = !!(LV.squad && LV.squad.length); SAY.q = []; SAY.t = 0; LV.zt = 0;
   if (LV.dlc && window.CASTLE_VOX && sfx.ctx) vox.preload(Object.keys(window.CASTLE_VOX).filter(k => k.startsWith('zo_') || k.startsWith('czb_')));
@@ -6565,6 +6654,8 @@ function squadInit() {
     SQ.list.push(e);
   }
   SQ.list.filter(a => a.joined).forEach((a, k) => a.slot = k);
+  SNAV.ok = null; if (SQ.on) navBuild();
+  for (const o of LV.objectives) if (o.kill) { o.count = enemies.filter(e => e.tag === o.id && e.state !== 'dead').length; o.n = 0; }   // "kill them all" objectives count the tagged men
 }
 const squadUp = () => SQ.list.filter(a => a.state !== 'down');
 function nearRecruit() {
@@ -6625,11 +6716,8 @@ function updateAlly(e, dt) {
     // a loose wedge behind you; out of sight they find their way along the same flow field the enemy uses
     const k = e.slot, ang = player.yaw + (k % 2 ? 1 : -1) * (.55 + .3 * (k >> 1)), back = 2.4 + 1.2 * (k >> 1);
     const sx = player.pos.x + Math.sin(ang) * back, sz = player.pos.z + Math.cos(ang) * back;
-    const see = pd < 10 && Math.abs(player.pos.y - e.y) < 1.2 && losClear(e.x, e.y + 1.5, e.z, player.pos.x, player.pos.y + 1.4, player.pos.z);
-    if (pd > 2.6 || Math.hypot(sx - e.x, sz - e.z) > 1.4) {
-      const sp = pd > 7 ? T.run * 1.1 : pd > 4.5 ? T.run * .8 : T.walk * 1.4;
-      if (see) goTo(sx, sz, sp); else { const n = flowNext(e.x, e.z, flowDist); goTo(n ? n.x : sx, n ? n.z : sz, sp); }
-    }
+    if (pd > 2.6 || Math.hypot(sx - e.x, sz - e.z) > 1.4) navGo(e, sx, sz, pd > 12 ? T.run * 1.55 : pd > 7 ? T.run * 1.3 : pd > 4.5 ? T.run * .85 : T.walk * 1.4, goTo);
+    for (const d of doors) if (d.target === 0 && !doorLocked(d) && Math.abs(d.y - e.y) < 1.5 && Math.hypot(d.c.x - e.x, d.c.z - e.z) < 2.6) openDoor(d, e.x, e.z);
     if (tg && pd < 12) speed *= .4;                                                   // advance slowly while they shoot
     if (pd > 40 && !e.root.visible) { e.x = player.pos.x + Math.sin(player.yaw) * 1.5; e.z = player.pos.z + Math.cos(player.yaw) * 1.5; e.y = player.pos.y; }   // never left behind for good
   }
@@ -6644,7 +6732,8 @@ function updateAlly(e, dt) {
   } else { e.burst = 0; e.cooldown = Math.max(e.cooldown - dt, .4); face = mx || mz ? { x: mx, z: mz } : e.joined ? { x: -Math.sin(player.yaw), z: -Math.cos(player.yaw) } : null; }
   if (!(RIDE.on && e.ride)) {
     const ox = e.x, oz = e.z; e.x += mx * speed * dt; e.z += mz * speed * dt; collide(e, e.r, e.y, e.h, .62);
-    if (speed > 0 && Math.hypot(e.x - ox, e.z - oz) < speed * dt * .2) { e.stuckT = (e.stuckT || 0) + dt; if (e.stuckT > .8) { e.stuckT = 0; e.x += (Math.random() - .5) * .6; e.z += (Math.random() - .5) * .6; collide(e, e.r, e.y, e.h, .62); } } else e.stuckT = 0;
+    if (speed > 0 && Math.hypot(e.x - ox, e.z - oz) < speed * dt * .25) { e.stuckT = (e.stuckT || 0) + dt; if (e.stuckT > .45) { e.stuckT = 0; e.pathT = 0; e.path = null; e.x -= mz * .25; e.z += mx * .25; collide(e, e.r, e.y, e.h, .62); } } else e.stuckT = 0;   // blocked: sidestep and plan again
+    for (const o of SQ.list) { if (o === e || o.state === 'down' || (RIDE.on && o.ride)) continue; const ax = e.x - o.x, az = e.z - o.z, d = Math.hypot(ax, az); if (d < .85 && d > 1e-3 && Math.abs(o.y - e.y) < 1.5) { e.x += ax / d * (.85 - d) * .5; e.z += az / d * (.85 - d) * .5; } }   // don't bunch up
     const gy = groundAt(e.x, e.z, e.y + .3); e.y = gy < e.y ? Math.max(gy, e.y - 9 * dt) : gy;
   }
   if (face) e.yaw = angLerp(e.yaw, Math.atan2(face.x, face.z), 1 - Math.exp(-9 * dt));
@@ -6936,6 +7025,43 @@ function mmRebuild() {
     }
   }
 }
+/* ---------- compass strip at the top of the screen (Call of Duty style): heading in degrees, the next objective marked ---------- */
+const CMP = { cv: $('cmp') }; CMP.g = CMP.cv.getContext('2d');
+const CMP_DIR = { 0: 'S', 45: 'SV', 90: 'V', 135: 'JV', 180: 'J', 225: 'JZ', 270: 'Z', 315: 'SZ' };
+function cmpDraw() {
+  const cv = CMP.cv, dpr = Math.min(2, devicePixelRatio || 1) * uiScale(), Wc = 680, Hc = 62;
+  if (cv.width !== Math.round(Wc * dpr)) { cv.width = Math.round(Wc * dpr); cv.height = Math.round(Hc * dpr); }
+  const g = CMP.g; g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, Wc, Hc);
+  if (!LV || TRAIN.drv) return;
+  const head = ((-player.yaw * 180 / Math.PI) % 360 + 360) % 360, span = 160, pxd = Wc / span, cx = Wc / 2;
+  const gr = g.createLinearGradient(0, 0, Wc, 0); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(.15, 'rgba(6,8,12,.72)'); gr.addColorStop(.85, 'rgba(6,8,12,.72)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = gr; g.fillRect(0, 6, Wc, 28); g.fillStyle = 'rgba(201,162,76,.35)'; g.fillRect(Wc * .15, 34, Wc * .7, 1);
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  const fade = x => Math.max(0, 1 - Math.pow(Math.abs(x - cx) / cx, 3));
+  for (let d = Math.ceil((head - span / 2) / 5) * 5; d <= head + span / 2; d += 5) {
+    const x = cx + (d - head) * pxd, a = fade(x), dd = ((d % 360) + 360) % 360, big = dd % 15 === 0;
+    g.globalAlpha = a; g.fillStyle = '#e8dcb8'; g.fillRect(Math.round(x) - (big ? .5 : 0), big ? 7 : 10, big ? 2 : 1, big ? 9 : 5);
+    g.strokeStyle = 'rgba(0,0,0,.9)'; g.lineWidth = 3;
+    if (CMP_DIR[dd] !== undefined) { g.font = "bold 19px Oswald, sans-serif"; g.fillStyle = dd === 0 ? '#ff5a3c' : '#fff6dc'; g.strokeText(CMP_DIR[dd], x, 25); g.fillText(CMP_DIR[dd], x, 25); }
+    else if (big) { g.font = "bold 13px Oswald, sans-serif"; g.fillStyle = '#d6cbad'; g.strokeText(String(dd), x, 25); g.fillText(String(dd), x, 25); }
+  }
+  g.globalAlpha = 1; g.fillStyle = '#e6c36a'; g.beginPath(); g.moveTo(cx - 7, 0); g.lineTo(cx + 7, 0); g.lineTo(cx, 8); g.fill();   // your heading
+  g.font = 'bold 12px Oswald, sans-serif'; g.fillStyle = '#e6c36a'; g.strokeStyle = 'rgba(0,0,0,.9)'; g.lineWidth = 3; g.strokeText(Math.round(head) % 360 + '°', cx, 42); g.fillText(Math.round(head) % 360 + '°', cx, 42);
+  // the open objectives: a gold diamond in their direction (pinned to the edge when behind you) with the distance
+  const objs = LV.objectives.filter(o => !o.done && !o.optional && (o.id !== 'exit' || objectivesDone()));
+  let n = 0;
+  for (const o of objs) {
+    let best = null, bd = 1e9; for (const p of objectiveSpots(o)) { const d = Math.hypot(p.x - player.pos.x, p.z - player.pos.z); if (d < bd) { bd = d; best = p; } }
+    if (!best || n++ > 2) continue;
+    const b = Math.atan2(best.x - player.pos.x, -(best.z - player.pos.z)) * 180 / Math.PI;
+    let rel = ((b - head + 540) % 360) - 180; const off = Math.abs(rel) > span / 2 - 4; rel = clamp(rel, -span / 2 + 4, span / 2 - 4);
+    const x = cx + rel * pxd, y = 52;
+    g.fillStyle = off ? 'rgba(201,162,76,.6)' : '#e6c36a'; g.strokeStyle = 'rgba(0,0,0,.8)'; g.lineWidth = 2;
+    g.beginPath(); g.moveTo(x, y - 9); g.lineTo(x + 8, y); g.lineTo(x, y + 9); g.lineTo(x - 8, y); g.closePath(); g.stroke(); g.fill();
+    if (off) { g.fillStyle = '#e6c36a'; g.font = 'bold 12px Oswald, sans-serif'; g.fillText(rel < 0 ? '◂' : '▸', x + (rel < 0 ? -12 : 12), y); }
+    g.font = "bold 13px Oswald, sans-serif"; g.fillStyle = '#fff6dc'; g.strokeStyle = 'rgba(0,0,0,.9)'; g.lineWidth = 3; const t = Math.round(bd) + ' m'; g.strokeText(t, x + 22, y); g.fillText(t, x + 22, y);
+  }
+}
 function mmDraw() {
   if (!SET.minimap || !LV || !MM.seen.length) return;
   const cx = toCell(player.pos.x), cz = toCell(player.pos.z);
@@ -6974,12 +7100,19 @@ function objectiveSpots(o) {   // where in the level an objective can be done
   for (const d of destructibles) if (d.alive && d.obj === o.id && !(d.charge && d.planted)) pk(d.pos);
   for (const e of enemies) if (e.state !== 'dead' && ((o.id === 'uber' && e.T.boss) || (o.id === 'zeman' && e.T.zeman))) pk(e);
   if (o.id === 'exit') for (const ex of exits) pk(ex.pos);
+  for (const e of enemies) if (e.tag === o.id && e.state !== 'dead') pk(e);   // the men you still have to kill
+  if (SQ.on) for (const a of SQ.list) if (!a.joined && ((o.id === 'druzstvo' && !a.leader) || (o.id === LV.leaderObj && a.leader))) pk(a);   // your men waiting to be found
+  for (const g of LV.trig || []) if (g.obj === o.id && !g.done) {   // places that finish an objective when you get there
+    if (g.at) pk({ x: (g.at[0] + .5) * CELL, z: (g.at[1] + .5) * CELL });
+    else if (g.clear) pk({ x: (g.clear[0] + g.clear[2] + 1) / 2 * CELL, z: (g.clear[1] + g.clear[3] + 1) / 2 * CELL });
+  }
   return at;
 }
 function tmDraw() {
   if (!LV || !MM.seen.length) return;
   if (MM.dirty) { mmRebuild(); MM.dirty = false; }
-  const P = MM.P, dpr = Math.min(2, devicePixelRatio || 1), maxW = innerWidth * .62, maxH = innerHeight * .8, sc = Math.min(maxW / (MW * P), maxH / (MH * P));
+  // the HUD is zoomed by the UI scale, so size the map in un-zoomed pixels or it overflows and looks blown up
+  const u = uiScale(), P = MM.P, dpr = Math.min(2, devicePixelRatio || 1) * u, maxW = Math.max(160, Math.min(innerWidth * .6 / u, innerWidth / u - 420)), maxH = innerHeight * .78 / u, sc = Math.min(maxW / (MW * P), maxH / (MH * P));
   const W = Math.round(MW * P * sc), Hh = Math.round(MH * P * sc), cv = TM.cv;
   if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(Hh * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(Hh * dpr); cv.style.width = W + 'px'; cv.style.height = Hh + 'px'; }
   const g = cv.getContext('2d'), k = sc * dpr, wx = x => x / CELL * P * k, t = performance.now() / 1000;
@@ -7530,7 +7663,7 @@ function startPlaying() {
 function pauseGame() { game.state = 'paused'; mouseDown = rightDown = false; sfx.flame(false); setOverlay(`<h1>PAUZA</h1><h2>${LV.name}</h2>${KEYS_HTML}`, [{ label: 'POKRAČOVAT', fn: startPlaying }, { label: 'NASTAVENÍ', cls: 'sm', fn: () => showSettings(pauseGame) }, { label: 'RESTART MISE', cls: 'sm', fn: () => { resetLevelState(); showBriefing(); } }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]); }
 const fmtTime = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
 const statsHtml = () => `<div class="stats">ZABITO <b>${player.kills}/${game.totalEnemies}</b><br>ODHALEN <b>${game.detections}×</b><br>POKLADY <b>${player.treasure}/${game.totalTreasure}</b><br>ČAS <b>${fmtTime(player.time)}</b><br>SKÓRE <b>${player.score}</b></div>`;
-function die() { game.state = 'dead'; sfx.flame(false); setTimeout(() => { document.exitPointerLock(); setOverlay(`<h1 style="color:#c22">KIA</h1><h2>MISE NESPLNĚNA</h2>${statsHtml()}`, [{ label: 'ZKUSIT ZNOVU', fn: () => { resetLevelState(); startPlaying(); } }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]); }, 1500); }
+function die() { game.state = 'dead'; sfx.flame(false); setTimeout(() => { document.exitPointerLock(); setOverlay(`<h1 style="color:#c22">KIA</h1><h2>MISE NESPLNĚNA</h2>${statsHtml()}`, [{ label: 'ZKUSIT ZNOVU', fn: async () => { if (LV.dlc) { game.noCS = true; await startMission(game.level, false); game.noCS = false; return; } resetLevelState(); startPlaying(); } }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]); }, 1500); }
 function win() {
   if (game.state !== 'playing') return; game.state = 'won'; sfx.flame(false);
   player.score += Math.max(0, 3000 - Math.floor(player.time) * 4); if (!game.detections) { player.score += 1500; log('Duch: neodhalen +1500'); } document.exitPointerLock();
@@ -7716,7 +7849,7 @@ function tick(dt) {
   if (Math.abs(dmgO - lastDmg) > .01) { hud.dmg.style.opacity = dmgO; lastDmg = dmgO; }
   if (Math.abs(player.burn - lastBurn) > .01) { hud.burn.style.opacity = player.burn; lastBurn = player.burn; }
   if (hitTimer > 0) { hitTimer -= dt; if (hitTimer <= 0) hud.hitm.style.opacity = 0; }
-  if (game.state === 'playing') { updateHud(); mmDraw(); if (TM.on) tmDraw(); } else if (TM.on) tabMap(false);
+  if (game.state === 'playing') { updateHud(); mmDraw(); cmpDraw(); if (TM.on) tmDraw(); } else if (TM.on) tabMap(false);
   if (M3.cv.style.display === 'block') { if (!m3Render()) { MB.cv.style.display = 'block'; menuBG(time); } soonArt(time); }   // 2D picture only if WebGL for the backdrop fails
   if (M3.ok && M3.cv.style.display === 'block') return;   // the menu draws its own 3D backdrop; the level behind it is hidden anyway
   renderer.clear(); renderer.render(scene, camera);

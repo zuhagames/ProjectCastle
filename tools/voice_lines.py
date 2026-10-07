@@ -94,6 +94,10 @@ LINES_ZO = [
     ('zo_f4', 'brn', 'Für Kessler. Für Vogt.', 'Za Kesslera. Za Vogta.'),
     ('zo_f5', 'bj', 'Tak pojď.'),
     ('zo_f6', 'bj', 'Pro Londýn.'),
+    # Brandt when an objective is done (instead of the Eagle's lines)
+    ('zo_obj1', 'brn', 'Erledigt.', 'Hotovo.'),
+    ('zo_obj2', 'brn', 'Gut. Weiter.', 'Dobře. Dál.'),
+    ('zo_obj3', 'brn', 'Das bringt uns näher an ihn.', 'Tohle nás k němu přiblíží.'),
 ]
 LINES += LINES_ZO
 # escaped prisoners and partisans shout in Czech (two voices, P and Q)

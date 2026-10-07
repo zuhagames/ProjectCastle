@@ -88,7 +88,7 @@ Lee-Enfield No.4 (T) s puškohledem, revolver, Sten Mk II (dvě rány do těla n
 
 ## Nastavení
 
-V menu i v pauze: citlivost a obrácení myši, FOV, hlasitost, velikost rozhraní, rozlišení vykreslování, způsob přikrčení, minimapa a pohupování kamery. Nastavení se ukládá v prohlížeči. Minimapa ve stylu Wolfensteinu odkrývá místnosti, jak jimi procházíš (les je zelený, budovy hnědé).
+V menu i v pauze: citlivost a obrácení myši, FOV, hlasitost, velikost rozhraní, rozlišení vykreslování, způsob přikrčení, minimapa a pohupování kamery. Nastavení se ukládá v prohlížeči. Minimapa ve stylu Wolfensteinu odkrývá místnosti, jak jimi procházíš (les je zelený, budovy hnědé). Nahoře uprostřed je kompas jako v Call of Duty: stupně, světové strany a zlatý kosočtverec ve směru nejbližšího cíle mise se vzdáleností v metrech.
 
 ## Novinky ve verzi 1.4
 
