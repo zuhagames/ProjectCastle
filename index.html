@@ -4361,7 +4361,7 @@ const VMCFG = {
 const WEAPONS = [
   { id: 'knife', name: 'MAČETA', melee: true, dmg: 45, rate: .5, fbx: 'machete', owned: true },
   { id: 'revolver', name: 'REVOLVER', ammo: 'pistol', mag: 6, clip: 6, reload: 2.0, dmg: 34, rate: .3, auto: false, spread: .011, kick: .075, snd: 'revolver', fbx: 'revolver', owned: true },
-  { id: 'sten', name: 'STEN Mk II', ammo: 'smg', mag: 32, clip: 0, reload: 2.2, dmg: 15, rate: .092, auto: true, spread: .03, kick: .026, snd: 'sten', fbx: 'sten', owned: false },
+  { id: 'sten', name: 'STEN Mk II', ammo: 'smg', mag: 20, clip: 0, reload: 2.2, dmg: 88, fixed: true, rate: .1, auto: true, spread: .03, kick: .026, snd: 'sten', fbx: 'sten', owned: false },
   { id: 'rifle', name: 'LEE-ENFIELD No.4 (T)', ammo: 'rifle', mag: 10, clip: 0, reload: 2.6, dmg: 92, rate: 1.15, auto: false, spread: .003, kick: .15, snd: 'rifle', fbx: 'rifle', owned: false, scope: true },
   { id: 'grenade', name: 'STIELHANDGRANATE', ammo: 'gren', thrown: true, rate: 1.1, fbx: 'grenade', owned: true },
   { id: 'flamer', name: 'PLAMENOMET', ammo: 'fuel', flame: true, rate: .06, dmg: 5, fbx: 'flamer', owned: false },
@@ -4369,7 +4369,7 @@ const WEAPONS = [
   { id: 'welrod', name: 'WELROD Mk I', ammo: 'smg', mag: 6, clip: 0, reload: 2.6, dmg: 60, rate: .85, auto: false, spread: .008, kick: .035, snd: 'welrod', fbx: 'welrod', owned: false, sup: true, quiet: 3 },
   { id: 'delisle', name: 'DE LISLE (T)', ammo: 'acp', mag: 8, clip: 0, reload: 2.8, dmg: 110, rate: 1.2, auto: false, spread: .002, kick: .07, snd: 'delisle', fbx: 'delisle', owned: false, scope: true, sup: true, quiet: 4 }
 ];
-const AMMO_MAX = { pistol: 72, smg: 256, rifle: 60, gren: 8, fuel: 300, acp: 48 };
+const AMMO_MAX = { pistol: 72, smg: 100, rifle: 60, gren: 8, fuel: 300, acp: 48 };
 const vmRoot = new THREE.Group(); vmScene.add(vmRoot);
 let vmMats = [];
 // screw-on suppressors (revolver: Nagant-style can, Sten Mk IIS-style sleeve, rifle: De Lisle-style can)
@@ -5253,7 +5253,7 @@ function fire() {
   for (const e of enemies) { if (e.state === 'dead') continue; const r = rayEnemy(o, d, e); if (r && r.t < bt) { bt = r.t; best = { e, head: r.head }; } }
   if (best) {
     const pt = o.clone().addScaledVector(d, bt);
-    damageEnemy(best.e, w.dmg * (sup ? .92 : 1) * (best.head ? (best.e.T.boss ? 1.4 : 2.6) : 1) * (.85 + Math.random() * .3), _v2.set(d.x, 0, d.z).normalize(), { silent: sup });
+    damageEnemy(best.e, w.dmg * (sup ? .92 : 1) * (best.head ? (best.e.T.boss ? 1.4 : 2.6) : 1) * (w.fixed ? 1 : .85 + Math.random() * .3), _v2.set(d.x, 0, d.z).normalize(), { silent: sup });
     fxImpact(pt, d.clone().negate(), best.e.T.boss ? 'metal' : 'flesh'); hitMarker(best.head); sfx.play(best.e.T.boss ? 'clang' : 'hit', null, .5);
   } else if (hit.kind !== 'none') {
     fxImpact(hit.point, hit.n, hit.kind === 'radio' || hit.kind === 'alarm' || hit.kind === 'barrel' ? 'metal' : 'stone');
@@ -5627,7 +5627,7 @@ function updatePickups(dt) {
       if (!w.owned) { w.owned = true; if (w.mag) w.clip = w.mag; log(`Máš novou zbraň: ${w.name}`); sfx.play('weapon'); switchWeapon(wi); }
       else log(`${w.name}: munice`);
       if (id === 'welrod') A.smg = Math.min(AMMO_MAX.smg, A.smg + 18); if (id === 'delisle') A.acp = Math.min(AMMO_MAX.acp, A.acp + 16);
-      if (id === 'sten') A.smg = Math.min(AMMO_MAX.smg, A.smg + 64); if (id === 'rifle') A.rifle = Math.min(AMMO_MAX.rifle, A.rifle + 20); if (id === 'flamer') A.fuel = Math.min(AMMO_MAX.fuel, A.fuel + 150);
+      if (id === 'sten') A.smg = Math.min(AMMO_MAX.smg, A.smg + 40); if (id === 'rifle') A.rifle = Math.min(AMMO_MAX.rifle, A.rifle + 20); if (id === 'flamer') A.fuel = Math.min(AMMO_MAX.fuel, A.fuel + 150);
       took = true;
     }
     else if (p.kind.startsWith('k:')) { const k = p.kind.slice(2); player.keys.add(k); log(`Sebral jsi: ${KEY_NAMES[k] || k}`); sfx.play('treasure'); completeObjective({ brana: 'key', knihovna: 'libkey', propustka: 'propustka', laborator: 'labkey' }[k]); took = true; }
@@ -5642,9 +5642,9 @@ function updatePickups(dt) {
       case 'f': if (player.hp < 100) { player.hp = Math.min(100, player.hp + 10); log(PICK_NAMES.f); sfx.play('eat'); took = true; } break;
       case 'v': if (player.armor < 100) { player.armor = Math.min(100, player.armor + 50); log(PICK_NAMES.v); took = true; } break;
       case 'q': if (A.acp < AMMO_MAX.acp) { A.acp = Math.min(AMMO_MAX.acp, A.acp + 8); log(PICK_NAMES.q); took = true; } break;
-      case 'a': if (WEAPONS[7].owned) A.acp = Math.min(AMMO_MAX.acp, A.acp + 8); A.pistol = Math.min(AMMO_MAX.pistol, A.pistol + 12); A.smg = Math.min(AMMO_MAX.smg, A.smg + 32); if (WEAPONS[3].owned) A.rifle = Math.min(AMMO_MAX.rifle, A.rifle + 10); if (WEAPONS[5].owned) A.fuel = Math.min(AMMO_MAX.fuel, A.fuel + 40); log(PICK_NAMES.a); took = true; break;
+      case 'a': if (WEAPONS[7].owned) A.acp = Math.min(AMMO_MAX.acp, A.acp + 8); A.pistol = Math.min(AMMO_MAX.pistol, A.pistol + 12); A.smg = Math.min(AMMO_MAX.smg, A.smg + 16); if (WEAPONS[3].owned) A.rifle = Math.min(AMMO_MAX.rifle, A.rifle + 10); if (WEAPONS[5].owned) A.fuel = Math.min(AMMO_MAX.fuel, A.fuel + 40); log(PICK_NAMES.a); took = true; break;
       case 'p': if (A.pistol < AMMO_MAX.pistol) { A.pistol = Math.min(AMMO_MAX.pistol, A.pistol + 12); log(PICK_NAMES.p); took = true; } break;
-      case 's': if (A.smg < AMMO_MAX.smg) { A.smg = Math.min(AMMO_MAX.smg, A.smg + 24); log(PICK_NAMES.s); took = true; } break;
+      case 's': if (A.smg < AMMO_MAX.smg) { A.smg = Math.min(AMMO_MAX.smg, A.smg + 14); log(PICK_NAMES.s); took = true; } break;
       case 'r': if (A.rifle < AMMO_MAX.rifle) { A.rifle = Math.min(AMMO_MAX.rifle, A.rifle + 8); log(PICK_NAMES.r); took = true; } break;
       case 'n': if (A.gren < AMMO_MAX.gren) { A.gren = Math.min(AMMO_MAX.gren, A.gren + 2); log(PICK_NAMES.n); took = true; } break;
       case 'u': if (A.fuel < AMMO_MAX.fuel) { A.fuel = Math.min(AMMO_MAX.fuel, A.fuel + 60); log(PICK_NAMES.u); took = true; } break;
@@ -6916,9 +6916,9 @@ async function startMission(i, fresh) {
       if (i >= DLC_START + 3) { WEAPONS[5].owned = true; Object.assign(player.ammo, { fuel: 120, gren: 6, smg: 192, rifle: 40 }); player.armor = 100; }
     }
     const past = id => !LEVELS[i].dlc && i > LEVELS.findIndex(L => L.id === id);   // by mission id, so inserting missions never shifts the loadouts
-    if (past('m1')) { WEAPONS[2].owned = true; WEAPONS[2].clip = WEAPONS[2].mag; WEAPONS[6].owned = true; WEAPONS[6].clip = 6; WEAPONS[7].owned = true; WEAPONS[7].clip = 8; player.ammo.smg = 96; player.ammo.acp = 16; player.ammo.gren = 4; }
+    if (past('m1')) { WEAPONS[2].owned = true; WEAPONS[2].clip = WEAPONS[2].mag; WEAPONS[6].owned = true; WEAPONS[6].clip = 6; WEAPONS[7].owned = true; WEAPONS[7].clip = 8; player.ammo.smg = 40; player.ammo.acp = 16; player.ammo.gren = 4; }
     if (past('m2')) { WEAPONS[3].owned = true; WEAPONS[3].clip = 10; player.ammo.rifle = 20; player.ammo.acp = 24; player.armor = 50; }
-    if (past('m3')) { WEAPONS[5].owned = true; player.ammo.fuel = 100; player.ammo.gren = 5; player.ammo.acp = 32; player.ammo.rifle = 30; player.ammo.smg = 128; player.ammo.pistol = 36; }
+    if (past('m3')) { WEAPONS[5].owned = true; player.ammo.fuel = 100; player.ammo.gren = 5; player.ammo.acp = 32; player.ammo.rifle = 30; player.ammo.smg = 60; player.ammo.pistol = 36; }
     if (past('e2m3')) { player.armor = 100; player.ammo.gren = 6; player.ammo.fuel = 150; }
     snapshotLoadout();
   } else if (!game.snapshot) snapshotLoadout();
