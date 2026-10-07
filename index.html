@@ -1645,7 +1645,7 @@ LEVELS.push(asciiLevel({
   clues: ['Krev na zábradlí nástupiště a otisky bot k cestě. Orel je zraněný – a běží do lesa.'],
   squad: ZO_SQUAD(),
   trig: [
-    { t: 2, say: ['zo_301'] }, { t: 16, say: ['zo_302'] }, { t: 30, say: ['zo_307'] },
+    { t: 2, say: ['zo_301'], fn: 'alertHold' }, { t: 16, say: ['zo_302'] }, { t: 30, say: ['zo_307'] },
     { after: 'sjezd', delay: .6, say: ['zo_303'] },
     { after: 'sjezd', delay: 9, spawn: [['partyzan', 22, 21, -PI / 2], ['partyzan2', 22, 22, -PI / 2], ['partyzan', 21, 21, -PI / 2]], say: ['zo_305'] },
     { after: 'stopa', delay: .5, say: ['zo_304'] }
@@ -6556,6 +6556,7 @@ const SAY = { q: [], t: 0, hide: 0 };
 const RIDE = { on: false, t: 0 };
 function squadInit() {
   SQ.list = []; SQ.on = !!(LV.squad && LV.squad.length); SAY.q = []; SAY.t = 0; LV.zt = 0;
+  if (LV.dlc && window.CASTLE_VOX && sfx.ctx) vox.preload(Object.keys(window.CASTLE_VOX).filter(k => k.startsWith('zo_') || k.startsWith('czb_')));
   for (const [t, cx, cz, yaw, o = {}] of LV.squad || []) {
     const e = makeEnemy(t, cx, cz, yaw, o); enemies.splice(enemies.indexOf(e), 1);
     Object.assign(e, { ally: true, name: o.name || e.T.name, leader: !!o.leader, joined: !o.recruit, hold: !!o.hold, joinLine: o.join, voiceI: SQ.list.length % 3, target: null, scanT: Math.random() * .3, downT: 0, id4: 0, slot: 0 });
@@ -6590,7 +6591,7 @@ function allyShoot(e, tg, d) {
   sfx.play(T.gun === 'sten' ? 'smg' : 'enemyshot', e.root.position, .75);
   const tgt = V(tg.x + rand(-.2, .2), tg.y + tg.h * rand(.5, .85), tg.z + rand(-.2, .2)), dir = tgt.clone().sub(m).normalize();
   const p = clamp(.6 - d * .011, .14, .68) * (calm(tg) ? 1.25 : 1) * (tg.T.boss ? .6 : 1);
-  if (Math.random() < p) { damageEnemy(tg, rand(T.dmg[0], T.dmg[1]) * 1.2, _v2.set(dir.x, 0, dir.z).normalize()); fxImpact(tgt, dir.clone().negate(), 'flesh'); }
+  if (Math.random() < p) { damageEnemy(tg, rand(T.dmg[0], T.dmg[1]) * 2.4, _v2.set(dir.x, 0, dir.z).normalize()); fxImpact(tgt, dir.clone().negate(), 'flesh'); }
   else { const h = rayWorld(m, dir.add(V(rand(-.06, .06), rand(-.04, .06), rand(-.06, .06))).normalize(), 60); if (h.kind !== 'none') fxImpact(h.point, h.n, 'stone'); }
   for (const h of enemies) if (calm(h) && h.state !== 'dead' && !h.actor && Math.hypot(h.x - e.x, h.z - e.z) < 24) after(.2 + Math.random() * .5, () => { if (calm(h)) alertEnemy(h); });
 }
@@ -6638,7 +6639,7 @@ function updateAlly(e, dt) {
     face = { x: tdx, z: tdz }; aiming = true; e.cooldown -= dt;
     if (e.cooldown <= 0 && Math.abs(angD(e.yaw, Math.atan2(tdx, tdz))) < .35) {
       if (e.burst <= 0) e.burst = Math.round(rand(T.burst[0], T.burst[1]));
-      allyShoot(e, tg, td); e.burst--; e.cooldown = e.burst > 0 ? T.rof : Math.max(T.rof, .7) + Math.random() * 1.1;
+      allyShoot(e, tg, td); e.burst--; e.cooldown = e.burst > 0 ? T.rof : Math.max(T.rof * .8, .5) + Math.random() * .7;
     }
   } else { e.burst = 0; e.cooldown = Math.max(e.cooldown - dt, .4); face = mx || mz ? { x: mx, z: mz } : e.joined ? { x: -Math.sin(player.yaw), z: -Math.cos(player.yaw) } : null; }
   if (!(RIDE.on && e.ride)) {
@@ -6683,7 +6684,9 @@ function sayTick(dt) {
   SAY.t -= dt; SAY.hide -= dt;
   if (SAY.hide <= 0) $('zsub').style.opacity = 0;
   if (SAY.t > 0 || !SAY.q.length) return;
-  const id = SAY.q.shift(), s = VOX_SUB[id], d = vox.play(id);
+  const id = SAY.q[0];
+  if (!vox.bufs[id] && sfx.ctx && window.CASTLE_VOX && window.CASTLE_VOX[id] && (SAY.wait = (SAY.wait || 0) + dt) < 2) { vox.get(id); return; }   // still decoding
+  SAY.q.shift(); SAY.wait = 0; const s = VOX_SUB[id], d = vox.play(id);
   if (s) { $('zsub').innerHTML = `<b>${SPEAKER[s[0]] || ''}</b>${s[1]}`; $('zsub').style.opacity = 1; }
   SAY.t = d + .3; SAY.hide = d + 1.4;
 }
@@ -6723,7 +6726,8 @@ const ZO_FN = {
   // Krüger is hit by the blast: he stays behind, you go on alone
   krugerDown() { const k = SQ.list.find(a => a.leader); if (k) { k.state = 'down'; k.downT = 1e9; } },
   quake(g) { player.shake = 1.4; for (let i = 0; i < 4; i++) after(i * .35, () => { sfx.play('explode', V(player.pos.x + rand(-30, 30), player.pos.y + 8, player.pos.z - 40), 1.6); player.shake = Math.min(1.5, player.shake + .6); }); },
-  squadAll() { SQ.list.forEach(a => { a.joined = true; a.hold = false; }); SQ.list.forEach((a, k) => a.slot = k); }
+  squadAll() { SQ.list.forEach(a => { a.joined = true; a.hold = false; }); SQ.list.forEach((a, k) => a.slot = k); },
+  alertHold() { for (const e of enemies) if (e.hold && e.state !== 'dead' && calm(e)) after(Math.random() * 4, () => alertEnemy(e)); }
 };
 const ZO = { movers: [] };
 // the ride down: you (and your men) stand in the cabin while it runs down the haul rope; partisans shoot from the slopes
