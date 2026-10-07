@@ -107,13 +107,13 @@
   .logo .l2 i { width:clamp(30px,2.6vw,46px); height:clamp(30px,2.6vw,46px); border-radius:50%; flex:none; background:radial-gradient(circle,#c8102e 0 30%,#fff 31% 58%,#012169 59% 100%); box-shadow:0 0 0 2px #000; }
   .logo .l3 { margin-top:8px; font:300 clamp(11px,.9vw,15px) 'Oswald',sans-serif; letter-spacing:.6em; color:#b9ad92; }
   .logo.sm .l1 { font-size:clamp(30px,3.4vw,58px); } .logo.sm .l2 span { font-size:clamp(11px,1vw,16px); }
-  .mlist { position:absolute; left:6vw; top:clamp(270px,40vh,420px); display:flex; flex-direction:column; gap:2px; width:min(440px,80vw); }
-  .mi { position:relative; display:flex; align-items:baseline; gap:16px; width:100%; padding:7px 18px 7px 22px; background:transparent; border:0; border-left:4px solid transparent; cursor:pointer; text-align:left;
-    font:600 clamp(22px,2.2vw,38px) 'Oswald',sans-serif; letter-spacing:.06em; text-transform:uppercase; color:#b8b0a0; transition:color .15s, transform .18s, letter-spacing .2s, background .2s; }
-  .mi i { font:400 13px 'Oswald',sans-serif; letter-spacing:.2em; color:#7d735f; font-style:normal; min-width:22px; }
+  .mlist { position:absolute; left:6vw; top:clamp(270px,40vh,420px); display:flex; flex-direction:column; gap:4px; width:min(560px,80vw); }
+  .mi { position:relative; display:flex; align-items:baseline; gap:16px; width:100%; padding:9px 22px 9px 26px; background:transparent; border:0; border-left:4px solid transparent; cursor:pointer; text-align:left;
+    font:600 clamp(28px,2.9vw,48px) 'Oswald',sans-serif; letter-spacing:.06em; text-transform:uppercase; color:#b8b0a0; transition:color .15s, transform .18s, letter-spacing .2s, background .2s; }
+  .mi i { font:400 16px 'Oswald',sans-serif; letter-spacing:.2em; color:#7d735f; font-style:normal; min-width:22px; }
   .mi small { margin-left:auto; font:400 12px 'Oswald',sans-serif; letter-spacing:.25em; color:#8f8571; }
   .mi.on { color:#fff; transform:translateX(10px); letter-spacing:.1em; border-left-color:#ff3b24; background:linear-gradient(90deg, rgba(179,21,12,.85), rgba(179,21,12,.35) 55%, rgba(179,21,12,0)); text-shadow:0 2px 6px rgba(0,0,0,.7); }
-  .mi.on i { color:#ffd6c9; } .mi:disabled { color:#5a5448; cursor:default; } .mi.sm { font-size:clamp(15px,1.3vw,20px); }
+  .mi.on i { color:#ffd6c9; } .mi:disabled { color:#5a5448; cursor:default; } .mi.sm { font-size:clamp(18px,1.6vw,24px); }
   .minfo { position:absolute; right:5vw; top:clamp(270px,40vh,420px); width:min(420px,32vw); padding:18px 22px 20px; background:linear-gradient(135deg, rgba(10,9,8,.86), rgba(20,14,10,.66)); border-top:3px solid #b3150c; box-shadow:0 20px 50px rgba(0,0,0,.6); }
   .minfo h4 { margin:0 0 4px; font:700 22px 'Oswald',sans-serif; letter-spacing:.12em; color:#fff; text-transform:uppercase; }
   .minfo h5 { margin:0 0 10px; font:400 12px 'Oswald',sans-serif; letter-spacing:.35em; color:#c9a24c; text-transform:uppercase; }
@@ -124,18 +124,18 @@
   .mbar kbd { display:inline-block; min-width:16px; padding:2px 7px; margin-right:7px; font:600 12px 'Oswald',sans-serif; color:#111; background:#d8d0bd; border-radius:3px; box-shadow:0 2px 0 #6d6553; text-align:center; letter-spacing:0; }
   .mbar em { margin-left:auto; font-style:normal; color:#6f6756; }
   .aaa .soon { right:5vw; bottom:64px; transform:none; }
-  .minfo.up { top:auto; bottom:330px; }
-  .xp { position:absolute; right:5vw; bottom:62px; width:360px; display:flex; flex-direction:column; gap:8px; }
-  .xp .cw { position:relative; display:block; width:100%; text-align:left; cursor:pointer; border:0; transition:transform .18s, box-shadow .18s; padding:9px 14px; background:linear-gradient(90deg, rgba(10,14,22,.92), rgba(30,40,60,.75)); border-left:4px solid #4a78c0; font-family:'Oswald',sans-serif; }
-  .xp .cw b { display:block; font-size:13px; letter-spacing:.14em; color:#dfe6f2; } .xp .cw span { font-size:12px; color:#8fa3c4; letter-spacing:.08em; }
-  .xp .cw i { position:absolute; right:10px; top:50%; transform:translateY(-50%) rotate(-4deg); font:700 11px 'Oswald',sans-serif; font-style:normal; letter-spacing:.2em; color:#fff; background:#2d4f8a; padding:3px 8px; }
-  .dlc { position:relative; display:block; width:360px; padding:0; border:2px solid var(--gold); background:#000; cursor:pointer; text-align:left; box-shadow:0 14px 40px rgba(0,0,0,.8); transition:transform .18s, box-shadow .18s; }
-  .dlc canvas { display:block; width:356px; height:188px; } .dlc.on { transform:translateY(-4px) scale(1.02); box-shadow:0 0 0 2px #ff3b24, 0 18px 50px rgba(0,0,0,.9); }
-  .dlc .st { position:absolute; left:0; right:0; bottom:38px; padding:0 14px; font-family:'Oswald',sans-serif; text-shadow:0 2px 6px #000; }
-  .dlc .st small { display:block; font-size:11px; letter-spacing:.4em; color:#c9a24c; } .dlc .st b { display:block; font:400 40px/1 'Anton','Impact',sans-serif; letter-spacing:.04em; color:#fff; }
+  .minfo.up { top:auto; bottom:400px; }
+  .xp { position:absolute; right:5vw; bottom:62px; width:440px; display:flex; flex-direction:column; gap:8px; }
+  .xp .cw { position:relative; display:block; width:100%; text-align:left; cursor:pointer; border:0; transition:transform .18s, box-shadow .18s; padding:12px 18px; background:linear-gradient(90deg, rgba(10,14,22,.95), rgba(30,40,60,.75)); border-left:4px solid #4a78c0; font-family:'Oswald',sans-serif; }
+  .xp .cw b { display:block; font-size:17px; letter-spacing:.1em; color:#fff; text-shadow:0 2px 4px #000; } .xp .cw span { display:block; margin-top:2px; font-size:15px; color:#b7c7e2; letter-spacing:.06em; }
+  .xp .cw i { position:absolute; right:10px; top:50%; transform:translateY(-50%) rotate(-4deg); font:700 13px 'Oswald',sans-serif; font-style:normal; letter-spacing:.2em; color:#fff; background:#2d4f8a; padding:4px 10px; top:auto; bottom:10px; transform:rotate(-4deg); }
+  .dlc { position:relative; display:block; width:440px; padding:0; border:2px solid var(--gold); background:#000; cursor:pointer; text-align:left; box-shadow:0 14px 40px rgba(0,0,0,.8); transition:transform .18s, box-shadow .18s; }
+  .dlc canvas { display:block; width:436px; height:230px; } .dlc.on { transform:translateY(-4px) scale(1.02); box-shadow:0 0 0 2px #ff3b24, 0 18px 50px rgba(0,0,0,.9); }
+  .dlc .st { position:absolute; left:0; right:0; bottom:46px; padding:40px 18px 10px; font-family:'Oswald',sans-serif; text-shadow:0 2px 6px #000, 0 0 2px #000; background:linear-gradient(0deg, rgba(0,0,0,.85), rgba(0,0,0,.55) 60%, rgba(0,0,0,0)); }
+  .dlc .st small { display:block; font-size:14px; letter-spacing:.3em; color:#f0c75e; font-weight:600; } .dlc .st b { display:block; margin-top:2px; font:400 54px/1 'Anton','Impact',sans-serif; letter-spacing:.04em; color:#fff; }
   .xp .cw.on { transform:translateX(-4px); box-shadow:0 0 0 2px #4a78c0, 0 10px 30px rgba(0,0,0,.8); }
-  .dlc .st span { display:block; margin-top:6px; font-size:12px; letter-spacing:.12em; color:#d8cfbb; }
-  .dlc em { position:absolute; left:0; right:0; bottom:0; height:34px; line-height:34px; text-align:center; font:700 17px 'Oswald',sans-serif; font-style:normal; letter-spacing:.3em; color:#fff; background:linear-gradient(90deg,#8e1209,#d0301e,#8e1209); animation:pulse 2.4s ease-in-out infinite; }
+  .dlc .st span { display:block; margin-top:6px; font-size:16px; letter-spacing:.06em; color:#fff; }
+  .dlc em { position:absolute; left:0; right:0; bottom:0; height:46px; line-height:46px; text-align:center; font:700 24px 'Oswald',sans-serif; font-style:normal; letter-spacing:.3em; color:#fff; background:linear-gradient(90deg,#8e1209,#d0301e,#8e1209); animation:pulse 2.4s ease-in-out infinite; }
   .press { position:absolute; left:0; right:0; bottom:16vh; text-align:center; font:400 clamp(14px,1.3vw,20px) 'Oswald',sans-serif; letter-spacing:.6em; color:#e8e0cc; animation:blink 1.8s ease-in-out infinite; text-shadow:0 2px 8px #000; }
   @keyframes blink { 50% { opacity:.25; } }
   .title .logo { left:50%; top:22vh; transform:translateX(-50%); text-align:center; } .title .logo .l2 { justify-content:center; }
@@ -6765,7 +6765,9 @@ function m3Init() {
   // ---- soldiers: the real game models, re-dressed
   const soldier = (type, x, z, yaw) => { const e = makeEnemy(type, 1, 1, 0); enemies.splice(enemies.indexOf(e), 1); for (const o of [e.blob, e.flashSprite, e.glint]) if (o) levelRoot.remove(o); levelRoot.remove(e.root); S.add(e.root);
     e.mark.visible = false; e.root.position.set(x, 0, z); e.root.rotation.y = yaw; e.x = x; e.z = z; M3.men.push(e); return e; };
-  for (let i = 0; i < 7; i++) { const e = soldier(i === 0 ? 'offizier' : i % 3 === 1 ? 'sturm' : 'soldat', -24 + i * 3.1, 1.5 + (i % 2) * .9, Math.PI / 2); e.march = true; setAnim(e, 'Walk', 1); }
+  for (let i = 0; i < 7; i++) { const e = soldier(i === 0 ? 'offizier' : i % 3 === 1 ? 'sturm' : 'soldat', -24 + i * 3.1, 1.5 + (i % 2) * .9, Math.PI / 2); e.march = true; setAnim(e, 'Walk', 1);
+    // own materials so each marcher can fade in and out at the ends of the column instead of popping
+    e.fade = []; e.root.traverse(o => { if (o.isMesh) { o.material = (Array.isArray(o.material) ? o.material : [o.material]).map(m => { const c = m.clone(); c.transparent = true; e.fade.push(c); return c; }); if (o.material.length === 1) o.material = o.material[0]; } }); }
   for (let i = 0; i < 4; i++) { const e = soldier('tommy', 8 + i * 3.6 + (i > 1 ? 3 : 0), 1.5 - (i % 2) * 1.5, -Math.PI / 2 + .35 * (i % 2 ? -1 : 1)); e.guard = true; }
   M3.ok = true; M3.clock = new THREE.Clock();
 }
@@ -6788,7 +6790,8 @@ function m3Render() {
   mv(M3.embers, 2.4, 0, (a, i) => { if (a[i + 1] > 30) { a[i] = -70 + Math.random() * 68; return true; } });
   mv(M3.snow, -1.6, 50, (a, i) => a[i + 1] < 0);
   for (const e of M3.men) {
-    if (e.march) { e.x += dt * 1.45; if (e.x > -3) e.x -= 21.7; e.root.position.x = e.x; }
+    if (e.march) { e.x += dt * 1.45; if (e.x > -3) e.x -= 21.7; e.root.position.x = e.x;
+      const a = Math.max(0, Math.min(1, (e.x + 24.7) / 3, (-3 - e.x) / 3)); e.root.visible = a > .01; for (const m of e.fade) { m.opacity = a; m.depthWrite = a > .98; } }
     if (e.mixer) { e.mixer.update(dt); e.root.updateMatrixWorld(true); if (e.holder && e.ikOK) poseSoldier(e, e.guard ? .2 : .08, 0); }
   }
   R.render(M3.scene, M3.cam); return true;
@@ -6858,7 +6861,7 @@ function showMainMenu() {
   if (IN_FRAME) rows.push(it('full', 'Celá obrazovka', 'full', ++n).replace('class="mi"', 'class="mi sm"'), it('tab', 'Otevřít v novém okně', 'tab', ++n).replace('class="mi"', 'class="mi sm"'));
   overlay.innerHTML = `<div class="aaa">${FX}${titleHtml()}<nav class="mlist">${rows.join('')}</nav><aside class="minfo up"></aside>
     <div class="xp"><button class="cw" data-nav data-go="cold" data-info="cold"><b>BLÁZEN Z LONDÝNA: STUDENÁ VÁLKA</b><span>Orel se vrací · Berlín 1961</span><i>COMING SOON</i></button>
-      <button class="dlc" data-nav data-go="dlc" data-info="dlc"><canvas id="soonc" width="360" height="190"></canvas><div class="st"><small>BLÁZEN Z LONDÝNA · ROZŠÍŘENÍ</small><b>ZAJETÍ ORLA</b><span>Hraj za Hauptmanna Brandta · 2 epizody</span></div><em>HRAJ NYNÍ ▶</em></button></div>${hintBar(false)}</div><div id="load"></div>`;
+      <button class="dlc" data-nav data-go="dlc" data-info="dlc"><canvas id="soonc" width="440" height="232"></canvas><div class="st"><small>BLÁZEN Z LONDÝNA · ROZŠÍŘENÍ</small><b>ZAJETÍ ORLA</b><span>Hraj za vojáka, kterého Orel málem zabil</span></div><em>HRAJ NYNÍ ▶</em></button></div>${hintBar(false)}</div><div id="load"></div>`;
   overlay.style.display = 'flex'; $('hud').style.display = 'none';
   const go = { start: () => startMission(menuLevel, true), new: () => { menuLevel = 0; startMission(0, true); }, missions: () => showMissionSelect('play', ''), dlc: () => { menuLevel = unlocked('zo'); showMissionSelect('play', 'zo'); }, settings: () => showSettings(showMainMenu), keys: showControls, credits: showCredits, cold: () => {}, full: goFullscreen, tab: openStandalone };
   overlay.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { okSound(); go[b.dataset.go](); });
