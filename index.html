@@ -188,6 +188,8 @@
   #ctitle .small { margin-top:8px; letter-spacing:7px; color:#c23b2c; font-size:clamp(12px,1.6vw,17px); text-shadow:0 2px 2px #000; }
   #csub { position:absolute; bottom:calc(11vh + 16px); left:50%; transform:translateX(-50%); width:min(920px,88vw); text-align:center; font-family:'Special Elite',monospace; font-size:clamp(16px,1.7vw,22px); line-height:1.4; color:#f2ead2; text-shadow:0 2px 3px #000,0 0 8px #000; opacity:0; transition:opacity .3s; }
   #csub b { color:var(--gold); font-weight:400; margin-right:10px; }
+  #zsub { position:absolute; bottom:150px; left:50%; transform:translateX(-50%); width:min(860px,86vw); text-align:center; font-family:'Special Elite',monospace; font-size:clamp(15px,1.5vw,20px); line-height:1.4; color:#f2ead2; text-shadow:0 2px 3px #000,0 0 8px #000; opacity:0; transition:opacity .3s; pointer-events:none; }
+  #zsub b { color:#9fd08a; font-weight:400; margin-right:10px; }
   #cskip { position:absolute; bottom:3.6vh; right:26px; font:600 12px 'Oswald',sans-serif; letter-spacing:3px; color:#777; }
   #fade { position:fixed; inset:0; background:#000; opacity:0; pointer-events:none; z-index:6; }
   .eps { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:4px 0; }
@@ -221,6 +223,7 @@
   <div id="intro"><div id="introT"></div><div id="introS"></div></div>
   <div id="boss"><span id="bossN">ÜBERSOLDAT</span><div class="bar"><b id="bossB"></b></div></div>
   <div id="log"></div>
+  <div id="zsub"></div>
   <div id="prompt"></div>
   <div id="drive"></div>
   <div id="dev"></div>
@@ -1474,46 +1477,401 @@ const EPISODES = [
 ];
 
 /* ---------- EXPANSION · BLÁZEN Z LONDÝNA: ZAJETÍ ORLA ----------
-   Hauptmann Erich Brandt, whom the Eagle nearly killed in the valley (episode 2), hunts him on his trail –
-   the same places a few hours after B. J.: doors blown open, alarms dead, partisans and an SOE team covering him. */
-const DLC_TYPE = { soldat: 'partyzan', sturm: 'komando', offizier: 'velitel', elite: 'komando', sniper: 'odstrelovac', untoter: 'partyzan', uber: null, doktor: null };
-function dlcLevel(baseId, o) {
-  const L = structuredClone(LEVELS.find(q => q.id === baseId));
-  Object.assign(L, { id: o.id, ep: o.ep, dlc: 'zo', name: o.name, sub: o.sub, brief: o.brief, targets: [], radio: undefined, alarms: [], reinforce: [], bossKey: undefined, clues: o.clues });
-  L.doors = L.doors.map(d => [d[0], d[1]]);                                          // the Eagle got through every locked door before you
-  L.enemies = L.enemies.filter(e => DLC_TYPE[e[0]] !== null).map(e => [DLC_TYPE[e[0]] || 'partyzan', ...e.slice(1)]);
-  const pk = L.pickups.map(p => p[0].startsWith('d:') ? ['h', ...p.slice(1)] : p.slice());
-  const cand = pk.map((p, i) => i).filter(i => 'gHahvq'.includes(pk[i][0]) && pk[i][0].length === 1);
-  for (const k of [0, Math.floor(cand.length / 2), cand.length - 1]) if (cand[k] !== undefined) pk[cand[k]][0] = 'd:stopa';   // three traces of the Eagle, far apart
-  L.pickups = pk;
-  L.objectives = [{ id: 'stopa', text: o.clueText || 'Najdi Orlovy stopy', count: 3 }, { id: 'exit', text: o.exitObj }, { id: 'tre', text: 'Volitelné: posbírej poklady', optional: true }];
-  if (L.exit) L.exit = { ...L.exit, text: o.exitText };
-  return L;
-}
+   Gefreiter Erich Brandt of the Grimhold garrison. The night the Eagle broke out of the dungeons he shot Brandt's
+   comrades and left him for dead in the guardroom. Brandt wakes up, gathers what is left of his squad under Feldwebel
+   Krüger and goes after him: through the castle full of freed prisoners, down the cable car under partisan fire,
+   the forester's lodge – and to Wolfsgrund, where the English have come to take the Eagle home. */
+const ZO_SQUAD = (o = {}) => [
+  ['zo_kruger', ...(o.k || [0, 0, 0]), { name: 'Feldwebel Krüger', leader: true, hp: 260, ...(o.ko || {}) }],
+  ['zo_mann', ...(o.m || [0, 0, 0]), { name: 'Schütze Müller' }],
+  ['zo_mann2', ...(o.w || [0, 0, 0]), { name: 'Schütze Weber' }],
+  ['zo_mann', ...(o.h || [0, 0, 0]), { name: 'Schütze Hoffmann' }]
+];
 const DLC_START = LEVELS.length;
-LEVELS.push(
-  dlcLevel('e2m1', { id: 'z1', ep: 1, name: 'MISE 1.1 · RÁNO PO ÚTOKU', sub: 'Údolní stanice lanovky', exitText: 'VYDAT SE PO ORLOVĚ STOPĚ DO LESA', exitObj: 'Vydej se po stopě do lesa',
-    brief: ['Údolí pod Grimholdem, svítání. Moji muži leží v kalužích krve a já mám v rameni kulku od Angličana, kterému tady všichni říkají Orel.', 'Partyzáni z hor mu kryjí záda. Prohledej stanici a najdi, kudy šel.', 'Hauptmann Erich Brandt ho dostane. Živého nebo mrtvého.'],
-    clues: ['Nábojnice .38 – z jeho revolveru.', 'Utržený kus americké uniformy. Je zraněný?', 'Stopy bot vedou na sever, k lesu.'] }),
-  dlcLevel('e2m2', { id: 'z2', ep: 1, name: 'MISE 1.2 · SPÁLENÝ TÁBOR', sub: 'Polní tábor v hvozdu', exitText: 'POKRAČOVAT K ŽELEZNICI', exitObj: 'Jdi silnicí k železnici',
-    brief: ['Lesní tábor hoří. Sklad paliva vyletěl do vzduchu a z posádky skoro nikdo nezbyl.', 'Orel tu byl před hodinou. V troskách najdi, co tu hledal.'],
-    clues: ['Ohořelý jízdní řád transportů. Chce se dostat na vlak.', 'Mapa s kroužkem kolem nádraží Wolfsgrund.', 'Krvavý obvaz. Je zraněný víc, než si myslí.'] }),
-  dlcLevel('e2m3', { id: 'z3', ep: 1, name: 'MISE 1.3 · ODJEZD ZVLÁŠTNÍHO VLAKU', sub: 'Nádraží Wolfsgrund', exitText: 'NASKOČIT NA POSLEDNÍ VŮZ', exitObj: 'Naskoč na zvláštní vlak',
-    brief: ['Výhybka přestavená, přednosta svázaný v kanceláři. Zvláštní vlak do Wolfsgrundu odjíždí – a Orel je na něm.', 'Najdi důkazy, kterým vagonem jel, a naskoč za ním.'],
-    clues: ['Kancelář přednosty: chybí nákladní list zvláštního vlaku.', 'Ve stavědle někdo přestavil výhybku. Na páce je krev.', 'Na rampě leží jeho čepice.'] }),
-  dlcLevel('e3m1', { id: 'z4', ep: 2, name: 'MISE 2.1 · BRÁNA WOLFSGRUND', sub: 'Vykládací rampa pod horou', exitText: 'SJET VÝTAHEM ZA NÍM', exitObj: 'Sjeď výtahem do podzemí',
-    brief: ['Vlak stojí u rampy, posádka je mrtvá. Orel je uvnitř hory – a s ním výsadek SOE.', 'Najdi, kudy pronikl do podzemí.'],
-    clues: ['Odstřelený zámek bezpečnostních dveří.', 'Propustka do podzemí – vzal si ji od mrtvého strážného.', 'Generátor reflektorů je zničený. Byl to on.'] }),
-  dlcLevel('e3m2', { id: 'z5', ep: 2, name: 'MISE 2.2 · PODZEMNÍ TOVÁRNA', sub: 'Montážní haly operace Finsternis', exitText: 'SESTOUPIT K ZEMANOVĚ LABORATOŘI', exitObj: 'Sestup do laboratoře dr. Zemana',
-    brief: ['Na turbínách tikají nálože. Tahle hora za chvíli vyletí do vzduchu.', 'Orel míří za doktorem Zemanem. Najdi jeho stopu dřív, než bude pozdě.'],
-    clues: ['Nálož s časovačem – britská výroba.', 'Mapa továrny s vyznačenou laboratoří.', 'Mrtví vojáci u výtahu. Rány nožem.'] }),
-  dlcLevel('e3m3', { id: 'z6', ep: 2, name: 'MISE 2.3 · SRDCE TEMNOTY', sub: 'Laboratoř dr. Zemana', exitText: 'VYBĚHNOUT ŠTOLOU ZA ORLEM', exitObj: 'Vyběhni únikovou štolou ven – za Orlem',
-    brief: ['Übersoldat Mk II leží v troskách a doktor Zeman je mrtvý. Orel to dokázal.', 'Hora se otřásá. Úniková štola je jediná cesta ven – a právě tudy běží on. Dnes v noci to skončí.'],
-    clues: ['Zemanův deník je pryč.', 'Trosky Übersoldata Mk II. Ještě jiskří.', 'Zakrvácený nůž u vchodu do štoly.'] })
-);
+LEVELS.push({
+  id: 'z1', ep: 1, dlc: 'zo', name: 'MISE 1.1 · PROBUZENÍ', sub: 'Strážnice hradu Grimhold', w: 27, h: 21,
+  brief: ['Hrad Grimhold, noc. Americký špion, kterému Angličané říkají Orel, utekl z kobek. Cestou nahoru postřílel celou tvou hlídku.',
+    'Kessler a Vogt jsou mrtví. Tebe nechal ležet v kaluži krve – myslel si, že jsi taky po smrti. Mýlil se.',
+    'Vyzbroj se ve zbrojnici a sežeň zbytek družstva. Orel otevřel cely a vězni teď s ukořistěnými zbraněmi běhají po celém hradě.',
+    'Feldwebel Krüger svolává muže na nádvoří. Odtamtud vyrazíte za Orlem.'],
+  rooms: [
+    R('strz', [1, 1, 4, 3], 'guard', 0, 3.4, 'Strážnice'),
+    R('chod', [6, 1, 6, 11], 'corridor', 0, 3.4, 'Chodba'),
+    R('kas', [8, 1, 12, 4], 'barracks', 0, 4.2, 'Kasárna'),
+    R('zbr', [8, 6, 11, 8], 'armory', 0, 4.0, 'Zbrojnice'),
+    R('kuch', [14, 1, 19, 4], 'kitchen', 0, 4.4, 'Kuchyně'),
+    R('jid', [13, 6, 19, 10], 'mess', 0, 6, 'Jídelna'),
+    ST('sch', [20, 3, 22, 3], 'stairs', '+x', 0, -3.6, 3.2),
+    R('skl', [23, 1, 25, 6], 'cellar', -3.6, -0.4, 'Sklep'),
+    R('bra', [13, 12, 17, 13], 'gate', 0, 4.6, 'Průchod'),
+    R('nad', [9, 15, 21, 19], 'yard', 0, 0, 'Nádvoří', { wallY: 9 })
+  ],
+  doors: [[5, 2], [7, 2], [7, 7], [13, 3], [12, 7], [16, 5], [15, 11], [15, 14]],
+  start: [2, 2, -PI / 2],
+  exit: { cell: [15, 19], side: '+z', kind: 'gate', text: 'VYRAZIT K HORNÍ STANICI LANOVKY' },
+  objectives: [
+    { id: 'zbran', text: 'Vyzbroj se ve zbrojnici' },
+    { id: 'druzstvo', text: 'Najdi muže svého družstva', count: 3 },
+    { id: 'kruger', text: 'Hlas se u Feldwebela Krügera na nádvoří' },
+    { id: 'exit', text: 'Vyraz s družstvem k horní stanici lanovky' }
+  ],
+  squad: [
+    ['zo_mann', 11, 2, -PI / 2, { name: 'Schütze Hoffmann', recruit: true, join: 'zo_j3' }],
+    ['zo_mann', 19, 1, PI / 2, { name: 'Schütze Müller', recruit: true, join: 'zo_j1', ox: .8, oz: -.8 }],
+    ['zo_mann2', 25, 6, PI, { name: 'Schütze Weber', recruit: true, join: 'zo_j2', ox: .6, oz: .6 }],
+    ['zo_kruger', 15, 17, PI, { name: 'Feldwebel Krüger', recruit: true, leader: true, join: 'zo_103', hp: 260 }]
+  ],
+  leaderObj: 'kruger', leaderWait: 'zo_kw',
+  trig: [
+    { t: .8, say: ['zo_101'] }, { t: 6, say: ['zo_102'] },
+    { at: [9, 7], r: 1.1, obj: 'zbran' },
+    { after: 'druzstvo', delay: 1.5, say: ['zo_104'] }
+  ],
+  enemies: [
+    ['soldat', 3, 1, 0, { dead: true, ox: .6 }], ['sturm', 4, 3, PI / 2, { dead: true, oz: -.5 }],
+    ['vezen', 6, 6, 0, { patrol: [[6, 4], [6, 10]] }],
+    ['vezen2', 9, 3, PI / 2], ['vezen', 10, 1, PI / 2, { ox: -1 }],
+    ['vezen', 10, 8, -PI / 2, { ox: .5 }],
+    ['vezen', 15, 2, PI / 2], ['vezen2', 17, 4, 0, { oz: -.6 }],
+    ['vezen', 14, 7, PI / 2], ['vezen', 18, 9, -PI / 2], ['vezen2', 16, 8, 0, { patrol: [[16, 8], [14, 10], [18, 10]] }], ['vezen', 13, 10, PI],
+    ['vezen', 23, 2, PI / 2], ['vezen2', 24, 4, -PI / 2], ['vezen', 25, 1, PI],
+    ['vezen', 14, 12, 0], ['vezen2', 17, 13, PI / 2],
+    ['vezen2', 11, 16, -PI / 2], ['vezen', 19, 18, PI / 2], ['vezen', 12, 18, 0], ['vezen2', 20, 16, PI],
+    ['soldat', 13, 17, 0, { dead: true }], ['soldat', 18, 16, PI / 2, { dead: true }]
+  ],
+  pickups: [
+    ['h', 1, 3, -1, 1], ['p', 4, 1, 1, -1],
+    ['W:rifle', 8, 6, -.4, -.6], ['W:sten', 9, 8, 0, .8], ['r', 11, 6, 1, -1], ['s', 11, 8, 1, 1], ['n', 8, 8, -1, 1], ['v', 10, 6, 0, -1],
+    ['h', 12, 1, 1, -1], ['p', 8, 4, -1, 1], ['h', 19, 4, 1, 1], ['f', 14, 4, -1, 1], ['a', 19, 6, 1, -1], ['f', 13, 9, -1, 0],
+    ['h', 25, 6, 1, 1], ['s', 23, 6, -1, 1], ['a', 9, 15, -1, -1], ['h', 21, 19, 1, 1], ['r', 10, 19, -1, 1]
+  ]
+});
+LEVELS.push({
+  id: 'z2', ep: 1, dlc: 'zo', name: 'MISE 1.2 · HORNÍ STANICE', sub: 'Hradby a stanice lanovky', w: 25, h: 20,
+  brief: ['Orel míří k lanovce. Jestli se dostane do údolí, ztratíme ho v lesích.',
+    'Na hradby vylezli partyzáni z hor – přišli mu na pomoc. Probijte se s Krügerem přes hradby a věž ke stanici.',
+    'Stanice má dvě kabiny. Když uteče jednou, druhou ho dohoníte.'],
+  rooms: [
+    R('nad', [1, 11, 11, 17], 'yard', 0, 0, 'Nádvoří', { wallY: 9 }),
+    R('kas', [1, 4, 6, 9], 'barracks', 0, 4.2, 'Kasárna'),
+    ST('sch', [12, 15, 14, 15], 'yardstairs', '+x', 0, 5, 0, { wallY: 9 }),
+    R('hrad', [15, 8, 16, 17], 'rampart', 5, 0, 'Hradby', { wallY: 6.1 }),
+    R('vez', [14, 3, 17, 6], 'tower', 5, 9, 'Věž'),
+    R('str', [19, 2, 22, 6], 'generator', 5, 9, 'Strojovna lanovky'),
+    R('sta', [19, 8, 22, 12], 'station', 5, 0, 'Horní stanice', { wallY: 7.4 })
+  ],
+  doors: [[3, 10], [15, 7], [18, 4], [20, 7]],
+  start: [3, 14, -PI / 2],
+  exit: { cell: [22, 10], side: '+x', kind: 'cable', text: 'NASTOUPIT DO DRUHÉ KABINY' },
+  objectives: [
+    { id: 'stanice', text: 'Dostaň se k horní stanici lanovky' },
+    { id: 'paka', text: 'Přivolej druhou kabinu (páka ve strojovně)' },
+    { id: 'exit', text: 'Nastup s družstvem do kabiny' }
+  ],
+  squad: ZO_SQUAD({ k: [4, 13, -PI / 2], m: [2, 13, -PI / 2], w: [3, 16, -PI / 2], h: [2, 15, -PI / 2] }),
+  trig: [
+    { t: .8, say: ['zo_201'] },
+    { at: [15, 13], r: 1.4, say: ['zo_206'] },
+    { at: [20, 10], r: 1.5, obj: 'stanice', say: ['zo_202'], fn: 'cabinGo', cab: [22, 10], side: '+x', off: [0, -3.4] },
+    { after: 'stanice', delay: 8, say: ['zo_204'] },
+    { after: 'paka', say: ['zo_205'] }
+  ],
+  targets: [{ kind: 'lever', cell: [21, 3], ox: .6, oz: -.4, rot: 0, obj: 'paka', name: 'Druhá kabina je přivolaná' }],
+  enemies: [
+    ['vezen2', 6, 12, PI / 2], ['vezen', 9, 16, -PI / 2], ['vezen', 8, 13, PI],
+    ['vezen', 2, 5, PI / 2], ['vezen2', 5, 8, 0],
+    ['partyzan', 15, 10, PI], ['partyzan', 16, 12, PI, { hold: true }], ['partyzan2', 15, 9, 0],
+    ['partyzan2', 15, 4, PI / 2], ['vezen', 17, 6, 0],
+    ['partyzan2', 20, 3, PI / 2], ['partyzan', 22, 5, -PI / 2],
+    ['partyzan', 19, 9, 0], ['partyzan2', 21, 12, PI], ['partyzan', 22, 8, -PI / 2]
+  ],
+  pickups: [
+    ['h', 1, 11, -1, -1], ['a', 11, 17, 1, 1], ['s', 2, 9, -1, 1], ['h', 6, 4, 1, -1], ['r', 16, 17, 0, 1],
+    ['h', 14, 3, -1, -1], ['n', 17, 3, 1, -1], ['a', 19, 6, -1, 1], ['h', 22, 2, 1, -1], ['s', 19, 12, -1, 1]
+  ]
+});
+LEVELS.push(asciiLevel({
+  id: 'z3', ep: 1, dlc: 'zo', name: 'MISE 1.3 · SJEZD', sub: 'Lanovka do údolí', brief: ['Druhá kabina se rozjíždí. Orel je dole – a partyzáni čekají v lesích pod lany.',
+    'Drž se v kabině a střílej po nich. Dole u údolní stanice se rozvineme a najdeme jeho stopu.'],
+  outdoor: { fog: [.045, .06, .11], density: .02, ground: 0 },
+  map: [
+    '########################',
+    '########################',
+    '########mmm#############',
+    '########mmm######mmm####',
+    '###mmm##mmm######mmm####',
+    '###mmm###########mmm####',
+    '###mmm##################',
+    '##########mmmm##########',
+    '##########mmmm####mmm###',
+    '####mmm###mmmm####mmm###',
+    '####mmm###########mmm###',
+    '####mmm#################',
+    '###########mmm##########',
+    '#####mmm###mmm###mmmm###',
+    '#####mmm###mmm###mmmm###',
+    '#####mmm#########mmmm###',
+    '###############mmm######',
+    '######mmm######mmm######',
+    '######mmm###############',
+    '##fffffffffff###ffffff##',
+    '##fffffffffff###ffffff##',
+    'rrrrrrrrrrrrrrrrrrrrrrr#',
+    'rrrrrrrrrrrrrrrrrrrrrrr#',
+    '##ff##pppppppppp########',
+    '##ff##pppppppppp#SSS####',
+    '##ff##pppppppppp#SSS####',
+    '######pppppppppp+SSS####',
+    '######pppppppppp#SSS####',
+    '######pppppppppp########',
+    '######pppppppppp########',
+    '########################',
+    '########################'
+  ],
+  legend: {
+    m: { theme: 'meadow', name: 'Paseka pod lany' }, f: { theme: 'forest', name: 'Les' }, r: { theme: 'road', name: 'Údolní cesta' },
+    p: { theme: 'platform', name: 'Údolní stanice lanovky' }, S: { theme: 'stationhall', top: 3.6, name: 'Čekárna' }
+  },
+  buildings: [{ r: [16, 23, 20, 28], style: 'station' }],
+  start: [11, 27, 0],
+  ride: { len: 96, dur: 52, out: [9, 25], obj: 'sjezd' },
+  trails: [{ cell: [0, 21], side: '-x', w: 6, len: 50 }],
+  exit: { cell: [0, 22], side: '-x', kind: 'trail', text: 'PO ORLOVĚ STOPĚ DO LESA', signText: 'FORSTHAUS', signSub: '3 km' },
+  objectives: [
+    { id: 'sjezd', text: 'Sjeď lanovkou do údolí' },
+    { id: 'stopa', text: 'Najdi Orlovu stopu u údolní stanice', count: 1 },
+    { id: 'exit', text: 'Vydej se po stopě do lesa' }
+  ],
+  clues: ['Krev na zábradlí nástupiště a otisky bot k cestě. Orel je zraněný – a běží do lesa.'],
+  squad: ZO_SQUAD(),
+  trig: [
+    { t: 2, say: ['zo_301'] }, { t: 16, say: ['zo_302'] }, { t: 30, say: ['zo_307'] },
+    { after: 'sjezd', delay: .6, say: ['zo_303'] },
+    { after: 'sjezd', delay: 9, spawn: [['partyzan', 22, 21, -PI / 2], ['partyzan2', 22, 22, -PI / 2], ['partyzan', 21, 21, -PI / 2]], say: ['zo_305'] },
+    { after: 'stopa', delay: .5, say: ['zo_304'] }
+  ],
+  props: [
+    ['cableStation', 11, 28, 0, .5, 0], ['cabin', 11, 27, 0, 0, 0],
+    ['sign', 7, 23, 0, -1.4, 0, { text: 'TALSTATION', sub: 'Seilbahn Grimhold' }], ['lamppost', 6, 24, -1.4, 0, 0], ['lamppost', 15, 24, 1.4, 0, 0],
+    ['truck', 18, 21, 0, .5, 1], ['barrier', 5, 22, 0, 1.6, 1, { len: 6 }], ['logpile', 3, 19, 0, 0, 0], ['woodpile', 20, 20, 0, 0, 1],
+    ['hochsitz', 8, 13, 0, 0, 1], ['hay', 12, 7, 0, 0], ['logpile', 18, 14, 0, 0, 1]
+  ],
+  enemies: [
+    ['partyzan', 9, 3, PI, { hold: true }], ['partyzan', 18, 4, PI, { hold: true }], ['partyzan', 11, 8, PI, { hold: true }], ['partyzan2', 12, 8, PI, { hold: true }],
+    ['partyzan', 19, 9, -PI / 2, { hold: true }], ['partyzan', 5, 10, PI / 2, { hold: true }], ['partyzan', 12, 13, PI, { hold: true }], ['partyzan', 6, 14, PI / 2, { hold: true }],
+    ['partyzan', 18, 14, -PI / 2, { hold: true }], ['partyzan', 16, 17, PI, { hold: true }], ['partyzan', 7, 17, PI, { hold: true }],
+    ['partyzan2', 8, 22, PI], ['partyzan', 14, 21, PI], ['partyzan', 3, 20, -PI / 2], ['partyzan2', 18, 22, PI],
+    ['partyzan', 12, 24, PI], ['partyzan', 7, 28, PI / 2], ['partyzan2', 18, 25, -PI / 2], ['partyzan', 19, 27, -PI / 2]
+  ],
+  pickups: [
+    ['d:stopa', 6, 23, -1.2, -1], ['h', 15, 29, 1, 1], ['a', 6, 29, -1, 1], ['h', 17, 24, 0, 0], ['s', 19, 27, 1, 1], ['h', 2, 21, 0, 0], ['r', 13, 22, 0, 0]
+  ]
+}));
+LEVELS.push(asciiLevel({
+  id: 'z4', ep: 2, dlc: 'zo', name: 'MISE 2.1 · HÁJOVNA', sub: 'Partyzánský tábor v hvozdu',
+  brief: ['Stopa vede k hájovně na kopci. Tady se Orel sešel se spojkou odboje – a celé okolí je plné partyzánů.',
+    'Prohledej hájovnu. Musíme zjistit, kam má namířeno, a varovat posádku vysílačkou ze spojovací chaty.'],
+  outdoor: { fog: [.04, .055, .1], density: .024, ground: 0 },
+  map: [
+    '############################',
+    '##LLLLL#######fffffff#######',
+    '##LLLLL####ffffffffffff#####',
+    '#####+#####ffffmmmmffff#####',
+    '#uuuuuuuu##ffffmmmmffff#####',
+    '#uuuuuuuu##fffffffffffff####',
+    '#uuuuuuuuffffffffkkkkkfff###',
+    '##vv####ffffffffffkkkkkffff#',
+    '##vv####fffffffffkkkkkffff##',
+    '##ff####fffff###ffffffffff##',
+    '##ffffffffff#####fffffffff##',
+    '##ffffffffff#####ffffmmmmff#',
+    '###fffff#####GGG#fffmmmmmff#',
+    '###fffff#####GGG#fffmmmmmff#',
+    '###fffff#####+###fffffffff##',
+    '###ffffffffffffffffffff#####',
+    '####fffffffffffffffffff#####',
+    '####ffffffmmmmmffffffff#####',
+    '####ffffffmmmmmfffff########',
+    '####ffffffmmmmmfffff########',
+    '#####ffffffffffffff#########',
+    '######fffffffffff###########',
+    '########ffffff##############',
+    '############################'
+  ],
+  legend: {
+    f: { theme: 'forest', name: 'Hvozd' }, m: { theme: 'meadow', name: 'Paseka' }, k: { theme: 'camp', name: 'Partyzánský tábor', extra: { nofence: true } },
+    L: { theme: 'lodge', y: 2.5, top: 5.7, name: 'Hájovna' }, u: { theme: 'forest', y: 2.5, name: 'Kopec u hájovny', trees: .18 },
+    v: { theme: 'slope', st: ['-z', 0, 2.5], name: 'Lesní stezka' }, G: { theme: 'hut', top: 3.2, name: 'Spojovací chata', furn: 'radio' }
+  },
+  buildings: [{ r: [1, 0, 7, 3], style: 'lodge', y: 2.5 }, { r: [12, 11, 16, 14], style: 'hut' }],
+  start: [10, 21, 0],
+  exit: { cell: [17, 1], side: '-z', kind: 'trail', text: 'NA SEVER, K WOLFSGRUNDU', signText: 'WOLFSGRUND', signSub: '9 km' },
+  objectives: [
+    { id: 'hajovna', text: 'Dostaň se k hájovně na kopci' },
+    { id: 'zomapa', text: 'Prohledej hájovnu' },
+    { id: 'funk', text: 'Vysílačkou varuj Wolfsgrund (spojovací chata)' },
+    { id: 'exit', text: 'Vydej se na sever, k Wolfsgrundu' }
+  ],
+  squad: ZO_SQUAD({ k: [10, 20, 0], m: [8, 21, 0], w: [11, 21, 0], h: [9, 22, 0] }),
+  trig: [
+    { t: 1, say: ['zo_400'] },
+    { at: [5, 5], r: 1.6, obj: 'hajovna', say: ['zo_401'] },
+    { after: 'zomapa', delay: .4, say: ['zo_402'] },
+    { at: [14, 12], r: .9, after: 'zomapa', obj: 'funk', say: ['zo_403'] },
+    { after: 'funk', delay: 5, say: ['zo_404', 'zo_405'], spawn: [['komando', 21, 12, PI / 2], ['komando', 23, 13, PI / 2], ['velitel', 22, 11, PI / 2], ['komando', 20, 13, PI / 2], ['odstrelovac', 16, 3, PI]] }
+  ],
+  props: [
+    ['tent', 18, 6, 0, 0, 1], ['tent', 21, 8, 0, 0, 0], ['campfire', 19, 7, .5, 0], ['tent', 21, 6, .4, 0, 1], ['logpile', 17, 8, 0, 0, 0], ['crates', 20, 8, 0, 1, 0],
+    ['woodpile', 7, 4, 0, -1.3, 0], ['hochsitz', 21, 12, .6, -.6, 3], ['logpile', 11, 17, 0, 0, 1], ['hay', 13, 18, 0, 0],
+    ['sign', 9, 6, 0, 0, 3, { text: 'FORSTHAUS', sub: 'Privat' }]
+  ],
+  enemies: [
+    ['partyzan', 9, 19, PI], ['partyzan2', 12, 17, PI], ['partyzan', 6, 16, PI / 2],
+    ['partyzan', 4, 12, PI], ['partyzan', 10, 10, PI], ['partyzan2', 3, 9, PI],
+    ['partyzan', 4, 5, PI / 2], ['partyzan2', 7, 4, PI], ['partyzan', 3, 1, PI / 2], ['partyzan2', 6, 2, -PI / 2],
+    ['partyzan', 18, 7, PI / 2], ['partyzan2', 20, 6, PI], ['partyzan', 21, 8, -PI / 2], ['partyzan', 19, 8, 0, { patrol: [[17, 7], [22, 7]] }],
+    ['partyzan', 14, 13, PI / 2], ['partyzan2', 18, 13, PI],
+    ['partyzan', 15, 3, 0, { hold: true }], ['partyzan', 22, 15, -PI / 2]
+  ],
+  pickups: [
+    ['d:zomapa', 3, 1, -.6, -.8], ['h', 6, 1, 1, -1], ['a', 2, 2, -1, 1], ['h', 1, 5, -1, 0], ['s', 20, 7, 0, 1],
+    ['h', 15, 12, 1, -1], ['r', 13, 13, -1, 1], ['h', 5, 14, 0, 0], ['a', 22, 11, 1, 0], ['h', 12, 19, 0, 1], ['n', 18, 15, 0, 0]
+  ]
+}));
+LEVELS.push(asciiLevel({
+  id: 'z5', ep: 2, dlc: 'zo', name: 'MISE 2.2 · WOLFSGRUND', sub: 'Rampa pod horou',
+  brief: ['Wolfsgrund mlčí. Posádka na rampě je mrtvá – Angličané z padáků byli rychlejší.',
+    'Orel je uvnitř hory. Komando čeká venku, aby ho odvezlo. Znič jejich vysílačku, ať nemůžou přivolat letadlo.',
+    'Pak k únikové štole pod skálou. Až Orel vyleze, budeme tam.'],
+  outdoor: { fog: [.04, .052, .095], density: .022, ground: 0 },
+  map: [
+    '##############################',
+    '##############################',
+    '##############################',
+    '##############################',
+    '#fff#######kkkkkkkk######fff##',
+    '#ffff#kkkkkkkkkkkkkkkkk#fffff#',
+    '#fffffkkkkkkkkkkkkkkkkkkfffff#',
+    '######kkkkkkkkkkkkkkkkkkfffff#',
+    '#BBB#kkkkkkkkkkkkkkkkkkkkffff#',
+    '#BBB+kkkkkkkkkkkkkkkkkkkkffff#',
+    '#BBB#kkkkkkkkkkkkkkkkkkkkfff##',
+    '#####kkkkkkkkkkkkkkkkkkkkfff##',
+    '#ffffkkkkkkkkkkkkkkkkkkkfffff#',
+    '#ffff####kkkkkkkkkk####ffffff#',
+    '#fffff##############ffffffff##',
+    'PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP',
+    'PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP',
+    'RRRRRRRRRRRRRRRRRRRRRRRRRRRRRR',
+    'RRRRRRRRRRRRRRRRRRRRRRRRRRRRRR',
+    'RRRRRRRRRRRRRRRRRRRRRRRRRRRRRR',
+    '#fffffffffff#####ffffffffffff#',
+    '#ffffffffff#######fffffffffff#',
+    '##ffffffff##########fffffff###',
+    '##############################'
+  ],
+  legend: {
+    f: { theme: 'forest', name: 'Les pod skálou' }, k: { theme: 'camp', name: 'Předpolí Wolfsgrundu', extra: { nofence: true } },
+    P: { theme: 'platform', name: 'Vykládací rampa' }, R: { theme: 'rails', name: 'Kolejiště' }, B: { theme: 'bunker', top: 3.4, name: 'Strážní bunkr', furn: 'radio' }
+  },
+  buildings: [{ r: [0, 0, 29, 3], style: 'cliff', h: 16 }, { r: [0, 7, 4, 11], style: 'bunker' }, { r: [5, 13, 8, 14], style: 'wall' }, { r: [19, 13, 22, 13], style: 'wall' }],
+  trails: [{ cell: [0, 18], side: '-x', w: 8, len: 50 }, { cell: [29, 18], side: '+x', w: 8, len: 50 }],
+  start: [6, 21, 0],
+  exit: { cell: [15, 4], side: '-z', kind: 'door', text: 'ÚNIKOVÁ ŠTOLA' },
+  objectives: [
+    { id: 'rampa', text: 'Vyčisti rampu od Angličanů' },
+    { id: 'funk', text: 'Znič vysílačku komanda (bunkr na západě)' },
+    { id: 'stola', text: 'Dostaň se k únikové štole pod skálou' }
+  ],
+  radio: { cell: [2, 9], obj: 'funk', name: 'Vysílačka komanda zničena' },
+  squad: ZO_SQUAD({ k: [6, 20, 0], m: [4, 21, 0], w: [8, 21, 0], h: [5, 22, 0] }),
+  trig: [
+    { t: 1, say: ['zo_500', 'zo_501'] },
+    { clear: [0, 15, 29, 19], t: 4, obj: 'rampa', say: ['zo_506'] },
+    { after: 'funk', delay: .5, say: ['zo_502'] },
+    { after: ['rampa', 'funk'], delay: 1, say: ['zo_503'] },
+    { at: [15, 5], r: 1.6, after: ['rampa', 'funk'], obj: 'stola', fn: 'quake', say: ['zo_504'] },
+    { after: 'stola', delay: 6, fn: 'win' }
+  ],
+  props: [
+    ['rails', 0, 18, -42, 0, 0, { len: 216 }], ['rails', 0, 17, -42, -1, 0, { len: 216 }],
+    ['wagon', 8, 18, 0, 0, 0], ['wagon', 12, 18, .5, 0, 0, { kind: 'flat' }], ['wagon', 18, 18, 0, 0, 0, { open: true }],
+    ['flak', 10, 8, 0, 0, 0], ['sandbags', 16, 12, 0, 1, 0, 3], ['mg', 16, 12, 0, .4, 0], ['crates', 22, 6, 0, 0, 0], ['truck', 20, 9, 0, 0, 1],
+    ['tower', 7, 12, 0, 0, 2, { h: 4.6, sweep: 1.0, speed: .3 }], ['lamppost', 4, 16, 0, -1.4, 0], ['lamppost', 25, 16, 0, -1.4, 0],
+    ['sign', 15, 5, 1.6, .5, 0, { text: 'NOTAUSGANG', sub: 'Stollen III', bg: '#e8d23a' }], ['drums', 13, 6, 0, 0, 0, { n: 4 }], ['hedgehog', 23, 14, 0, 0, 0]
+  ],
+  enemies: [
+    ['soldat', 9, 15, PI / 2, { dead: true }], ['sturm', 14, 16, 0, { dead: true }], ['soldat', 21, 15, -PI / 2, { dead: true }], ['offizier', 11, 10, PI, { dead: true }],
+    ['komando', 7, 16, PI], ['komando', 13, 15, PI], ['komando', 18, 16, PI / 2], ['komando', 24, 15, -PI / 2], ['odstrelovac', 18, 18, PI, { yo: 1.4 }],
+    ['velitel', 15, 9, PI], ['komando', 10, 7, PI / 2], ['komando', 19, 6, -PI / 2], ['komando', 16, 12, PI],
+    ['komando', 6, 9, PI / 2], ['komando', 2, 8, PI / 2], ['odstrelovac', 7, 12, PI, { yo: 4.6 }],
+    ['komando', 14, 5, PI], ['komando', 17, 5, PI], ['odstrelovac', 25, 6, -PI / 2, { hold: true }]
+  ],
+  pickups: [
+    ['h', 2, 21, -1, 0], ['a', 11, 16, 0, -1], ['h', 22, 16, 0, -1], ['s', 3, 10, 1, 0], ['h', 1, 9, -1, 0], ['n', 13, 11, 0, 0], ['h', 24, 8, 0, 0], ['a', 20, 6, 0, 0], ['v', 5, 15, 0, 0]
+  ]
+}));
+LEVELS.push(asciiLevel({
+  id: 'z6', ep: 2, dlc: 'zo', name: 'MISE 2.3 · POD HOŘÍCÍ HOROU', sub: 'Les u únikové štoly',
+  brief: ['Hora vybuchla. Les hoří, ze skály padají kameny a rádio mlčí.', 'Krüger to schytal. Ostatní jsou rozprášení.',
+    'Zbytek anglického komanda drží východ ze štoly a čeká na Orla. Teď jsi na to sám.'],
+  outdoor: { fog: [.09, .05, .035], density: .026, ground: 0 },
+  map: [
+    '##########################',
+    '##########################',
+    '##########################',
+    '###fff####mmmmmm####fff###',
+    '##ffffff#mmmmmmmmm#ffffff#',
+    '##ffffffmmmmmmmmmmmffffff#',
+    '##fffff#mmmmmmmmmmm#fffff#',
+    '###fff##mmmmmmmmmmm##fff##',
+    '###ffff##mmmmmmmmm##ffff##',
+    '###fffff###mmmmm###fffff##',
+    '####fffff##mmmmm##ffffff##',
+    '####ffffffffmmmffffffff###',
+    '#####fffffffmmmfffffff####',
+    '####ffff#ffffffffff#ffff##',
+    '###ffff###ffffffff###ffff#',
+    '###fff#####ffffff#####fff#',
+    '###ffff####ffffff####ffff#',
+    '####ffffffffffffffffffff##',
+    '#####fffffffffffffffffff##',
+    '######ffffffmmmmffffff####',
+    '#######fffffmmmmfffff#####',
+    '########ffffmmmmffff######',
+    '##########ffffffff########',
+    '##########################'
+  ],
+  legend: { f: { theme: 'forest', name: 'Hořící les' }, m: { theme: 'meadow', name: 'Paseka pod štolou' } },
+  buildings: [{ r: [0, 0, 25, 2], style: 'cliff', h: 18 }],
+  start: [13, 20, 0],
+  exit: { cell: [13, 3], side: '-z', kind: 'door', text: 'POČKAT NA ORLA U ŠTOLY' },
+  objectives: [
+    { id: 'stola', text: 'Probij se k východu ze štoly' },
+    { id: 'exit', text: 'Počkej na Orla u štoly' }
+  ],
+  squad: [['zo_kruger', 13, 21, PI, { name: 'Feldwebel Krüger', wounded: true, ox: 1.2 }]],
+  trig: [
+    { t: .8, say: ['zo_601', 'zo_602'] },
+    { at: [13, 10], r: 1.8, say: ['zo_604'] },
+    { clear: [0, 0, 25, 9], at: [13, 7], r: 2.5, obj: 'stola', say: ['zo_603'] }
+  ],
+  props: [
+    ['campfire', 6, 17, 0, 0], ['campfire', 19, 13, 0, 0], ['campfire', 10, 12, .5, 0], ['campfire', 17, 5, 0, 0], ['campfire', 4, 5, 0, 0], ['campfire', 22, 8, 0, 0],
+    ['truck', 8, 6, 0, 0, 1], ['crates', 17, 7, 0, 0, 0], ['sandbags', 13, 6, 0, .8, 0, 3], ['logpile', 16, 19, 0, 0, 0], ['sign', 13, 3, 1.6, .5, 0, { text: 'NOTAUSGANG', sub: 'Stollen III', bg: '#e8d23a' }]
+  ],
+  enemies: [
+    ['komando', 12, 17, PI], ['komando', 7, 14, PI / 2], ['komando', 19, 15, -PI / 2],
+    ['komando', 5, 10, PI / 2], ['komando', 20, 10, -PI / 2], ['odstrelovac', 13, 9, PI, { hold: true }],
+    ['komando', 9, 7, PI], ['komando', 17, 7, PI], ['velitel', 13, 5, PI], ['komando', 11, 4, PI], ['komando', 15, 4, PI], ['odstrelovac', 21, 5, -PI / 2, { hold: true }], ['odstrelovac', 4, 5, PI / 2, { hold: true }]
+  ],
+  pickups: [
+    ['h', 11, 20, -1, 0], ['a', 15, 20, 1, 0], ['h', 4, 14, 0, 0], ['s', 21, 14, 0, 0], ['H', 13, 11, 0, 0], ['a', 6, 8, 0, 0], ['h', 20, 7, 0, 0], ['n', 13, 13, 0, 0]
+  ]
+}));
 EPISODES.push(
-  { dlc: 'zo', title: 'VE STOPÁCH ORLA', sub: 'Údolí, spálený tábor a nádraží', levels: [DLC_START, DLC_START + 1, DLC_START + 2], outro: 'Zvláštní vlak mizí v noci. Brandt jede s ním – v posledním voze.' },
-  { dlc: 'zo', title: 'ZAJETÍ ORLA', sub: 'Wolfsgrund – až do srdce hory', levels: [DLC_START + 3, DLC_START + 4, DLC_START + 5], outro: '' }
+  { dlc: 'zo', title: 'POPLACH NA GRIMHOLDU', sub: 'Hrad, hradby a lanovka do údolí', levels: [DLC_START, DLC_START + 1, DLC_START + 2], outro: 'Kabina dosedla. Orel má náskok – ale krvácí. Daleko neuteče.' },
+  { dlc: 'zo', title: 'ZAJETÍ ORLA', sub: 'Hájovna, Wolfsgrund a hořící hora', levels: [DLC_START + 3, DLC_START + 4, DLC_START + 5], outro: '' }
 );
 const campOf = i => (LEVELS[i] && LEVELS[i].dlc) || '';
 const campLevels = c => LEVELS.map((L, i) => i).filter(i => campOf(i) === c);
@@ -4588,7 +4946,7 @@ pilotSprite.visible = false; pilotSprite.scale.set(.02, .04, 1); vmScene.add(pil
    ===================================================================== */
 const goldMat = new THREE.MeshLambertMaterial({ color: new THREE.Color(1, .78, .3), emissive: new THREE.Color(.18, .12, 0) });
 const chaliceG = new THREE.LatheGeometry([[0, 0], [.13, 0], [.13, .02], [.05, .045], [.03, .1], [.055, .13], [.028, .16], [.035, .2], [.11, .25], [.14, .36], [.13, .365], [.1, .27], [0, .24]].map(([x, y]) => new THREE.Vector2(x, y)), 10);
-const DOC_NAMES = { plans: 'Plány operace Finsternis jsou tvoje', diary: 'Deník dr. Zemana', mapa: 'Mapa spojky – cesta k trati', jizdni: 'Jízdní řád transportů do Wolfsgrundu', list: 'Nákladní list zvláštního vlaku', propustka: 'Propustka do podzemí', vzorky: 'Zemanovy vzorky séra' };
+const DOC_NAMES = { plans: 'Plány operace Finsternis jsou tvoje', diary: 'Deník dr. Zemana', mapa: 'Mapa spojky – cesta k trati', jizdni: 'Jízdní řád transportů do Wolfsgrundu', list: 'Nákladní list zvláštního vlaku', propustka: 'Propustka do podzemí', vzorky: 'Zemanovy vzorky séra', zomapa: 'Orlova mapa: Wolfsgrund je zakroužkovaný červeně' };
 const PICK_NAMES = { q: 'Náboje .45 ACP', h: 'Lékárnička +25', H: 'Velká lékárnička +50', f: 'Jídlo +10', v: 'Neprůstřelná vesta', a: 'Bedna munice', p: 'Náboje do revolveru', s: 'Zásobníky 9 mm', r: 'Náboje .303', n: 'Stielhandgranate ×2', u: 'Palivo do plamenometu' };
 function makePickupMesh(kind) {
   const g = new THREE.Group(), mats = [];
@@ -4638,15 +4996,22 @@ const ETYPES = {
   untoter: { name: 'Untoter', hp: 85, run: 4.6, walk: 1.0, uni: 'undead', head: 'rusthelm', melee: true, dmg: [11, 17], score: 150, h: 1.76, slow: true },
   doktor: { name: 'Dr. Zeman', hp: 150, run: 4.4, walk: 1.4, uni: 'labcoat', head: 'bare', gun: 'revolver', burst: [2, 3], rof: .32, dmg: [7, 11], acc: 1, range: 20, aim: [.3, .45], alarm: true, drop: 'H', score: 2500, h: 1.78, zeman: true },
   civil: { name: 'Spojka', hp: 20, run: 3.5, walk: 1.3, uni: 'civil', head: 'flatcap', score: 0, h: 1.78 },
-  // the expansion's enemies: partisans and an SOE team covering the Eagle (they never bark in German)
-  partyzan: { name: 'Partyzán', hp: 60, run: 4.0, walk: 1.5, uni: 'agent', head: 'watchcap', gun: 'rifle', burst: [1, 2], rof: .9, dmg: [8, 13], acc: 1, range: 26, aim: [.45, .75], drop: 'r', score: 100, h: 1.8, ally: true },
-  komando: { name: 'Komando SOE', hp: 80, run: 4.4, walk: 1.6, uni: 'agent', head: 'brodie', gun: 'sten', burst: [3, 6], rof: .1, dmg: [5, 8], acc: .95, range: 22, aim: [.3, .5], strafe: true, drop: 's', score: 200, h: 1.82, ally: true },
-  velitel: { name: 'Velitel odboje', hp: 90, run: 4.4, walk: 1.6, uni: 'agent', head: 'watchcap', gun: 'revolver', burst: [2, 3], rof: .32, dmg: [8, 12], acc: 1.1, range: 22, aim: [.25, .4], drop: 'p', score: 250, h: 1.84, ally: true },
-  odstrelovac: { name: 'Odstřelovač SOE', hp: 55, run: 3.0, walk: 1.2, uni: 'agent', head: 'watchcap', gun: 'rifle', scope: true, burst: [1, 1], rof: 2.4, dmg: [22, 32], acc: 1.6, range: 70, aim: [1.0, 1.4], stationary: true, drop: 'r', score: 200, h: 1.78, ally: true },
+  // the expansion: escaped prisoners and partisans (they shout in Czech), later the SOE team sent for the Eagle (silent)
+  vezen: { name: 'Uprchlý vězeň', hp: 55, run: 4.2, walk: 1.5, uni: 'civil', head: 'flatcap', gun: 'revolver', burst: [2, 3], rof: .36, dmg: [7, 11], acc: .9, range: 20, aim: [.35, .55], drop: 'p', score: 100, h: 1.78, cz: true },
+  vezen2: { name: 'Uprchlý vězeň', hp: 55, run: 4.0, walk: 1.5, uni: 'civil', head: 'flatcap', gun: 'rifle', burst: [1, 1], rof: 1.0, dmg: [9, 14], acc: .95, range: 26, aim: [.45, .7], drop: 'r', score: 100, h: 1.78, cz: true },
+  partyzan: { name: 'Partyzán', hp: 65, run: 4.0, walk: 1.5, uni: 'civil', head: 'watchcap', gun: 'rifle', burst: [1, 2], rof: .9, dmg: [8, 13], acc: 1, range: 28, aim: [.45, .75], drop: 'r', score: 120, h: 1.8, cz: true },
+  partyzan2: { name: 'Partyzán', hp: 70, run: 4.2, walk: 1.5, uni: 'civil', head: 'watchcap', gun: 'sten', burst: [3, 6], rof: .11, dmg: [5, 8], acc: .85, range: 20, aim: [.35, .6], drop: 's', score: 150, h: 1.8, cz: true },
+  komando: { name: 'Komando SOE', hp: 85, run: 4.4, walk: 1.6, uni: 'agent', head: 'brodie', gun: 'sten', burst: [3, 6], rof: .1, dmg: [5, 8], acc: .95, range: 22, aim: [.3, .5], strafe: true, drop: 's', score: 200, h: 1.82, nobark: true },
+  velitel: { name: 'Kapitán SOE', hp: 100, run: 4.4, walk: 1.6, uni: 'agent', head: 'brodie', gun: 'revolver', burst: [2, 3], rof: .32, dmg: [8, 12], acc: 1.1, range: 22, aim: [.25, .4], drop: 'p', score: 300, h: 1.84, nobark: true },
+  odstrelovac: { name: 'Odstřelovač SOE', hp: 55, run: 3.0, walk: 1.2, uni: 'agent', head: 'watchcap', gun: 'rifle', scope: true, burst: [1, 1], rof: 2.4, dmg: [22, 32], acc: 1.6, range: 70, aim: [1.0, 1.4], stationary: true, drop: 'r', score: 250, h: 1.78, nobark: true },
   tommy: { name: 'Tommy', hp: 100, run: 4, walk: 1.5, uni: 'agent', head: 'brodie', gun: 'rifle', score: 0, h: 1.8, actor: true },
   bj: { name: 'B. J.', hp: 100, run: 4.2, walk: 1.5, uni: 'agent', head: 'watchcap', gun: 'revolver', score: 0, h: 1.86 },
   uber: { name: 'Übersoldat', model: 'xbot', scale: 1.4, hp: 1100, run: 3.1, walk: 1.7, uni: 'metal', gun: 'flamer', flamer: true, burst: [14, 22], rof: .07, dmg: [3, 5], acc: .9, range: 11, aim: [.3, .5], boss: true, score: 3000, h: 2.5 }
 };
+// your squad: Feldwebel Krüger and three riflemen of the Grimhold garrison
+ETYPES.zo_kruger = { ...ETYPES.sturm, name: 'Feldwebel Krüger', acc: 1.1 };
+ETYPES.zo_mann = { ...ETYPES.soldat, name: 'Schütze' };
+ETYPES.zo_mann2 = { ...ETYPES.sturm, name: 'Schütze' };
 ETYPES.uber2 = { ...ETYPES.uber, name: 'Übersoldat Mk II', hp: 1700, run: 3.5, burst: [18, 26], dmg: [4, 6], range: 12, score: 5000 };
 const UNIFORMS = {
   labcoat: { main: [196, 192, 182], sec: [62, 64, 60], dark: [24, 22, 20], metal: [140, 130, 110] },
@@ -4876,6 +5241,7 @@ function makeEnemy(type, cx, cz, yaw, opts = {}) {
   e.mark.scale.set(.32, .4, 1); e.mark.position.y = T.h + .45; e.mark.renderOrder = 5; root.add(e.mark);
   if (opts.torch) addFlashlight(e);
   if (opts.dead) { e.corpse = true; e.fallSide = .2; }
+  e.hold = !!opts.hold;
   enemies.push(e); resetEnemy(e); return e;
 }
 function resetEnemy(e) {
@@ -5295,9 +5661,15 @@ function enemyShoot(e, dist) {
   e.flashSprite.position.copy(m); e.flashSprite.visible = true; e.flashSprite.material.rotation = Math.random() * 6; e.flashT = .06;
   DL.pos[1].copy(m); DL.col[1].setRGB(1.4, 1, .5); DL.rad[1] = 8;
   sfx.play(T.scope ? 'snipershot' : T.gun === 'sten' ? 'smg' : 'enemyshot', e.root.position);
+  if (e.atAlly && e.foeAlly && e.foeAlly.state !== 'down') { // at one of your men
+    const a = e.foeAlly, d = Math.hypot(a.x - e.x, a.z - e.z), dir = V(a.x, a.y + 1.2, a.z).sub(m).normalize();
+    if (Math.random() < clamp(.55 - d * .014, .1, .6) * T.acc) { hurtAlly(a, rand(T.dmg[0], T.dmg[1]) * .55); fxImpact(V(a.x, a.y + 1.2, a.z), dir.clone().negate(), 'flesh'); }
+    else { const h = rayWorld(m, dir.add(V(rand(-.08, .08), rand(-.05, .08), rand(-.08, .08))).normalize(), 60); if (h.kind !== 'none') fxImpact(h.point, h.n, 'stone'); }
+    return;
+  }
   const pspeed = Math.hypot(player.vel.x, player.vel.z);
   let p = clamp((.8 - dist * (T.scope ? .006 : .022) - pspeed * .035) * T.acc * DIFF.acc, .08, T.scope ? .8 : .88);
-  if (player.crouch > .5) p *= .75; if (Math.abs(player.lean) > .5) p *= .8;
+  if (player.crouch > .5) p *= .75; if (Math.abs(player.lean) > .5) p *= .8; if (RIDE.on) p *= .5;   // the cabin walls cover you
   // cover: is anything between the muzzle and the player's chest?
   const tgt = V(player.pos.x, player.pos.y + eyeH() - .35, player.pos.z), dir = tgt.clone().sub(m), dl = dir.length(); dir.divideScalar(dl);
   const cov = rayWorld(m, dir, dl - .3);
@@ -5443,6 +5815,7 @@ function updateEnemy(e, dt, frameNo) {
   if (e.visionT <= 0) {
     e.visionT = .2;
     e.los = !player.dead && dist < (T.scope ? 75 : 50) * DIFF.view && losClear(e.x, eyeY, e.z, player.pos.x, player.pos.y + eyeH(), player.pos.z);
+    if (SQ.on) enemyFoe(e, dist, eyeY);
     if (calm(e)) {
       const sy = Math.sin(e.yaw), cy = Math.cos(e.yaw);
       if (e.los) {
@@ -5532,8 +5905,8 @@ function updateEnemy(e, dt, frameNo) {
         e.growlT -= dt; if (e.growlT <= 0) { e.growlT = rand(3, 7); sfx.play('growl', e.root.position, .8); }
         break;
       }
-      if (!player.dead && e.los && dist < T.range && e.cooldown <= 0) { e.state = 'aim'; e.aimT = rand(T.aim[0], T.aim[1]) * DIFF.react; if (e.glint && T.scope) e.glint.visible = true; break; }
-      if (T.stationary) { face = e.lastSeen ? { x: e.lastSeen.x - e.x, z: e.lastSeen.z - e.z } : null; break; }
+      if (((!player.dead && e.los && dist < T.range) || e.atAlly) && e.cooldown <= 0) { e.state = 'aim'; e.aimT = rand(T.aim[0], T.aim[1]) * DIFF.react; if (e.glint && T.scope) e.glint.visible = true; break; }
+      if (T.stationary || e.hold) { face = e.lastSeen ? { x: e.lastSeen.x - e.x, z: e.lastSeen.z - e.z } : null; break; }
       let tx, tz;
       if (player.dead) { }
       else if (e.los && dist < (T.boss ? 5 : 7.5)) {
@@ -5556,20 +5929,20 @@ function updateEnemy(e, dt, frameNo) {
       face = { x: dx, z: dz }; e.meleeT -= dt;
       if (e.meleeT <= 0) { if (dist < 2 && Math.abs(dy) < 1.3 && !player.dead) { damagePlayer(rand(T.dmg[0], T.dmg[1])); sfx.play('stab', e.root.position); } e.state = 'chase'; e.cooldown = .6 * DIFF.rest; }
       break;
-    case 'aim': face = { x: dx, z: dz }; e.aimT -= dt; if (!e.los && !T.scope) { e.state = 'chase'; break; } if (e.aimT <= 0) { e.state = 'fire'; e.burst = Math.round(rand(T.burst[0], T.burst[1])); e.burstT = 0; } break;
+    case 'aim': face = e.atAlly ? { x: e.foeAlly.x - e.x, z: e.foeAlly.z - e.z } : { x: dx, z: dz }; e.aimT -= dt; if (!e.los && !e.atAlly && !T.scope) { e.state = 'chase'; break; } if (e.aimT <= 0) { e.state = 'fire'; e.burst = Math.round(rand(T.burst[0], T.burst[1])); e.burstT = 0; } break;
     case 'fire':
-      face = { x: dx, z: dz }; e.burstT -= dt;
+      face = e.atAlly && e.foeAlly ? { x: e.foeAlly.x - e.x, z: e.foeAlly.z - e.z } : { x: dx, z: dz }; e.burstT -= dt;
       if (T.flamer) {
         if (e.burst > 0 && e.los && dist < T.range + 2 && !player.dead) { enemyFlame(e, dist, dt); if (e.burstT <= 0) { e.burst--; e.burstT = T.rof; } if (Math.random() < dt * 2) sfx.play('ignite', e.root.position, .7); }
         else { e.state = 'chase'; e.cooldown = (.8 + Math.random()) * DIFF.rest; }
         if (dist > 4) goTo(player.pos.x, player.pos.z, walk);
         break;
       }
-      if (e.burstT <= 0) { if (e.burst > 0 && e.los && !player.dead) { enemyShoot(e, Math.hypot(dist, dy)); e.burst--; e.burstT = T.rof; } else { e.state = 'chase'; e.cooldown = ((T.scope ? T.rof : T.alarm ? .6 : 1) + Math.random() * 1.3) * DIFF.rest; if (e.glint && T.scope) e.glint.visible = false; } }
+      if (e.burstT <= 0) { if (e.burst > 0 && (e.atAlly || (e.los && !player.dead))) { enemyShoot(e, Math.hypot(dist, dy)); e.burst--; e.burstT = T.rof; } else { e.state = 'chase'; e.cooldown = ((T.scope ? T.rof : T.alarm ? .6 : 1) + Math.random() * 1.3) * DIFF.rest; if (e.glint && T.scope) e.glint.visible = false; } }
       break;
   }
   if (e.painT > 0) { mx *= .15; mz *= .15; }
-  if (T.stationary) { mx = mz = 0; }
+  if (T.stationary || e.hold) { mx = mz = 0; }
   const ox = e.x, oz = e.z;
   e.x += mx * speed * dt; e.z += mz * speed * dt; collide(e, e.r, e.y, e.h, .62);
   if (speed > 0 && Math.hypot(e.x - ox, e.z - oz) < speed * dt * .2) { e.stuckT += dt; if (e.stuckT > .8) { e.stuckT = 0; e.x += (Math.random() - .5) * .6; e.z += (Math.random() - .5) * .6; collide(e, e.r, e.y, e.h, .62); } } else e.stuckT = 0;
@@ -5751,6 +6124,7 @@ function updatePlayer(dt) {
   const tx = l ? ix / l * spd : 0, tz = l ? iz / l * spd : 0, acc = player.onGround ? 12 : 2.2, k = 1 - Math.exp(-acc * dt);
   player.vel.x += (tx - player.vel.x) * k; player.vel.z += (tz - player.vel.z) * k;
   const P = player.pos, ph = lerp(P_HEIGHT, 1.15, player.crouch);
+  if (RIDE.on) rideTick(dt); else {
   P.x += player.vel.x * dt; P.z += player.vel.z * dt; if (!DEV.noclip) collide(P, .4, P.y, ph);
   for (const e of enemies) if (e.state !== 'dead') { const ddx = P.x - e.x, ddz = P.z - e.z, d = Math.hypot(ddx, ddz), rr = e.r + .44; if (d < rr && d > 1e-4 && Math.abs(e.y - P.y) < 1.5) { P.x += ddx / d * (rr - d) * .5; P.z += ddz / d * (rr - d) * .5; } }
   // vertical: gravity, stairs, standing on props, falling off galleries
@@ -5766,6 +6140,7 @@ function updatePlayer(dt) {
       if (v > 11) { damagePlayer(Math.pow(v - 10, 1.6) * 2.2 / DIFF.dmg); player.shake = .5; }
     }
   } else if (!DEV.noclip) { P.y = gnd; player.vy = 0; }
+  }
   player.viewY = P.y > player.viewY ? lerp(player.viewY, P.y, 1 - Math.exp(-16 * dt)) : P.y;
   const hs = Math.hypot(player.vel.x, player.vel.z); if (player.onGround) player.bobT += dt * hs * 1.15;
   const sp = Math.floor(player.bobT / Math.PI); if (sp !== stepPhase) { stepPhase = sp; if (hs > 2 && player.crouch < .5) { sfx.play('step'); makeNoise(P.x, P.y, P.z, hs > 7 ? 13 : 5); } }
@@ -5794,6 +6169,7 @@ function updatePlayer(dt) {
   let pr = '';
   const ex = exits.find(ex => Math.hypot(P.x - ex.pos.x, P.z - ex.pos.z) < 2.6 && Math.abs(P.y - ex.pos.y) < 2);
   if (ex) pr = objectivesDone() ? `[F]  ${ex.text}` : 'NEJDŘÍV SPLŇ ÚKOLY MISE  (TAB)';
+  else if (nearRecruit()) { const a = nearRecruit(); pr = leaderWaits(a) ? 'NEJDŘÍV SEŽEŇ SVÉ MUŽE  (TAB)' : a.leader ? `[F]  HLÁSIT SE: ${a.name.toUpperCase()}` : `[F]  PŘIDAT DO DRUŽSTVA: ${a.name.toUpperCase()}`; }
   else if (nearCharge()) pr = { lever: '[F]  PŘESTAVIT VÝHYBKU', regulator: '[F]  PŘEVZÍT ŘÍZENÍ LOKOMOTIVY' }[nearCharge().kind] || '[F]  POLOŽIT NÁLOŽ';
   else { const d = lookDoor(); if (d && doorLocked(d) && d.target === 0) pr = player.keys.has(d.lock) ? '[F]  ODEMKNOUT' : `ZAMČENO — POTŘEBUJEŠ: ${d.lockName.toUpperCase()}`; }
   setPrompt(pr);
@@ -5807,6 +6183,7 @@ function lookDoor() {
 function useAction() {
   const ex = exits.find(ex => Math.hypot(player.pos.x - ex.pos.x, player.pos.z - ex.pos.z) < 2.6 && Math.abs(player.pos.y - ex.pos.y) < 2);
   if (ex) { if (objectivesDone()) { completeObjective('exit'); win(); } else { sfx.play('locked'); game.objT = 4; } return; }
+  const rc = nearRecruit(); if (rc) { recruitAlly(rc); return; }
   const ch = nearCharge(); if (ch) { if (ch.kind === 'lever') pullLever(ch); else if (ch.kind === 'regulator') takeTrain(ch); else plantCharge(ch); return; }
   const best = lookDoor(); if (!best) return;
   if (doorLocked(best)) { if (player.keys.has(best.lock)) { best.unlocked = true; log('Odemčeno'); sfx.play('switch'); flowCell = -1; MM.dirty = true; } else { sfx.play('locked'); log(`Zamčeno — potřebuješ: ${best.lockName}`); return; } }
@@ -5820,8 +6197,8 @@ function useAction() {
 const VOX_SUB = {bj_01: ['bj', "Tady Orel. Jsem na místě. Hrad Grimhold je hned za hřebenem."], lon_01: ['lon', "Rozumím, Orle. Buďte opatrný. Hory jsou plné hlídek."], off_01: ['offA', "Ruce vzhůru! Ani hnout!"], off_02: ['off', "Americký špion. Úplně sám v našich horách."], bj_02: ['bj', "Jen jsem si tu sbíral houby."], off_03: ['offM', "Doktor bude mít radost. Odveďte ho na Grimhold!"], grd_01: ['grd', "Vstávej, Amíku! Doktor tě chce vidět."], bj_03: ['bj', "Doktor si bude muset počkat."], bj_04: ['bj', "Revolver a klíče. A teď ven z téhle díry."], bj_05: ['bj', "Londýne, tady Orel. Jsem venku z Grimholdu. Mám plány i Zemanův deník."], lon_02: ['lon', "Výborně, Orle. A co je v tom deníku?"], bj_06: ['bj', "Wolfsgrund. Podzemní továrna, kam vede jen železnice. Tam stavějí Finsternis."], lon_03: ['lon', "Pak tam musíte vy. Spojka odboje na vás čeká v hájovně nad údolím. Hodně štěstí."], bj_07: ['bj', "Štěstí si nechte, plukovníku. Mně stačí náboje."], zem_01: ['zem', "Übersoldat Mk II je připraven, Standartenführere. Stačí ho jen probudit."], off_04: ['off', "A rakety, pane doktore?"], zem_02: ['zem', "Za tři dny poletí první na Londýn."], bj_08: ['bj', "Za tři dny. To mám času dost."], lon_04: ['lon', "Orle, tady Londýn. Slyšíte nás? Seismografy ve Švýcarsku právě zaznamenaly zemětřesení."], bj_09: ['bj', "To nebylo zemětřesení, Londýne. To byl Wolfsgrund. Operace Finsternis skončila."], lon_05: ['lon', "Skvělá práce, Orle. Je čas vrátit se domů."], bj_10: ['bj', "Domů. To zní dobře."], zem_03: ['zem', "Stráže! Zastavte ho!"], bj_obj1: ['bj', "Mám to."], bj_obj2: ['bj', "Další odškrtnuto."], bj_obj3: ['bj', "Tohle se bude v Londýně hodit."]};
 // subtitles that come with a regenerated voices.js (tools/make_voices_neural.py)
 Object.assign(VOX_SUB, window.CASTLE_VOX_SUB || {});
-const SPEAKER = { bj: 'B. J.', lon: 'Londýn (vysílačka)', off: 'Důstojník SS', offA: 'Důstojník SS', offM: 'Důstojník SS', grd: 'Strážný', zem: 'Dr. Zeman' };
-const BARK_N = { sus: 4, alert: 4, body: 2, lost: 3 };
+const SPEAKER = { brn: 'Brandt', krg: 'Feldwebel Krüger', krgA: 'Feldwebel Krüger', lsp: 'Hlášení z amplionu', kes: 'Kessler', mul: 'Schütze Müller', web: 'Schütze Weber', hof: 'Schütze Hoffmann', bj: 'B. J.', lon: 'Londýn (vysílačka)', off: 'Důstojník SS', offA: 'Důstojník SS', offM: 'Důstojník SS', grd: 'Strážný', zem: 'Dr. Zeman' };
+const BARK_N = { sus: 4, alert: 4, body: 2, lost: 3 }, CZ_BARK_N = { sus: 3, alert: 4, body: 2, lost: 2 };
 const vox = {
   bufs: {}, cur: [], lastBark: 0,
   async get(id) {
@@ -5845,9 +6222,9 @@ const vox = {
 };
 // guards talk: a suspicious mutter, a shout on alert, horror at a body, a shrug when they give up — each man keeps his voice
 sfx.bark = (e, kind) => {
-  if (!e || !e.root || !sfx.ctx || e.T.ally || e.T.melee || e.T.boss || e.T.zeman || e.actor) return;
-  const n = BARK_N[kind]; if (!n || time - vox.lastBark < .9 || time - (e.barkT || -9) < 4) return;
-  const v = 'ABC'[e.voiceI ?? (e.voiceI = (Math.random() * 3) | 0)], id = `bark_${kind}_${v}${(Math.random() * n) | 0}`;
+  if (!e || !e.root || !sfx.ctx || e.ally || e.T.nobark || e.T.melee || e.T.boss || e.T.zeman || e.actor) return;
+  const n = e.T.cz ? CZ_BARK_N[kind] : BARK_N[kind]; if (!n || time - vox.lastBark < .9 || time - (e.barkT || -9) < 4) return;
+  const v = 'ABC'[e.voiceI ?? (e.voiceI = (Math.random() * 3) | 0)], id = e.T.cz ? `czb_${kind}_${'PQ'[e.voiceI % 2]}${(Math.random() * n) | 0}` : `bark_${kind}_${v}${(Math.random() * n) | 0}`;
   if (Math.hypot(e.x - player.pos.x, e.z - player.pos.z) > 32) return;
   vox.lastBark = time; e.barkT = time;
   vox.get(id).then(b => { if (b) vox.play(id, V(e.x, e.y + 1.6, e.z), kind === 'alert' || kind === 'body' ? 1.3 : .9); });
@@ -6168,6 +6545,215 @@ function csBoom(p, s = 1) {
   sfx.play('explode', null, .9 + .4 * s);
 }
 // which scenes open which mission
+/* ---------- EXPANSION SYSTEMS · your squad, scripted moments, voiced orders, the cable-car ride ----------
+   Squad mates are ordinary soldier models kept out of `enemies`: the player's bullets pass through them, they follow
+   in a loose wedge behind you, pick their own targets and shoot back; the enemy can shoot them too. A downed comrade
+   gets back on his feet after a while (the story needs every one of them until the last mission). */
+const SQ = { on: false, list: [] };
+const angD = (a, b) => ((b - a + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI;
+TX.markAlly = markTex('V', '#8be070');
+const SAY = { q: [], t: 0, hide: 0 };
+const RIDE = { on: false, t: 0 };
+function squadInit() {
+  SQ.list = []; SQ.on = !!(LV.squad && LV.squad.length); SAY.q = []; SAY.t = 0; LV.zt = 0;
+  for (const [t, cx, cz, yaw, o = {}] of LV.squad || []) {
+    const e = makeEnemy(t, cx, cz, yaw, o); enemies.splice(enemies.indexOf(e), 1);
+    Object.assign(e, { ally: true, name: o.name || e.T.name, leader: !!o.leader, joined: !o.recruit, hold: !!o.hold, joinLine: o.join, voiceI: SQ.list.length % 3, target: null, scanT: Math.random() * .3, downT: 0, id4: 0, slot: 0 });
+    e.maxHp = e.hp = o.hp || 170; e.cooldown = 1; tintMats(e.mats, e.x, e.z);
+    if (o.wounded) { e.state = 'down'; e.downT = 1e9; }
+    SQ.list.push(e);
+  }
+  SQ.list.filter(a => a.joined).forEach((a, k) => a.slot = k);
+}
+const squadUp = () => SQ.list.filter(a => a.state !== 'down');
+function nearRecruit() {
+  if (!SQ.on) return null;
+  for (const a of SQ.list) if (!a.joined && a.state !== 'down' && Math.hypot(a.x - player.pos.x, a.z - player.pos.z) < 2.8 && Math.abs(a.y - player.pos.y) < 1.6) return a;
+  return null;
+}
+const leaderWaits = a => a.leader && SQ.list.some(o => !o.leader && !o.joined);
+function recruitAlly(a) {
+  if (leaderWaits(a)) { zoSay(LV.leaderWait); game.objT = 4; return; }
+  a.joined = true; a.slot = SQ.list.filter(o => o.joined).length - 1; sfx.play('pickup', null, .6);
+  zoSay(a.joinLine); log(`<span style="color:#9fd08a">${a.name}</span> ${a.leader ? 'vede družstvo' : 'se přidal k družstvu'}`);
+  if (a.leader) { if (LV.leaderObj) completeObjective(LV.leaderObj); return; }
+  const o = LV.objectives.find(o => o.id === 'druzstvo'); if (o) { o.n = (o.n || 0) + 1; if (o.n >= o.count) completeObjective('druzstvo'); }
+}
+function hurtAlly(a, n) {
+  if (a.state === 'down' || DEV.god) return;
+  a.hp -= n; a.flash = 1;
+  if (a.hp <= 0) { a.state = 'down'; a.downT = 14; a.target = null; log(`<span style="color:#e6a23c">${a.name} je zraněný!</span>`); sfx.play('pain', a.root.position, .9); }
+}
+function allyShoot(e, tg, d) {
+  const T = e.T, m = enemyMuzzle(e);
+  e.flashSprite.position.copy(m); e.flashSprite.visible = true; e.flashSprite.material.rotation = Math.random() * 6; e.flashT = .06;
+  sfx.play(T.gun === 'sten' ? 'smg' : 'enemyshot', e.root.position, .75);
+  const tgt = V(tg.x + rand(-.2, .2), tg.y + tg.h * rand(.5, .85), tg.z + rand(-.2, .2)), dir = tgt.clone().sub(m).normalize();
+  const p = clamp(.6 - d * .011, .14, .68) * (calm(tg) ? 1.25 : 1) * (tg.T.boss ? .6 : 1);
+  if (Math.random() < p) { damageEnemy(tg, rand(T.dmg[0], T.dmg[1]) * 1.2, _v2.set(dir.x, 0, dir.z).normalize()); fxImpact(tgt, dir.clone().negate(), 'flesh'); }
+  else { const h = rayWorld(m, dir.add(V(rand(-.06, .06), rand(-.04, .06), rand(-.06, .06))).normalize(), 60); if (h.kind !== 'none') fxImpact(h.point, h.n, 'stone'); }
+  for (const h of enemies) if (calm(h) && h.state !== 'dead' && !h.actor && Math.hypot(h.x - e.x, h.z - e.z) < 24) after(.2 + Math.random() * .5, () => { if (calm(h)) alertEnemy(h); });
+}
+function updateAlly(e, dt) {
+  const T = e.T;
+  e.flash = Math.max(0, e.flash - dt * 7);
+  if (e.flashT > 0) { e.flashT -= dt; if (e.flashT <= 0) e.flashSprite.visible = false; }
+  if (e.state === 'down') { // hit: down on the ground, then back in the fight
+    e.downT -= dt; const k = Math.min(1, (e.downK = Math.min(1, (e.downK || 0) + dt * 3)));
+    e.inner.rotation.x = -k * 1.45; e.inner.position.y = .05 * k; if (e.holder) e.holder.visible = false; e.mark.visible = false;
+    if (e.mixer) setAnim(e, 'Idle');
+    if (e.downT <= 0) { e.state = 'idle'; e.hp = e.maxHp * .6; e.downK = 0; e.inner.rotation.x = 0; e.inner.position.y = 0; if (e.holder) e.holder.visible = true; log(`<span style="color:#9fd08a">${e.name}</span> je zase na nohou`); }
+    e.root.position.set(e.x, e.y, e.z); e.blob.position.set(e.x, e.y + .015, e.z); return;
+  }
+  const pdx = player.pos.x - e.x, pdz = player.pos.z - e.z, pd = Math.hypot(pdx, pdz) + 1e-4;
+  let mx = 0, mz = 0, speed = 0, face = null, aiming = false;
+  const goTo = (tx, tz, sp) => { const ax = tx - e.x, az = tz - e.z, l = Math.hypot(ax, az); if (l > .15) { mx = ax / l; mz = az / l; speed = sp; } return l; };
+  // targets: the nearest live enemy he can see
+  e.scanT -= dt;
+  if (e.scanT <= 0) {
+    e.scanT = .35; e.target = null; let bd = e.joined ? 36 : 18;
+    for (const h of enemies) {
+      if (h.state === 'dead' || h.actor || h.T.civ) continue;
+      const d = Math.hypot(h.x - e.x, h.z - e.z); if (d >= bd || Math.abs(h.y - e.y) > 9) continue;
+      if (losClear(e.x, e.y + e.h * .9, e.z, h.x, h.y + h.h * .7, h.z)) { bd = d; e.target = h; }
+    }
+  }
+  const tg = e.target && e.target.state !== 'dead' ? e.target : null;
+  if (RIDE.on && e.ride) { const p = RIDE.cab.localToWorld(e.ride.clone()); e.x = p.x; e.y = p.y; e.z = p.z; }
+  else if (e.joined && !e.hold) {
+    // a loose wedge behind you; out of sight they find their way along the same flow field the enemy uses
+    const k = e.slot, ang = player.yaw + (k % 2 ? 1 : -1) * (.55 + .3 * (k >> 1)), back = 2.4 + 1.2 * (k >> 1);
+    const sx = player.pos.x + Math.sin(ang) * back, sz = player.pos.z + Math.cos(ang) * back;
+    const see = pd < 10 && Math.abs(player.pos.y - e.y) < 1.2 && losClear(e.x, e.y + 1.5, e.z, player.pos.x, player.pos.y + 1.4, player.pos.z);
+    if (pd > 2.6 || Math.hypot(sx - e.x, sz - e.z) > 1.4) {
+      const sp = pd > 7 ? T.run * 1.1 : pd > 4.5 ? T.run * .8 : T.walk * 1.4;
+      if (see) goTo(sx, sz, sp); else { const n = flowNext(e.x, e.z, flowDist); goTo(n ? n.x : sx, n ? n.z : sz, sp); }
+    }
+    if (tg && pd < 12) speed *= .4;                                                   // advance slowly while they shoot
+    if (pd > 40 && !e.root.visible) { e.x = player.pos.x + Math.sin(player.yaw) * 1.5; e.z = player.pos.z + Math.cos(player.yaw) * 1.5; e.y = player.pos.y; }   // never left behind for good
+  }
+  if (pd < .9 && !(RIDE.on && e.ride)) { e.x -= pdx / pd * (.9 - pd); e.z -= pdz / pd * (.9 - pd); }  // make room for you
+  if (tg) {
+    const tdx = tg.x - e.x, tdz = tg.z - e.z, td = Math.hypot(tdx, tdz);
+    face = { x: tdx, z: tdz }; aiming = true; e.cooldown -= dt;
+    if (e.cooldown <= 0 && Math.abs(angD(e.yaw, Math.atan2(tdx, tdz))) < .35) {
+      if (e.burst <= 0) e.burst = Math.round(rand(T.burst[0], T.burst[1]));
+      allyShoot(e, tg, td); e.burst--; e.cooldown = e.burst > 0 ? T.rof : Math.max(T.rof, .7) + Math.random() * 1.1;
+    }
+  } else { e.burst = 0; e.cooldown = Math.max(e.cooldown - dt, .4); face = mx || mz ? { x: mx, z: mz } : e.joined ? { x: -Math.sin(player.yaw), z: -Math.cos(player.yaw) } : null; }
+  if (!(RIDE.on && e.ride)) {
+    const ox = e.x, oz = e.z; e.x += mx * speed * dt; e.z += mz * speed * dt; collide(e, e.r, e.y, e.h, .62);
+    if (speed > 0 && Math.hypot(e.x - ox, e.z - oz) < speed * dt * .2) { e.stuckT = (e.stuckT || 0) + dt; if (e.stuckT > .8) { e.stuckT = 0; e.x += (Math.random() - .5) * .6; e.z += (Math.random() - .5) * .6; collide(e, e.r, e.y, e.h, .62); } } else e.stuckT = 0;
+    const gy = groundAt(e.x, e.z, e.y + .3); e.y = gy < e.y ? Math.max(gy, e.y - 9 * dt) : gy;
+  }
+  if (face) e.yaw = angLerp(e.yaw, Math.atan2(face.x, face.z), 1 - Math.exp(-9 * dt));
+  e.root.position.set(e.x, e.y, e.z); e.root.rotation.y = e.yaw; e.blob.position.set(e.x, e.y + .015, e.z);
+  _sph.center.set(e.x, e.y + e.h * .5, e.z); _sph.radius = e.h * .8;
+  const vis = pd < 80 && _fr.intersectsSphere(_sph); e.root.visible = vis; e.blob.visible = vis && !(RIDE.on && e.ride);
+  const moving = (mx || mz) && speed > 0;
+  e.poseW = lerp(e.poseW, aiming ? 1 : e.joined ? .35 : 0, 1 - Math.exp(-8 * dt));
+  if (e.mixer) { setAnim(e, moving ? (speed > 3 ? 'Run' : 'Walk') : 'Idle', 1); if (vis) e.mixer.update(dt); }
+  if (vis) {
+    e.root.updateMatrixWorld(true);
+    const tp = tg ? Math.atan2(tg.y + tg.h * .7 - (e.y + 1.33 * e.h / 1.8), Math.hypot(tg.x - e.x, tg.z - e.z)) : 0; e.pitch = lerp(e.pitch || 0, clamp(tp, -.8, .8), 1 - Math.exp(-8 * dt));
+    if (e.mixer && e.ikOK) poseSoldier(e, e.poseW, e.pitch);
+    sampleGrid(e.x, e.z, _g); for (const m of e.mats) { const b = m.userData.base || (m.userData.base = m.color.clone()); m.color.setRGB(b.r * _g[0] + e.flash * .8, b.g * _g[1], b.b * _g[2]); }
+  }
+  if (e.flashT > 0 && e.holder) e.flashSprite.position.copy(enemyMuzzle(e));
+  // a green chevron over your men, so you never shoot at them by mistake
+  e.mark.visible = vis && pd > 4 && pd < 40; if (e.mark.visible) { e.mark.material.map = TX.markAlly; e.mark.material.opacity = .8; }
+}
+// enemies notice your squad and shoot at whoever is nearer: you or one of your men
+function enemyFoe(e, dist, eyeY) {
+  e.foeAlly = null; e.atAlly = false; if (!SQ.on) return;
+  let bd = 1e9; const sy = Math.sin(e.yaw), cy = Math.cos(e.yaw);
+  for (const a of SQ.list) {
+    if (a.state === 'down' || (RIDE.on && a.ride && !LV.rideShootable)) continue;
+    const ax = a.x - e.x, az = a.z - e.z, d = Math.hypot(ax, az) + 1e-4; if (d > bd || d > (e.T.range || 0) * 1.1) continue;
+    if (calm(e) && ((ax * sy + az * cy) / d < .25 || d > 22)) continue;
+    if (losClear(e.x, eyeY, e.z, a.x, a.y + 1.4, a.z)) { bd = d; e.foeAlly = a; }
+  }
+  if (!e.foeAlly) return;
+  if (calm(e)) alertEnemy(e);
+  e.atAlly = !e.los || bd < dist - 3 || Math.random() < .3;
+}
+// in-game dialogue: voiced lines one after another, with a subtitle above the HUD
+function zoSay(...ids) { for (const id of ids.flat()) if (id) SAY.q.push(id); }
+function sayTick(dt) {
+  SAY.t -= dt; SAY.hide -= dt;
+  if (SAY.hide <= 0) $('zsub').style.opacity = 0;
+  if (SAY.t > 0 || !SAY.q.length) return;
+  const id = SAY.q.shift(), s = VOX_SUB[id], d = vox.play(id);
+  if (s) { $('zsub').innerHTML = `<b>${SPEAKER[s[0]] || ''}</b>${s[1]}`; $('zsub').style.opacity = 1; }
+  SAY.t = d + .3; SAY.hide = d + 1.4;
+}
+// scripted moments: walk into a spot, finish an objective, clear an area, wait – then talk, spawn, complete, call
+function trigTick(dt) {
+  if (!LV.trig) return; LV.zt += dt;
+  for (const g of LV.trig) {
+    if (g.done) continue;
+    if (g.at && Math.hypot(player.pos.x - (g.at[0] + .5) * CELL, player.pos.z - (g.at[1] + .5) * CELL) > (g.r || 1.2) * CELL) continue;
+    if (g.t !== undefined && LV.zt < g.t) continue;
+    if (g.after && ![].concat(g.after).every(id => (LV.objectives.find(o => o.id === id) || {}).done || (LV.trig.find(q => q.id === id) || {}).done)) continue;
+    if (g.clear) { const [x0, z0, x1, z1] = g.clear; if (enemies.some(e => e.state !== 'dead' && !e.actor && e.x >= x0 * CELL && e.x <= (x1 + 1) * CELL && e.z >= z0 * CELL && e.z <= (z1 + 1) * CELL)) continue; }
+    if (g.ride && RIDE.on) continue;
+    g.done = true;
+    if (g.delay) after(g.delay, () => fireTrig(g)); else fireTrig(g);
+  }
+}
+function fireTrig(g) {
+  if (game.state !== 'playing') return;
+  if (g.say) zoSay(g.say);
+  if (g.log) log(g.log);
+  if (g.spawn) for (const [t, cx, cz, yaw, o = {}] of g.spawn) { const e = makeEnemy(t, cx, cz, yaw, o); e.id4 = 0; tintMats(e.mats, e.x, e.z); game.totalEnemies++; if (!o.calm) after(.3 + Math.random() * .6, () => alertEnemy(e, false)); }
+  if (g.obj) completeObjective(g.obj);
+  if (g.fn) ZO_FN[g.fn](g);
+}
+const ZO_FN = {
+  win() { completeObjective('exit'); win(); },
+  // the Eagle's cabin pulls out of the top station just as you arrive
+  cabinGo(g) {
+    const [cx, cz] = g.cab, [dx, dz] = SIDE[g.side], off = g.off || [0, 0], p = C(cx, cz, dx * 5 + off[0], dz * 5 + off[1]); p.y = C(cx, cz).y + (g.dy || 0);
+    P_.cabin(p, dx ? 1 : 0); const cab = OUT.cabin; OUT.cabin = null; tintMats(OUT.cabinMats, p.x, p.z, 1.3);
+    const bj = csActor('bj', p.x, p.z, Math.atan2(-dx, -dz), { gun: true }); CS.actors.splice(CS.actors.indexOf(bj), 1); levelRoot.remove(bj.blob); bj.root.position.set(0, .2, 0); cab.add(bj.root); bj.root.rotation.y = Math.atan2(-dx, -dz) - cab.rotation.y;
+    const t0 = time, home = cab.position.clone(), dir = V(dx * Math.cos(.3), -Math.sin(.3), dz * Math.cos(.3));
+    const mv = { tick: () => { const k = Math.min(1, (time - t0) / 18); cab.position.copy(home).addScaledVector(dir, 70 * k * k * (3 - 2 * k)); if (bj.mixer) bj.mixer.update(1 / 60); return k < 1; } };
+    ZO.movers.push(mv); sfx.play('clang', p, 1.2);
+  },
+  // Krüger is hit by the blast: he stays behind, you go on alone
+  krugerDown() { const k = SQ.list.find(a => a.leader); if (k) { k.state = 'down'; k.downT = 1e9; } },
+  quake(g) { player.shake = 1.4; for (let i = 0; i < 4; i++) after(i * .35, () => { sfx.play('explode', V(player.pos.x + rand(-30, 30), player.pos.y + 8, player.pos.z - 40), 1.6); player.shake = Math.min(1.5, player.shake + .6); }); },
+  squadAll() { SQ.list.forEach(a => { a.joined = true; a.hold = false; }); SQ.list.forEach((a, k) => a.slot = k); }
+};
+const ZO = { movers: [] };
+// the ride down: you (and your men) stand in the cabin while it runs down the haul rope; partisans shoot from the slopes
+function rideInit() {
+  RIDE.on = false; ZO.movers = [];
+  if (!LV.ride || !OUT.cabin) return;
+  const R = LV.ride; Object.assign(RIDE, { on: true, t: 0, dur: R.dur || 50, len: R.len || 96, cab: OUT.cabin, home: OUT.cabin.position.clone(), up: OUT.ropeDir.clone() });
+  RIDE.cab.updateMatrixWorld(true);
+  const spots = [V(-.75, .2, -.55), V(.75, .2, -.55), V(-.75, .2, .55), V(.75, .2, .55)];
+  SQ.list.forEach((a, k) => { a.ride = spots[k % 4]; a.joined = true; a.hold = true; });
+  rideTick(0);
+}
+function rideTick(dt) {
+  RIDE.t += dt; const k = clamp(RIDE.t / RIDE.dur, 0, 1), e = .5 - .5 * Math.cos(Math.PI * k);
+  RIDE.cab.position.copy(RIDE.home).addScaledVector(RIDE.up, RIDE.len * (1 - e)); RIDE.cab.rotation.z = Math.sin(RIDE.t * 1.3) * .012; RIDE.cab.updateMatrixWorld(true);
+  const p = RIDE.cab.localToWorld(V(0, .2, .1)); player.pos.copy(p); player.vel.set(0, 0, 0); player.vy = 0; player.onGround = true; player.viewY = p.y;
+  if (k >= 1) {
+    RIDE.on = false; sfx.play('clang', RIDE.home, 1.2); sfx.play('stomp', RIDE.home, 1);
+    const [ox, oz] = LV.ride.out, q = C(ox, oz); player.pos.copy(q); player.viewY = q.y;
+    SQ.list.forEach((a, i) => { a.ride = null; a.hold = false; const s = C(ox, oz, (i % 2 ? 1 : -1) * 1.4, -1 - (i >> 1)); a.x = s.x; a.y = s.y; a.z = s.z; });
+    if (LV.ride.obj) completeObjective(LV.ride.obj);
+  }
+}
+function zoTick(dt) {
+  if (RIDE.on) for (const a of SQ.list) if (a.ride) { const p = RIDE.cab.localToWorld(a.ride.clone()); a.x = p.x; a.y = p.y; a.z = p.z; }
+  for (const a of SQ.list) updateAlly(a, dt);
+  ZO.movers = ZO.movers.filter(m => m.tick(dt));
+  trigTick(dt); sayTick(dt);
+}
+
 /* ---------- expansion scenes: the ambush in the valley, and the knife fight below the burning mountain ---------- */
 function csSub(who, text, dur = 4) { const el = $('csub'); el.innerHTML = `<b>${who}</b>${text}`; el.style.opacity = 1; CS.subUntil = CS.t + dur; }
 function zoSpot(base, dx, dz) {   // nearest open ground towards an offset, at the same height
@@ -6185,50 +6771,50 @@ function csKnife(e) {
   const ws = e.bones.RightHand.getWorldScale(V(0, 0, 0)).x || 1; k.scale.multiplyScalar(.75 / ws); k.rotation.set(Math.PI / 2, 0, Math.PI / 2); k.position.set(0, .08 / ws, .02 / ws); e.bones.RightHand.add(k);
 }
 Object.assign(CUTSCENES, {
-  // the night before: the Eagle comes down the valley and guns down Brandt's patrol
+  // the night of the escape: the Eagle bursts into the guardroom and guns down Brandt's watch
   zo_intro: {
-    dur: 31,
+    dur: 32, lines: ['zo_i1', 'zo_i2', 'zo_i3', 'zo_i4'],
     setup(A) {
-      const [sx, sz, yaw] = LV.start, p = C(sx, sz), f = V(-Math.sin(yaw), 0, -Math.cos(yaw)), sd = V(f.z, 0, -f.x), at = (a, b) => zoSpot(p, f.x * a + sd.x * b, f.z * a + sd.z * b);
-      const face = (e, q) => { e.yaw = e.faceYaw = Math.atan2(q.x - e.x, q.z - e.z); };
-      const bp = at(6, -.4), bjp = at(19, 1.5); A.bp = bp; A.bjp = bjp;
-      A.br = csActor('offizier', bp.x, bp.z, 0, { gun: true });
-      A.s = [at(5, 1.6), at(7.2, 1.4), at(5.6, -2.2)].map((q, i) => csActor(i === 1 ? 'sturm' : 'soldat', q.x, q.z, 0, { gun: true, torch: i === 0 }));
-      A.bj = csActor('bj', bjp.x, bjp.z, 0, { gun: true }); A.bj.root.visible = A.bj.blob.visible = false;
-      for (const e of [A.br, ...A.s]) face(e, bjp); face(A.bj, bp);
-      const eye = (q, h = 1.6) => V(q.x, q.y + h, q.z);
-      const c1 = at(-1.5, 3.5).setY(p.y + 2.6), c2 = at(13, 4).setY(p.y + 1.7), c3 = at(4.2, -1.6).setY(p.y + 1.55), c4 = at(9.5, 2.8).setY(p.y + 1.2);
-      const L1 = eye(at(12, 0), 1.4), Lb = eye(bp, 1.55), Lj = eye(bjp, 1.5);
-      CS.cam = [[0, c1.x, c1.y, c1.z, L1.x, L1.y, L1.z], [6.4, c1.x, c1.y - .3, c1.z, L1.x, L1.y, L1.z], [6.41, c2.x, c2.y, c2.z, Lj.x, Lj.y, Lj.z], [9.8, c2.x, c2.y, c2.z, Lj.x, Lj.y, Lj.z],
-        [9.81, c1.x, c1.y, c1.z, Lb.x, Lb.y - .4, Lb.z], [13.6, c1.x, c1.y - .4, c1.z, Lb.x, Lb.y - .5, Lb.z], [13.61, c3.x, c3.y, c3.z, Lb.x, Lb.y - .5, Lb.z], [20.5, c3.x, c3.y - .15, c3.z, Lb.x, Lb.y - .3, Lb.z],
-        [20.51, c4.x, c4.y, c4.z, Lb.x, Lb.y, Lb.z], [31, c4.x, c4.y + .3, c4.z, Lb.x, Lb.y, Lb.z]];
+      const y = floorAt(10, 10), P = (x, z) => V(x, y, z);
+      for (const e of enemies) if (e.corpse && e.x < 21 && e.z < 17) e.root.visible = false;     // the dead of the guardroom lie there only after the scene
+      A.door = doors.find(d => d.cx === 5 && d.cz === 2);
+      A.br = csActor('soldat', 9.5, 10.5, -PI / 2, { gun: true }); A.ke = csActor('soldat', 14.6, 6.2, PI, { gun: true }); A.vo = csActor('sturm', 17.6, 13.4, PI / 2, { gun: false });
+      A.bj = csActor('bj', 25, 10, -PI / 2, { gun: true }); A.bj.root.visible = A.bj.blob.visible = false;
+      const L = (q, h) => [q.x, y + h, q.z];
+      const c1 = P(5.2, 14.8), c2 = P(19.6, 5.3), c3 = P(12.5, 12.4), c4 = P(8.4, 8.2);
+      CS.cam = [[0, ...L(c1, 2.5), ...L(P(16, 9), 1.3)], [7.6, ...L(c1, 2.2), ...L(P(16, 9), 1.3)],
+        [7.61, ...L(c2, 1.7), ...L(P(20.5, 10), 1.5)], [11, ...L(c2, 1.6), ...L(P(17.5, 10), 1.4)],
+        [11.01, ...L(c3, 1.5), ...L(P(18, 10), 1.6)], [16.5, ...L(c3, 1.3), ...L(P(16, 10.5), 1.3)],
+        [16.51, ...L(c4, .55), ...L(P(9.6, 10.3), .3)], [24, ...L(c4, .45), ...L(P(9.6, 10.3), .3)],
+        [24.01, ...L(P(9.2, 9.6), 3.1), ...L(P(9.6, 10.6), 0)], [32, ...L(P(9.2, 9.6), 4.2), ...L(P(9.6, 10.6), 0)]];
+      A.y = y;
     },
     tick(cs) { if (cs.flashOff && cs.t > cs.flashOff) { cs.flashE.flashSprite.visible = false; cs.flashOff = 0; } },
     ev: [
-      [0, () => { csFade(1, .01); setTimeout(() => csFade(0, 1.6), 50); csTitle('ÚDOLÍ POD GRIMHOLDEM', 'TÉŽE NOCI, KDY OREL SJEL LANOVKOU DOLŮ', 4.5); }],
-      [1.5, (A) => { A.s[0].walkTo = { x: A.s[0].x + 1, z: A.s[0].z + .6 }; }],
-      [2.6, () => csSub('Hauptmann Brandt', 'Hledejte ho! Ten Angličan je někde tady dole. <i>(Sucht ihn! Der Engländer ist hier irgendwo unten.)</i>', 3.6)],
-      [6.4, (A) => { A.bj.root.visible = A.bj.blob.visible = true; A.bj.aimTo = 1; sfx.play('step', A.bjp, 1); }],
-      [7.6, (A) => { csShot(A.bj, A.s[0]); A.s[0].dead = true; A.s[0].fallSide = .3; }],
-      [8.3, (A) => { csShot(A.bj, A.s[1]); A.s[1].dead = true; A.s[1].fallSide = -.3; }],
-      [9.0, (A) => { csShot(A.bj, A.s[2]); A.s[2].dead = true; A.s[2].fallSide = .2; for (const e of [A.br]) e.aimTo = 1; }],
-      [9.9, (A) => { csShot(A.bj, A.br); CS.shake = .25; A.br.pose = 'kneel'; A.br.poseTo = 1; A.br.poseRate = 6; A.br.aimTo = 0; sfx.play('pain', A.bp, 1.2); }],
-      [10.8, () => csSub('Hauptmann Brandt', 'Aaach…!', 1.6)],
-      [12.2, (A) => { A.bj.aimTo = 0; A.bj.speed = 4.6; A.bj.path = [{ x: A.bjp.x + (A.bjp.x - A.bp.x) * .4 + 3, z: A.bjp.z + (A.bjp.z - A.bp.z) * .4 }, { x: A.bjp.x + (A.bjp.x - A.bp.x) * 1.2, z: A.bjp.z + (A.bjp.z - A.bp.z) * 1.2 + 4 }]; }],
-      [14.6, (A) => { A.br.poseTo = 0; A.br.poseRate = 1.4; }],
-      [16.2, () => csSub('Hauptmann Brandt', 'Orel… Najdu tě. A pak tě pověsím vlastníma rukama. <i>(Ich finde dich. Und dann hänge ich dich eigenhändig.)</i>', 4.8)],
-      [21, () => csTitle('BLÁZEN Z LONDÝNA: ZAJETÍ ORLA', 'HAUPTMANN ERICH BRANDT · EPIZODA 1 · VE STOPÁCH ORLA', 6)],
-      [29.6, () => csFade(1, 1.2)]
-    ]
+      [0, () => { csFade(1, .01); setTimeout(() => csFade(0, 1.6), 50); csTitle('HRAD GRIMHOLD · STRÁŽNICE', 'TÉŽE NOCI, KDY OREL UTEKL Z KOBEK', 4.5); }],
+      [1.6, (A) => { csSay('zo_i1', A.ke); A.ke.faceYaw = -PI / 2; }],
+      [4.6, (A) => { csSay('zo_i2', A.br); A.br.faceYaw = PI / 2; }],
+      [7.7, (A) => { if (A.door) openDoor(A.door, 26, 10); sfx.play('door', V(22, A.y + 1, 10), 1.4); A.bj.root.visible = A.bj.blob.visible = true; A.bj.speed = 4.5; A.bj.aimTo = 1; A.bj.path = [{ x: 19.5, z: 10 }]; }],
+      [8.5, (A) => { csShot(A.bj, A.ke); A.ke.dead = true; A.ke.fallSide = .3; }],
+      [9.2, (A) => { csShot(A.bj, A.vo); A.vo.dead = true; A.vo.fallSide = -.3; A.br.aimTo = 1; A.br.faceYaw = Math.atan2(19.5 - A.br.x, 10 - A.br.z); }],
+      [10.1, (A) => { A.bj.lookAtE = A.br; csShot(A.bj, A.br); CS.shake = .3; A.br.dead = true; A.br.fallSide = .15; sfx.play('pain', V(9.5, A.y + 1, 10.5), 1.2); }],
+      [11.6, (A) => { A.bj.aimTo = 0; A.bj.speed = 1.3; A.bj.path = [{ x: 12.6, z: 10.3 }]; }],
+      [13.4, (A) => csSay('zo_i3', A.bj)],
+      [16.4, (A) => { A.bj.lookAtE = null; A.bj.speed = 3.6; A.bj.path = [{ x: 21, z: 10 }, { x: 24.5, z: 9 }, { x: 24.5, z: 2 }]; }],
+      [19.5, (A) => csSay('zo_i4', A.br)],
+      [24.2, () => csTitle('BLÁZEN Z LONDÝNA: ZAJETÍ ORLA', 'GEFREITER ERICH BRANDT · EPIZODA 1 · POPLACH NA GRIMHOLDU', 6.5)],
+      [30.6, () => csFade(1, 1.2)]
+    ],
+    end(cs) { const d = doors.find(d => d.cx === 5 && d.cz === 2); if (d) { d.open = d.target = 0; d.pivot.rotation.y = d.base; } }
   },
   // dawn: the mountain goes up, the Eagle runs out of the escape tunnel – and Brandt is waiting
   zo_finale: {
-    dur: 47,
+    dur: 47, lines: ['zo_f1', 'zo_f2', 'zo_f3', 'zo_f4', 'zo_f5', 'zo_f6'],
     setup(A, cs) {
       CUTSCENES.finale.setup(A, cs);                                           // the burning dawn, the Eagle's run out of the mountain
       const c = V(12, floorAt(12, 84.5), 84.5); A.c = c;
       const b = zoSpot(c, 4.2, 3.2); A.b = b; A.m = c.clone().lerp(b, .5);
-      A.br = csActor('offizier', b.x + 1.2, b.z + .8, 0, { gun: true }); A.br.root.visible = A.br.blob.visible = false; A.br.yaw = Math.atan2(c.x - b.x, c.z - b.z);
+      A.br = csActor('soldat', b.x + 1.2, b.z + .8, 0, { gun: true }); A.br.root.visible = A.br.blob.visible = false; A.br.yaw = Math.atan2(c.x - b.x, c.z - b.z);
       const d = b.clone().sub(c).setY(0).normalize(), sd = V(d.z, 0, -d.x), m = A.m;
       A.d = d; A.sd = sd;
       const P = (v, y) => [v.x, y, v.z], behindJ = c.clone().addScaledVector(d, -2.4).addScaledVector(sd, .9), behindB = b.clone().addScaledVector(d, 2.4).addScaledVector(sd, -.9);
@@ -6248,16 +6834,16 @@ Object.assign(CUTSCENES, {
       [0, () => { csFade(1, .01); setTimeout(() => csFade(0, 1.5), 50); }],
       [4, (A) => CUTSCENES.finale.ev[1][1](A)], [5.2, (A) => CUTSCENES.finale.ev[2][1](A)],
       [8.8, (A) => { A.br.root.visible = A.br.blob.visible = true; A.br.walkTo = { x: A.b.x, z: A.b.z }; A.br.speed = 1.4; A.bj.pose = null; A.bj.poseTo = 0; }],
-      [9.6, (A) => { A.bj.faceYaw = Math.atan2(A.b.x - A.c.x, A.b.z - A.c.z); csSub('Hauptmann Brandt', 'Orle. <i>(Adler.)</i>', 2.2); }],
-      [11.2, () => csSub('B. J.', 'Ty jsi ten z údolí. Měl jsem mířit líp.', 3.2)],
-      [14.0, (A) => { csSub('Hauptmann Brandt', 'Tvoje zbraň je prázdná, Angličane. Moje taky. <i>(Deine Waffe ist leer, Engländer. Meine auch.)</i>', 4); csKnife(A.bj); csKnife(A.br); sfx.play('knife', null, 1); }],
+      [9.6, (A) => { A.bj.faceYaw = Math.atan2(A.b.x - A.c.x, A.b.z - A.c.z); csSay('zo_f1', A.br); }],
+      [11.2, (A) => csSay('zo_f2', A.bj)],
+      [14.0, (A) => { csSay('zo_f3', A.br); csKnife(A.bj); csKnife(A.br); sfx.play('knife', null, 1); }],
       [15.6, (A) => {   // fifteen seconds of circling, knives low, eyes locked
         A.bj.lookAtE = A.br; A.br.lookAtE = A.bj; A.bj.speed = A.br.speed = .62;
         const arc = (s0, n) => Array.from({ length: n }, (_, i) => { const a = s0 + (i + 1) / n * 2.1; return { x: A.m.x + (A.sd.x * Math.sin(a) + A.d.x * Math.cos(a)) * 2.4, z: A.m.z + (A.sd.z * Math.sin(a) + A.d.z * Math.cos(a)) * 2.4 }; });
         A.bj.path = arc(Math.PI, 8); A.br.path = arc(0, 8); A.bj.walkTo = null; A.br.walkTo = null;
       }],
-      [21.5, () => csSub('Hauptmann Brandt', 'Za mé muže. <i>(Für meine Männer.)</i>', 2.6)],
-      [26.5, () => csSub('B. J.', 'Tak pojď.', 2)],
+      [21.5, (A) => csSay('zo_f4', A.br)],
+      [26.5, (A) => csSay('zo_f5', A.bj)],
       [30.5, (A) => { A.bj.path = []; A.br.path = []; A.bj.speed = A.br.speed = 5; A.bj.walkTo = { x: A.m.x - A.d.x * .45, z: A.m.z - A.d.z * .45 }; A.br.walkTo = { x: A.m.x + A.d.x * .45, z: A.m.z + A.d.z * .45 }; }],
       [31.2, (A) => { for (const e of [A.bj, A.br]) { e.pose = 'strike'; e.poseTo = 1; e.poseRate = 12; } sfx.play('clang', null, 1.3); sfx.play('knife', null, 1); CS.shake = .15; }],
       [31.7, (A) => { for (const e of [A.bj, A.br]) e.poseTo = 0; }],
@@ -6265,7 +6851,7 @@ Object.assign(CUTSCENES, {
       [33.3, (A) => { A.br.poseTo = 0; A.bj.pose = 'strike'; A.bj.poseTo = 1; A.bj.poseRate = 10; }],
       [33.65, (A) => { sfx.play('stab', null, 1.3); sfx.play('hit', null, 1); fxImpact(V(A.br.x, A.br.y + 1.2, A.br.z), A.d, 'flesh'); CS.shake = .3; A.br.lookAtE = null; A.br.dead = true; A.br.fallSide = -.25; }],
       [34.6, (A) => { A.bj.poseTo = 0; A.bj.poseRate = 1.5; }],
-      [36.4, () => csSub('B. J.', 'Pro Londýn.', 2.5)],
+      [36.4, (A) => csSay('zo_f6', A.bj)],
       [39.6, (A) => { A.bj.lookAtE = null; A.bj.speed = 1.5; A.bj.path = [{ x: A.m.x - A.d.x * 6 + A.sd.x * 2, z: A.m.z - A.d.z * 6 + A.sd.z * 2 }, { x: A.m.x - A.d.x * 14, z: A.m.z - A.d.z * 14 }]; }],
       [41, () => csTitle('ZAJETÍ ORLA', 'KONEC', 5)],
       [45.4, () => csFade(1, 1.4)]
@@ -6842,7 +7428,7 @@ const MENU_INFO = {
   credits: () => `<h5>Kdo to udělal</h5><h4>Titulky</h4><p>Hra v jednom HTML souboru na three.js. Modely, zvuky a textury s licencí CC0.</p>`,
   full: () => `<h4>Celá obrazovka</h4><p>Hra je vložená do jiné stránky. Na celé obrazovce se hraje nejlépe.</p>`,
   cold: () => `<h5>Připravujeme · Coming soon</h5><h4>Studená Válka</h4><p>Berlín, 1961. Válka skončila, ale Orel nikdy nepřestal pracovat. Ve městě rozděleném drátem a betonem hledá muže, kterého měl dávno pohřbít.</p><p>Druhé rozšíření série Blázen z Londýna. Zase hraješ za Orla.</p>`,
-  dlc: () => `<h5>Blázen z Londýna · rozšíření · 2 epizody · 6 misí</h5><h4>Zajetí Orla</h4><p>Hauptmann Erich Brandt přežil Orlův útok v údolí. Teď jde po jeho stopě – přes spálený tábor, zvláštní vlak až do srdce hory Wolfsgrund.</p><p>Hraješ za Němce. Proti tobě stojí partyzáni a komando SOE. Na konci tě čeká Orel.</p>`,
+  dlc: () => `<h5>Blázen z Londýna · rozšíření · 2 epizody · 6 misí</h5><h4>Zajetí Orla</h4><p>Gefreiter Erich Brandt z posádky hradu Grimhold. Tu noc, kdy Orel utekl z kobek, postřílel celou jeho hlídku – a Brandta nechal ležet v krvi.</p><p>Sežeň družstvo, vyrazte s Feldwebelem Krügerem za ním: přes hrad plný vězňů, lanovkou do údolí, až k hoře Wolfsgrund.</p>`,
   tab: () => `<h4>Otevřít v novém okně</h4><p>Pokud vložená stránka nedovolí zamknout myš, otevři hru samostatně. Postup zůstane uložený.</p>`
 };
 function showTitle() {
@@ -6906,14 +7492,14 @@ async function startMission(i, fresh) {
   if (ARMS.mat) { const m = ARMS.mat, b = m.userData.base || (m.userData.base = m.color.clone()), o = m.userData.orig || (m.userData.orig = b.clone()); b.copy(o); if (LEVELS[i].dlc) b.multiply(new THREE.Color(.74, .82, .8)); }   // Brandt's field-grey sleeves
   const cs = game.noCS ? null : MISSION_CS[LEVELS[i].id];
   if (cs && cs.pre) { await loadLevel(-1, CS_FOREST); await playCutscene(CUTSCENES[cs.pre]); }
-  if (game.level !== i || !LV || LV.id !== LEVELS[i].id) await loadLevel(i); else resetLevelState();
+  if (game.level !== i || !LV || LV.id !== LEVELS[i].id || LEVELS[i].dlc) await loadLevel(i); else resetLevelState();   // expansion missions spawn and script things: always rebuilt
   for (const e of enemies) { e.maxHp = Math.round(e.T.hp * DIFF.hp); e.hp = e.maxHp; }
   if (fresh) {   // starting a later mission from the menu: hand out the weapons found earlier
     newLoadout();
-    if (LEVELS[i].dlc) {   // Hauptmann Brandt: officer's revolver, the scoped rifle, an SMG and grenades from the start
+    if (LEVELS[i].dlc && i > DLC_START) {   // Gefreiter Brandt: whatever the armoury in mission 1.1 gave him
       for (const k of [2, 3]) { WEAPONS[k].owned = true; WEAPONS[k].clip = WEAPONS[k].mag; }
-      Object.assign(player.ammo, { pistol: 48, smg: 128, rifle: 30, gren: 5 }); player.armor = 50;
-      if (i >= DLC_START + 3) { WEAPONS[5].owned = true; Object.assign(player.ammo, { fuel: 120, gren: 6, smg: 192, rifle: 40 }); player.armor = 100; }
+      Object.assign(player.ammo, { pistol: 48, smg: 60, rifle: 30, gren: 4 }); player.armor = 50;
+      if (i >= DLC_START + 3) { Object.assign(player.ammo, { gren: 6, smg: 80, rifle: 40 }); player.armor = 100; }
     }
     const past = id => !LEVELS[i].dlc && i > LEVELS.findIndex(L => L.id === id);   // by mission id, so inserting missions never shifts the loadouts
     if (past('m1')) { WEAPONS[2].owned = true; WEAPONS[2].clip = WEAPONS[2].mag; WEAPONS[6].owned = true; WEAPONS[6].clip = 6; WEAPONS[7].owned = true; WEAPONS[7].clip = 8; player.ammo.smg = 40; player.ammo.acp = 16; player.ammo.gren = 4; }
@@ -6947,7 +7533,7 @@ function win() {
   const camp = campOf(game.level), CL = campLevels(camp), last = game.level === CL[CL.length - 1], ep = epOf(game.level), epEnd = EPISODES[ep].levels[EPISODES[ep].levels.length - 1] === game.level;
   store.set(camp ? 'cg_unlocked_' + camp : 'cg_unlocked', Math.max(unlocked(camp), Math.min(CL[CL.length - 1], game.level + 1)));
   snapshotLoadout();
-  if (last && camp === 'zo') { setOverlay(`<h1>MISE SPLNĚNA</h1><h2>${LV.name}</h2>${statsHtml()}<p>Štola se za tebou hroutí. Venku svítá – a někdo před tebou běží z hory.</p>`, [{ label: 'POKRAČOVAT', fn: async () => { await loadLevel(LEVELS.findIndex(L => L.id === 'e3m1')); await playCutscene(CUTSCENES.zo_finale); showDlcEnding(); } }]); return; }
+  if (last && camp === 'zo') { setOverlay(`<h1>MISE SPLNĚNA</h1><h2>${LV.name}</h2>${statsHtml()}<p>Komando je mrtvé. Ze štoly se valí kouř – a v něm se objevuje postava s revolverem v ruce.</p>`, [{ label: 'POKRAČOVAT', fn: async () => { await loadLevel(LEVELS.findIndex(L => L.id === 'e3m1')); await playCutscene(CUTSCENES.zo_finale); showDlcEnding(); } }]); return; }
   if (last) { setOverlay(`<h1>MISE SPLNĚNA</h1><h2>${LV.name}</h2>${statsHtml()}<p>Úniková štola tě vyvedla ven do lesa. Za tebou se rozhoří nálože…</p>`, [{ label: 'POKRAČOVAT', fn: async () => { await loadLevel(LEVELS.findIndex(L => L.id === 'e3m1')); await playCutscene(CUTSCENES.finale); showEnding(); } }]); return; }
   if (epEnd) { setOverlay(`<h1>EPIZODA ${EPISODES.filter(E => (E.dlc || '') === camp).indexOf(EPISODES[ep]) + 1} DOKONČENA</h1><h2>${EPISODES[ep].title}</h2>${statsHtml()}<p>${EPISODES[ep].outro}</p>`, [{ label: 'DALŠÍ EPIZODA', fn: () => { menuLevel = game.level + 1; startMission(game.level + 1, false); } }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]); return; }
   setOverlay(`<h1>MISE SPLNĚNA</h1><h2>${LV.name}</h2>${statsHtml()}`, [{ label: 'DALŠÍ MISE', fn: () => { menuLevel = game.level + 1; startMission(game.level + 1, false); } }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]);
@@ -6956,7 +7542,8 @@ function win() {
 function showDlcEnding() {
   game.state = 'menu'; document.exitPointerLock();
   setOverlay(`<h1>ZAJETÍ ORLA</h1><h2>KONEC</h2>
-    <p>Hauptmann Erich Brandt zemřel na úpatí hory Wolfsgrund, pár kroků od muže, kterého honil přes celé Bavorsko.</p>
+    <p>Gefreiter Erich Brandt zemřel na úpatí hory Wolfsgrund, pár kroků od muže, kterého honil z hradu Grimhold až sem.</p>
+    <p>Feldwebel Krüger přežil. Do konce války vyprávěl, že Brandt byl jediný, kdo Orla skoro dostal.</p>
     <p>Orel odešel do lesa. Válka pro něj ještě neskončila – a jednou se vrátí.</p>
     <p style="color:#8fa3c4;letter-spacing:.2em">PŘIPRAVUJEME: BLÁZEN Z LONDÝNA – STUDENÁ VÁLKA</p>`,
     [{ label: 'HLAVNÍ MENU', fn: () => { game.snapshot = null; showMainMenu(); } }]);
@@ -7036,7 +7623,7 @@ async function loadLevel(i, def = null) {
   for (const e of enemies) tintMats(e.mats, e.x, e.z);
   linkSearchlightGuards();
   { const bn = document.getElementById('bossN'); if (bn && game.bossE) bn.textContent = game.bossE.T.name.toUpperCase(); }
-  placePlayerAtStart(); flowCell = -1; trainInit();
+  placePlayerAtStart(); flowCell = -1; trainInit(); squadInit(); rideInit(); $('zsub').style.opacity = 0;
   camera.position.set(player.pos.x, player.pos.y + 1.62, player.pos.z); camera.rotation.set(0, player.yaw, 0);
   renderer.compile(scene, camera); renderer.compile(vmScene, vmCamera);
 }
@@ -7093,6 +7680,7 @@ function tick(dt) {
     if (game.state === 'playing') updateStealth(dt);
     if (TRAIN.on && game.state === 'playing') trainTick(dt);
     for (const e of enemies) { if (DEV.freeze && e.state !== 'dead') idleEnemy(e, dt); else updateEnemy(e, dt, frameNo); }
+    if (LV.dlc && game.state === 'playing') zoTick(dt);
     if (DEV.ammo) { for (const w of WEAPONS) if (w.owned && w.mag) w.clip = w.mag; for (const k in AMMO_MAX) player.ammo[k] = AMMO_MAX[k]; }
     for (let i = 0; i < enemies.length; i++) { const a = enemies[i]; if (a.state === 'dead') continue; for (let j = i + 1; j < enemies.length; j++) { const b = enemies[j]; if (b.state === 'dead' || Math.abs(a.y - b.y) > 1.5) continue; const dx = a.x - b.x, dz = a.z - b.z, d = Math.hypot(dx, dz), rr = a.r + b.r + .1; if (d < rr && d > 1e-4) { const p = (rr - d) * .5; a.x += dx / d * p; a.z += dz / d * p; b.x -= dx / d * p; b.z -= dz / d * p; } } }
     for (const e of enemies) if (e.state === 'chase' || e.state === 'alarm' || e.state === 'investigate' || e.state === 'search' || e.state === 'return') for (const d of doors) if (d.target === 0 && !doorLocked(d) && Math.abs(d.y - e.y) < 1.5 && Math.hypot(d.c.x - e.x, d.c.z - e.z) < 3) openDoor(d, e.x, e.z);
@@ -7133,7 +7721,7 @@ function tick(dt) {
 window.__errs = [];
 addEventListener('error', e => window.__errs.push(String(e.message) + ' @' + e.lineno));
 addEventListener('unhandledrejection', e => window.__errs.push('rejection: ' + (e.reason && e.reason.message || e.reason)));
-window.__castle = { step(n = 1, dt = 1 / 60) { for (let i = 0; i < n; i++) tick(dt); }, OUT, LEVELS, sampleGrid, damageDestructible, useAction, get destructibles() { return destructibles; }, objectivesDone, completeObjective, get alarms() { return alarms; }, THREE, ARMS, GRIPS, RIGS, FBX, sfx, SET, P_, ARM_POLE_R, ARM_POLE_L, DELISLE_CAN, buildViewModels2: () => buildViewModels(), get pickups() { return pickups; }, damageEnemy, aim(v) { rightDown = v; }, player, enemies, WEAPONS, VMCFG, POSES, game, renderer, scene, camera, vmScene, vmCamera, get LV() { return LV; }, get lmB() { return lmB; }, get doors() { return doors; }, get patches() { return patches; }, get wallFaces() { return wallFaces; }, get ROOMS() { return ROOMS; }, get roomAt() { return roomAt; }, get wallTop() { return wallTop; }, floorAt, topAt, tp(x, z) { const p = C(x, z); player.pos.copy(p); player.viewY = p.y; }, give() { WEAPONS.forEach(w => { w.owned = true; if (w.mag) w.clip = w.mag; }); Object.assign(player.ammo, AMMO_MAX); }, loadLevel, startMission, buildViewModels, async quick(i = 0) { game.noCS = true; await startMission(i, true); game.noCS = false; startPlaying(); }, playCutscene, CUTSCENES, CS, CS_FOREST, vox, endCutscene, TRAIN, TRACK };
+window.__castle = { step(n = 1, dt = 1 / 60) { for (let i = 0; i < n; i++) tick(dt); }, OUT, LEVELS, sampleGrid, damageDestructible, useAction, get destructibles() { return destructibles; }, objectivesDone, completeObjective, get alarms() { return alarms; }, THREE, ARMS, GRIPS, RIGS, FBX, sfx, SET, P_, ARM_POLE_R, ARM_POLE_L, DELISLE_CAN, buildViewModels2: () => buildViewModels(), get pickups() { return pickups; }, damageEnemy, aim(v) { rightDown = v; }, player, enemies, WEAPONS, VMCFG, POSES, game, renderer, scene, camera, vmScene, vmCamera, get LV() { return LV; }, get lmB() { return lmB; }, get doors() { return doors; }, get patches() { return patches; }, get wallFaces() { return wallFaces; }, get ROOMS() { return ROOMS; }, get roomAt() { return roomAt; }, get wallTop() { return wallTop; }, floorAt, topAt, tp(x, z) { const p = C(x, z); player.pos.copy(p); player.viewY = p.y; }, give() { WEAPONS.forEach(w => { w.owned = true; if (w.mag) w.clip = w.mag; }); Object.assign(player.ammo, AMMO_MAX); }, loadLevel, startMission, buildViewModels, async quick(i = 0) { game.noCS = true; await startMission(i, true); game.noCS = false; startPlaying(); }, playCutscene, CUTSCENES, CS, CS_FOREST, vox, endCutscene, TRAIN, TRACK, SQ, RIDE, SAY, get DLC_START() { return DLC_START; } };
 frame();
 boot().catch(err => { console.error(err); setLoad('Chyba při načítání: ' + err.message); });
 </script>

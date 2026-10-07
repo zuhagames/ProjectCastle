@@ -102,5 +102,185 @@
  "bj_obj3": [
   "bj",
   "Tohle se bude v Londýně hodit."
+ ],
+ "zo_i1": [
+  "kes",
+  "Slyšels to? Střelba! Dole v kobkách."
+ ],
+ "zo_i2": [
+  "brn",
+  "Klid, Kesslere. Určitě jen nějaký vězeň dělá potíže."
+ ],
+ "zo_i3": [
+  "bj",
+  "Promiň, kamaráde. Nic osobního."
+ ],
+ "zo_i4": [
+  "brn",
+  "Orel… Najdu tě…"
+ ],
+ "zo_101": [
+  "brn",
+  "Kesslere? Vogte? … Mrtví. Oba. A já pořád žiju."
+ ],
+ "zo_102": [
+  "lsp",
+  "Pozor! Pozor! Vězni jsou na svobodě! Všichni muži do zbrojnice! Feldwebel Krüger svolává na nádvoří!"
+ ],
+ "zo_j1": [
+  "mul",
+  "Brandte! Ty žiješ! Myslel jsem, že tě dostali. Jdu s tebou."
+ ],
+ "zo_j2": [
+  "web",
+  "Konečně! Ti vězni jsou všude. Jdu do toho."
+ ],
+ "zo_j3": [
+  "hof",
+  "Rozkaz, Brandte. Jdu za tebou."
+ ],
+ "zo_kw": [
+  "krg",
+  "Brandte! Kde máte své muže? Přiveďte je, pak si promluvíme."
+ ],
+ "zo_103": [
+  "krg",
+  "Brandte. Dobře, že žijete. Ten Američan chce k lanovce. Dostaneme ho. Za mnou!"
+ ],
+ "zo_104": [
+  "mul",
+  "Feldwebel čeká na nádvoří. Jdeme."
+ ],
+ "zo_201": [
+  "krgA",
+  "Přes hradby a věží k horní stanici. Pohyb!"
+ ],
+ "zo_206": [
+  "krgA",
+  "Partyzáni na hradbách! Přišli si pro něj!"
+ ],
+ "zo_202": [
+  "krgA",
+  "Tamhle! V kabině! Pal! Pal!"
+ ],
+ "zo_204": [
+  "krg",
+  "Sakra! Je pryč. Brandte, přivolejte druhou kabinu! Páka ve strojovně!"
+ ],
+ "zo_205": [
+  "krg",
+  "Kabina je tady. Všichni nastoupit!"
+ ],
+ "zo_301": [
+  "krgA",
+  "Partyzáni na svahu! Volná palba!"
+ ],
+ "zo_302": [
+  "web",
+  "Střílejí po kabině! K zemi, k zemi!"
+ ],
+ "zo_307": [
+  "hof",
+  "Vydrží to lano? Prosím, ať to lano vydrží…"
+ ],
+ "zo_303": [
+  "krg",
+  "Údolní stanice. Rozvinout se! Hledejte jeho stopu!"
+ ],
+ "zo_305": [
+  "mul",
+  "Další od silnice! Kryt!"
+ ],
+ "zo_304": [
+  "brn",
+  "Krev. Je zraněný. Utíká na sever, do lesa."
+ ],
+ "zo_400": [
+  "krg",
+  "Hájovna je nahoře na kopci. Potichu, chlapi."
+ ],
+ "zo_401": [
+  "krg",
+  "Tady se sešel s partyzány. Prohledejte dům!"
+ ],
+ "zo_402": [
+  "brn",
+  "Mapa. Wolfsgrund je zakroužkovaný červeně. Chce do továrny!"
+ ],
+ "zo_403": [
+  "krg",
+  "Wolfsgrunde, tady Krüger. Ten Američan jde k vám. Slyšíte mě? Wolfsgrunde! … Nic."
+ ],
+ "zo_404": [
+  "web",
+  "Padáky! Nad lesem!"
+ ],
+ "zo_405": [
+  "krg",
+  "Angličané. Teď si ho odvezou domů."
+ ],
+ "zo_500": [
+  "hof",
+  "Můj bože. Celá stráž je mrtvá."
+ ],
+ "zo_501": [
+  "krg",
+  "Angličané drží rampu. Vyčistěte ji! A najděte jejich vysílačku!"
+ ],
+ "zo_506": [
+  "krg",
+  "Rampa je čistá!"
+ ],
+ "zo_502": [
+  "brn",
+  "Jejich vysílačka je na kusy. Teď žádné letadlo nepřiletí."
+ ],
+ "zo_503": [
+  "krg",
+  "Nouzový východ ze štoly, pod skálou. Tudy vyleze."
+ ],
+ "zo_504": [
+  "krgA",
+  "Hora! K zemi! Všichni k zemi!"
+ ],
+ "zo_601": [
+  "brn",
+  "Krügere! Pane Feldwebel!"
+ ],
+ "zo_602": [
+  "krg",
+  "Nech mě, Brandte. Moje noha… Jdi. Dostaň ho. Za Kesslera a Vogta."
+ ],
+ "zo_604": [
+  "brn",
+  "Další Angličani. Čekají na něj."
+ ],
+ "zo_603": [
+  "brn",
+  "Teď jsi můj, Orle."
+ ],
+ "zo_f1": [
+  "brn",
+  "Orle."
+ ],
+ "zo_f2": [
+  "bj",
+  "Ty jsi ten ze strážnice. Měl jsem mířit líp."
+ ],
+ "zo_f3": [
+  "brn",
+  "Tvoje zbraň je prázdná, Američane. Moje taky."
+ ],
+ "zo_f4": [
+  "brn",
+  "Za Kesslera. Za Vogta."
+ ],
+ "zo_f5": [
+  "bj",
+  "Tak pojď."
+ ],
+ "zo_f6": [
+  "bj",
+  "Pro Londýn."
  ]
 }
