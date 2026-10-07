@@ -21,6 +21,7 @@
   #tml .n { display:inline-block; width:22px; height:22px; line-height:22px; border-radius:50%; background:#f2c53d; color:#1a1408; font:700 13px 'Oswald',sans-serif; text-align:center; margin-right:8px; }
   #tml .done { color:#7f9a6a; text-decoration:line-through; } #tml .done .n { background:#55663f; } #tml .opt { color:#a99c80; }
   #tml .leg { margin-top:14px; font-size:13px; color:#a99c80; line-height:1.6; }
+  #cmp { position:absolute; top:8px; left:50%; transform:translateX(-50%); width:680px; height:62px; }
   #hud.mm #mmap { display:block; } #hud.mm #obj { top:202px; }
   #cross { position:absolute; left:50%; top:50%; width:4px; height:4px; margin:-2px 0 0 -2px; background:#fff; box-shadow:0 0 0 1px #000; border-radius:50%; }
   #cross i { position:absolute; background:#fff; box-shadow:0 0 0 1px rgba(0,0,0,.6); }
@@ -48,7 +49,7 @@
   #intro { position:absolute; top:22%; width:100%; text-align:center; opacity:0; transition:opacity 1.2s; }
   #introT { font-family:'Special Elite',monospace; font-size:clamp(26px,4.5vw,52px); color:#e6d6aa; text-shadow:0 0 18px rgba(160,20,10,.6),0 3px 0 #000; }
   #introS { margin-top:6px; letter-spacing:6px; color:#c23b2c; font-size:clamp(12px,1.6vw,16px); text-shadow:0 2px 2px #000; }
-  #boss { position:absolute; top:58px; left:50%; width:420px; margin-left:-210px; text-align:center; display:none; font:600 13px 'Oswald'; letter-spacing:4px; color:#e9c2b5; text-shadow:0 2px 2px #000; }
+  #boss { position:absolute; top:76px; left:50%; width:420px; margin-left:-210px; text-align:center; display:none; font:600 13px 'Oswald'; letter-spacing:4px; color:#e9c2b5; text-shadow:0 2px 2px #000; }
   #boss .bar { width:100%; height:9px; margin-top:4px; } #boss .bar b { background:linear-gradient(#b8231a,#5e0b06); }
   #drive { position:absolute; right:22px; top:120px; width:230px; display:none; font-family:'Special Elite',monospace; color:#f0e2b6; background:rgba(10,8,6,.62); border:1px solid rgba(201,162,76,.5); padding:10px 14px; text-shadow:0 1px 2px #000; }
   #drive .dv { font-size:46px; line-height:1; color:#fff; } #drive .dv small { font-size:16px; color:#c9a24c; }
@@ -217,6 +218,7 @@
   <div id="scope"></div><div id="dmg"></div><div id="burn"></div>
   <div id="cross"><i></i><i></i><i></i><i></i></div><div id="hitm"></div>
   <canvas id="mmap"></canvas>
+  <canvas id="cmp"></canvas>
   <div id="tabmap"><div class="tmw"><h4 id="tmt"></h4><canvas id="tmc"></canvas></div><div id="tml"></div></div>
   <div id="obj"></div>
   <div id="top">SKÓRE <b id="score">0</b><br>ZABITO <b id="kills">0</b> · POKLADY <b id="treas">0</b></div>
@@ -7021,6 +7023,43 @@ function mmRebuild() {
     }
   }
 }
+/* ---------- compass strip at the top of the screen (Call of Duty style): heading in degrees, the next objective marked ---------- */
+const CMP = { cv: $('cmp') }; CMP.g = CMP.cv.getContext('2d');
+const CMP_DIR = { 0: 'S', 45: 'SV', 90: 'V', 135: 'JV', 180: 'J', 225: 'JZ', 270: 'Z', 315: 'SZ' };
+function cmpDraw() {
+  const cv = CMP.cv, dpr = Math.min(2, devicePixelRatio || 1) * uiScale(), Wc = 680, Hc = 62;
+  if (cv.width !== Math.round(Wc * dpr)) { cv.width = Math.round(Wc * dpr); cv.height = Math.round(Hc * dpr); }
+  const g = CMP.g; g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, Wc, Hc);
+  if (!LV || TRAIN.drv) return;
+  const head = ((-player.yaw * 180 / Math.PI) % 360 + 360) % 360, span = 160, pxd = Wc / span, cx = Wc / 2;
+  const gr = g.createLinearGradient(0, 0, Wc, 0); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(.15, 'rgba(6,8,12,.72)'); gr.addColorStop(.85, 'rgba(6,8,12,.72)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = gr; g.fillRect(0, 6, Wc, 28); g.fillStyle = 'rgba(201,162,76,.35)'; g.fillRect(Wc * .15, 34, Wc * .7, 1);
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  const fade = x => Math.max(0, 1 - Math.pow(Math.abs(x - cx) / cx, 3));
+  for (let d = Math.ceil((head - span / 2) / 5) * 5; d <= head + span / 2; d += 5) {
+    const x = cx + (d - head) * pxd, a = fade(x), dd = ((d % 360) + 360) % 360, big = dd % 15 === 0;
+    g.globalAlpha = a; g.fillStyle = '#e8dcb8'; g.fillRect(Math.round(x) - (big ? .5 : 0), big ? 7 : 10, big ? 2 : 1, big ? 9 : 5);
+    g.strokeStyle = 'rgba(0,0,0,.9)'; g.lineWidth = 3;
+    if (CMP_DIR[dd] !== undefined) { g.font = "bold 19px Oswald, sans-serif"; g.fillStyle = dd === 0 ? '#ff5a3c' : '#fff6dc'; g.strokeText(CMP_DIR[dd], x, 25); g.fillText(CMP_DIR[dd], x, 25); }
+    else if (big) { g.font = "bold 13px Oswald, sans-serif"; g.fillStyle = '#d6cbad'; g.strokeText(String(dd), x, 25); g.fillText(String(dd), x, 25); }
+  }
+  g.globalAlpha = 1; g.fillStyle = '#e6c36a'; g.beginPath(); g.moveTo(cx - 7, 0); g.lineTo(cx + 7, 0); g.lineTo(cx, 8); g.fill();   // your heading
+  g.font = 'bold 12px Oswald, sans-serif'; g.fillStyle = '#e6c36a'; g.strokeStyle = 'rgba(0,0,0,.9)'; g.lineWidth = 3; g.strokeText(Math.round(head) % 360 + '°', cx, 42); g.fillText(Math.round(head) % 360 + '°', cx, 42);
+  // the open objectives: a gold diamond in their direction (pinned to the edge when behind you) with the distance
+  const objs = LV.objectives.filter(o => !o.done && !o.optional && (o.id !== 'exit' || objectivesDone()));
+  let n = 0;
+  for (const o of objs) {
+    let best = null, bd = 1e9; for (const p of objectiveSpots(o)) { const d = Math.hypot(p.x - player.pos.x, p.z - player.pos.z); if (d < bd) { bd = d; best = p; } }
+    if (!best || n++ > 2) continue;
+    const b = Math.atan2(best.x - player.pos.x, -(best.z - player.pos.z)) * 180 / Math.PI;
+    let rel = ((b - head + 540) % 360) - 180; const off = Math.abs(rel) > span / 2 - 4; rel = clamp(rel, -span / 2 + 4, span / 2 - 4);
+    const x = cx + rel * pxd, y = 52;
+    g.fillStyle = off ? 'rgba(201,162,76,.6)' : '#e6c36a'; g.strokeStyle = 'rgba(0,0,0,.8)'; g.lineWidth = 2;
+    g.beginPath(); g.moveTo(x, y - 9); g.lineTo(x + 8, y); g.lineTo(x, y + 9); g.lineTo(x - 8, y); g.closePath(); g.stroke(); g.fill();
+    if (off) { g.fillStyle = '#e6c36a'; g.font = 'bold 12px Oswald, sans-serif'; g.fillText(rel < 0 ? '◂' : '▸', x + (rel < 0 ? -12 : 12), y); }
+    g.font = "bold 13px Oswald, sans-serif"; g.fillStyle = '#fff6dc'; g.strokeStyle = 'rgba(0,0,0,.9)'; g.lineWidth = 3; const t = Math.round(bd) + ' m'; g.strokeText(t, x + 22, y); g.fillText(t, x + 22, y);
+  }
+}
 function mmDraw() {
   if (!SET.minimap || !LV || !MM.seen.length) return;
   const cx = toCell(player.pos.x), cz = toCell(player.pos.z);
@@ -7059,6 +7098,11 @@ function objectiveSpots(o) {   // where in the level an objective can be done
   for (const d of destructibles) if (d.alive && d.obj === o.id && !(d.charge && d.planted)) pk(d.pos);
   for (const e of enemies) if (e.state !== 'dead' && ((o.id === 'uber' && e.T.boss) || (o.id === 'zeman' && e.T.zeman))) pk(e);
   if (o.id === 'exit') for (const ex of exits) pk(ex.pos);
+  if (SQ.on) for (const a of SQ.list) if (!a.joined && ((o.id === 'druzstvo' && !a.leader) || (o.id === LV.leaderObj && a.leader))) pk(a);   // your men waiting to be found
+  for (const g of LV.trig || []) if (g.obj === o.id && !g.done) {   // places that finish an objective when you get there
+    if (g.at) pk({ x: (g.at[0] + .5) * CELL, z: (g.at[1] + .5) * CELL });
+    else if (g.clear) pk({ x: (g.clear[0] + g.clear[2] + 1) / 2 * CELL, z: (g.clear[1] + g.clear[3] + 1) / 2 * CELL });
+  }
   return at;
 }
 function tmDraw() {
@@ -7802,7 +7846,7 @@ function tick(dt) {
   if (Math.abs(dmgO - lastDmg) > .01) { hud.dmg.style.opacity = dmgO; lastDmg = dmgO; }
   if (Math.abs(player.burn - lastBurn) > .01) { hud.burn.style.opacity = player.burn; lastBurn = player.burn; }
   if (hitTimer > 0) { hitTimer -= dt; if (hitTimer <= 0) hud.hitm.style.opacity = 0; }
-  if (game.state === 'playing') { updateHud(); mmDraw(); if (TM.on) tmDraw(); } else if (TM.on) tabMap(false);
+  if (game.state === 'playing') { updateHud(); mmDraw(); cmpDraw(); if (TM.on) tmDraw(); } else if (TM.on) tabMap(false);
   if (M3.cv.style.display === 'block') { if (!m3Render()) { MB.cv.style.display = 'block'; menuBG(time); } soonArt(time); }   // 2D picture only if WebGL for the backdrop fails
   if (M3.ok && M3.cv.style.display === 'block') return;   // the menu draws its own 3D backdrop; the level behind it is hidden anyway
   renderer.clear(); renderer.render(scene, camera);
