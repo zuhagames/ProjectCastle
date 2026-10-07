@@ -1781,7 +1781,7 @@ LEVELS.push(asciiLevel({
   start: [6, 21, 0],
   exit: { cell: [15, 4], side: '-z', kind: 'door', text: 'ÚNIKOVÁ ŠTOLA' },
   objectives: [
-    { id: 'rampa', text: 'Vyčisti rampu od Angličanů' },
+    { id: 'rampa', text: 'Zabij komando na rampě', kill: true },
     { id: 'funk', text: 'Znič vysílačku komanda (bunkr na západě)' },
     { id: 'stola', text: 'Dostaň se k únikové štole pod skálou' }
   ],
@@ -1789,7 +1789,7 @@ LEVELS.push(asciiLevel({
   squad: ZO_SQUAD({ k: [6, 20, 0], m: [4, 21, 0], w: [8, 21, 0], h: [5, 22, 0] }),
   trig: [
     { t: 1, say: ['zo_500', 'zo_501'] },
-    { clear: [0, 15, 29, 19], t: 4, obj: 'rampa', say: ['zo_506'] },
+    { after: 'rampa', delay: .5, say: ['zo_506'] },
     { after: 'funk', delay: .5, say: ['zo_502'] },
     { after: ['rampa', 'funk'], delay: 1, say: ['zo_503'] },
     { at: [15, 5], r: 1.6, after: ['rampa', 'funk'], obj: 'stola', fn: 'quake', say: ['zo_504'] },
@@ -1804,7 +1804,7 @@ LEVELS.push(asciiLevel({
   ],
   enemies: [
     ['soldat', 9, 15, PI / 2, { dead: true }], ['sturm', 14, 16, 0, { dead: true }], ['soldat', 21, 15, -PI / 2, { dead: true }], ['offizier', 11, 10, PI, { dead: true }],
-    ['komando', 7, 16, PI], ['komando', 13, 15, PI], ['komando', 18, 16, PI / 2], ['komando', 24, 15, -PI / 2], ['odstrelovac', 18, 18, PI, { yo: 1.4 }],
+    ['komando', 7, 16, PI, { tag: 'rampa' }], ['komando', 13, 15, PI, { tag: 'rampa' }], ['komando', 18, 16, PI / 2, { tag: 'rampa' }], ['komando', 24, 15, -PI / 2, { tag: 'rampa' }], ['velitel', 15, 16, PI, { tag: 'rampa' }],
     ['velitel', 15, 9, PI], ['komando', 10, 7, PI / 2], ['komando', 19, 6, -PI / 2], ['komando', 16, 12, PI],
     ['komando', 6, 9, PI / 2], ['komando', 2, 8, PI / 2], ['odstrelovac', 7, 12, PI, { yo: 4.6 }],
     ['komando', 14, 5, PI], ['komando', 17, 5, PI], ['odstrelovac', 25, 6, -PI / 2, { hold: true }]
@@ -1849,14 +1849,14 @@ LEVELS.push(asciiLevel({
   start: [13, 20, 0],
   exit: { cell: [13, 3], side: '-z', kind: 'door', text: 'POČKAT NA ORLA U ŠTOLY' },
   objectives: [
-    { id: 'stola', text: 'Probij se k východu ze štoly' },
+    { id: 'stola', text: 'Zabij komando u východu ze štoly', kill: true },
     { id: 'exit', text: 'Počkej na Orla u štoly' }
   ],
   squad: [['zo_kruger', 13, 21, PI, { name: 'Feldwebel Krüger', wounded: true, ox: 1.2 }]],
   trig: [
     { t: .8, say: ['zo_601', 'zo_602'] },
     { at: [13, 10], r: 1.8, say: ['zo_604'] },
-    { clear: [0, 0, 25, 9], at: [13, 7], r: 2.5, obj: 'stola', say: ['zo_603'] }
+    { after: 'stola', delay: .5, say: ['zo_603'] }
   ],
   props: [
     ['campfire', 6, 17, 0, 0], ['campfire', 19, 13, 0, 0], ['campfire', 10, 12, .5, 0], ['campfire', 17, 5, 0, 0], ['campfire', 4, 5, 0, 0], ['campfire', 22, 8, 0, 0],
@@ -1865,7 +1865,7 @@ LEVELS.push(asciiLevel({
   enemies: [
     ['komando', 12, 17, PI], ['komando', 7, 14, PI / 2], ['komando', 19, 15, -PI / 2],
     ['komando', 5, 10, PI / 2], ['komando', 20, 10, -PI / 2], ['odstrelovac', 13, 9, PI, { hold: true }],
-    ['komando', 9, 7, PI], ['komando', 17, 7, PI], ['velitel', 13, 5, PI], ['komando', 11, 4, PI], ['komando', 15, 4, PI], ['odstrelovac', 21, 5, -PI / 2, { hold: true }], ['odstrelovac', 4, 5, PI / 2, { hold: true }]
+    ['komando', 9, 7, PI, { tag: 'stola' }], ['komando', 17, 7, PI, { tag: 'stola' }], ['velitel', 13, 5, PI, { tag: 'stola' }], ['komando', 11, 4, PI, { tag: 'stola' }], ['komando', 15, 4, PI, { tag: 'stola' }], ['odstrelovac', 21, 5, -PI / 2, { hold: true }], ['odstrelovac', 4, 5, PI / 2, { hold: true }]
   ],
   pickups: [
     ['h', 11, 20, -1, 0], ['a', 15, 20, 1, 0], ['h', 4, 14, 0, 0], ['s', 21, 14, 0, 0], ['H', 13, 11, 0, 0], ['a', 6, 8, 0, 0], ['h', 20, 7, 0, 0], ['n', 13, 13, 0, 0]
@@ -5243,7 +5243,7 @@ function makeEnemy(type, cx, cz, yaw, opts = {}) {
   e.mark.scale.set(.32, .4, 1); e.mark.position.y = T.h + .45; e.mark.renderOrder = 5; root.add(e.mark);
   if (opts.torch) addFlashlight(e);
   if (opts.dead) { e.corpse = true; e.fallSide = .2; }
-  e.hold = !!opts.hold;
+  e.hold = !!opts.hold; e.tag = opts.tag;
   enemies.push(e); resetEnemy(e); return e;
 }
 function resetEnemy(e) {
@@ -5534,6 +5534,7 @@ function damageEnemy(e, dmg, dir, opts = {}) {
     if (gw && !gw.owned && !pickups.some(p => p.active && p.kind === 'W:' + gw.id)) addPickup('W:' + gw.id, at, null, true);   // dead men's guns are yours
     else if (e.T.drop && Math.random() < .9) addPickup(e.T.drop, at, null, true);
     if (e.T.zeman) { completeObjective('zeman'); log('Dr. Zeman je mrtvý'); }
+    if (e.tag) { const o = LV.objectives.find(q => q.id === e.tag); if (o && !o.done) { o.n = (o.n || 0) + 1; if (o.n >= o.count) completeObjective(o.id); else log(`<span style="color:#e6c36a">${o.text}:</span> ${o.n}/${o.count}`); } }
     if (e.T.boss) {
       for (let i = 0; i < 60; i++) sparks.spawn(_v.set(e.x, e.y + 1.5, e.z), rand(-5, 5), rand(0, 8), rand(-5, 5), 2.2, 1.2, .5, .08, rand(.5, 1.2), 9, 1);
       completeObjective('uber'); player.keys.add(LV.bossKey || 'strojovna'); log(LV.bossLog || 'Übersoldat padl — strojovna je odemčená'); game.bossE = null;
@@ -6654,6 +6655,7 @@ function squadInit() {
   }
   SQ.list.filter(a => a.joined).forEach((a, k) => a.slot = k);
   SNAV.ok = null; if (SQ.on) navBuild();
+  for (const o of LV.objectives) if (o.kill) { o.count = enemies.filter(e => e.tag === o.id && e.state !== 'dead').length; o.n = 0; }   // "kill them all" objectives count the tagged men
 }
 const squadUp = () => SQ.list.filter(a => a.state !== 'down');
 function nearRecruit() {
@@ -7098,6 +7100,7 @@ function objectiveSpots(o) {   // where in the level an objective can be done
   for (const d of destructibles) if (d.alive && d.obj === o.id && !(d.charge && d.planted)) pk(d.pos);
   for (const e of enemies) if (e.state !== 'dead' && ((o.id === 'uber' && e.T.boss) || (o.id === 'zeman' && e.T.zeman))) pk(e);
   if (o.id === 'exit') for (const ex of exits) pk(ex.pos);
+  for (const e of enemies) if (e.tag === o.id && e.state !== 'dead') pk(e);   // the men you still have to kill
   if (SQ.on) for (const a of SQ.list) if (!a.joined && ((o.id === 'druzstvo' && !a.leader) || (o.id === LV.leaderObj && a.leader))) pk(a);   // your men waiting to be found
   for (const g of LV.trig || []) if (g.obj === o.id && !g.done) {   // places that finish an objective when you get there
     if (g.at) pk({ x: (g.at[0] + .5) * CELL, z: (g.at[1] + .5) * CELL });
