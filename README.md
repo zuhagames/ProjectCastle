@@ -66,8 +66,6 @@ Fotografické textury (Poly Haven) jsou volitelné – když nejsou dostupné, h
 
 Lee-Enfield No.4 (T) s puškohledem, revolver, Sten Mk II, plamenomet, mačeta, granát (Stielhandgranate) a dvě tiché zbraně SOE: pistole **Welrod Mk I** (9 mm, integrovaný tlumič) a tlumená karabina **De Lisle (T)** s puškohledem (.45 ACP). Když začneš pozdější misi z menu, dostaneš zbraně, které bys měl touto dobou mít.
 
-Americké zbraně: samopal **Thompson M1A1** z kontejneru SOE (mise 1.3) a zbraně, které Němci ukořistili a zkoumali ve Wolfsgrundu – puška **M1 Garand** (mise 2.1, prázdný klip po posledním náboji cinkne), kulomet **BAR M1918A2** (mise 2.3) a prototyp **bazuky M1** (mise 3.2) s raketami, které vybuchují. Klávesy `9`, `0`, `-`, `=` nebo kolečko. Všechny čtyři mají podrobné modely (pažby a rukojeti tvarované podle skutečných zbraní, ořechové dřevo, parkerizovaná ocel, olivový lak) a míří se s nimi pravým tlačítkem přes jejich mířidla. Kdo chce skutečné modely z internetu, stačí do `assets/models/` dát `thompson.fbx`, `garand.fbx`, `bar.fbx` nebo `bazooka.fbx` – hra je sama otočí, zmenší na skutečnou délku a použije místo vestavěných.
-
 ## Nastavení
 
 V menu i v pauze: citlivost a obrácení myši, FOV, hlasitost, velikost rozhraní, rozlišení vykreslování, způsob přikrčení, minimapa a pohupování kamery. Nastavení se ukládá v prohlížeči. Minimapa ve stylu Wolfensteinu odkrývá místnosti, jak jimi procházíš (les je zelený, budovy hnědé).
@@ -77,7 +75,6 @@ V menu i v pauze: citlivost a obrácení myši, FOV, hlasitost, velikost rozhran
 - **Nové menu ve stylu moderních Wolfensteinů:** úvodní obrazovka „Stiskni libovolnou klávesu“, kovové logo, menu vlevo s červeným zvýrazněním (myš i šipky + Enter, Esc zpět, zvuky), panel s informacemi k vybrané položce, výběr mise s kartami epizod a stavem misí, nová obrazovka Titulky, filmové zrno a žhavé jiskry. Pozadí menu je živá 3D scéna: vlevo hrad Grimhold pod rudým nebem s reflektory a pochodujícími německými vojáky, vpravo Londýn (Big Ben se svítícími ciferníky, parlament, St Paul's, Tower Bridge, Temže, balóny) s britskými vojáky; obě vlajky vlají, kamera jemně pluje a reaguje na myš.
 - **Dev menu (F8 nebo `):** zbraně a munice, nesmrtelnost, nekonečná munice, průchod zdmi (Space/C nahoru/dolů), zmrazení/zabití/uklidnění nepřátel, spawn libovolného nepřítele, splnění úkolů, dokončení mise, skok na libovolnou misi, odemknutí všech misí.
 - **Mise 2.4 · Zvláštní vlak:** probojuješ se jedoucím vlakem vagon po vagonu (služební vůz, otevřený vůz, krytý vůz, plošina s raketou, vůz s municí, protiletadlový vůz, tendr) až do lokomotivy. Tam převezmeš řízení: `W` regulátor, `S` brzda. V zatáčce a na mostě dodržuj rychlost, jinak vykolejíš, a ve Wolfsgrundu zastav u rampy dřív, než narazíš do zarážedla.
-- **Americké zbraně:** Thompson M1A1, M1 Garand, BAR M1918A2 a prototyp bazuky M1.
 - **Realističtější dabing:** nový generátor s neuronovými hlasy (viz *Cutscény a dabing*).
 - V menu vpravo dole upoutávka na **Bonus Expansion Pack – Ve stopách Orla** (coming soon).
 
