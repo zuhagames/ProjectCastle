@@ -2,7 +2,7 @@
 
 **Bavorské Alpy, 1943.** Akční FPS z druhé světové války ve stylu starých Wolfensteinů, které běží přímo v prohlížeči (three.js). Přestřelky, plížení ve tmě, cutscény s dabingem a hrad plný tajemství.
 
-![Hlavní menu – vlevo hrad Grimhold pod rudým nebem, vpravo válečný Londýn](docs/screenshot-menu.jpg)
+![Polní tábor wehrmachtu v noci – stany, věž s reflektorem, ohniště](docs/screenshot-camp.jpg)
 
 ## Příběh
 
@@ -100,6 +100,8 @@ Na konci stojí Brandt proti Orlovi. Oba mají prázdné zbraně – a tak přij
 | `1`–`8` / kolečko | výběr zbraně |
 | `Tab` (držet) | mapa úrovně s cíli |
 | `Esc` | pauza |
+
+**Na mobilu a tabletu** (na šířku): levým palcem joystick kdekoli v levé části obrazovky (zatlačit až na kraj = běh), pravým palcem tažením rozhlížení. Tlačítka PAL (při držení se dá zároveň mířit tažením), MÍŘIT, PŘEBÍT, SKOK, KRČIT, POUŽÍT (rozsvítí se, když je co použít), ZBRAŇ, MAPA a pauza. Menu se ovládá ťuknutím.
 
 ## Série
 

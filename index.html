@@ -2,7 +2,8 @@
 <html lang="cs">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>Blázen z Londýna: Tajná Akce</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Oswald:wght@300;400;600;700&family=Anton&display=swap" rel="stylesheet">
@@ -94,6 +95,8 @@
   @media (max-width:900px) { .soon { transform:scale(.7); transform-origin:right bottom; } }
   /* ---- AAA front end: title screen, left-hand menu, info panel, key hints, film grain ---- */
   #overlay > .aaa { zoom:1; }
+  /* short landscape screens (phones): the menu is laid out on a virtual 1280×720 screen and zoomed down to fit */
+  html.mz #overlay > .aaa { zoom:var(--mz); inset:auto; left:0; top:0; width:calc(100vw / var(--mz)); height:calc(100vh / var(--mz)); }
   .aaa { position:absolute; inset:0; overflow:hidden; text-align:left; font-family:'Oswald',sans-serif; animation:aaaIn .7s ease-out; }
   @keyframes aaaIn { from { opacity:0; transform:translateX(-24px); } to { opacity:1; transform:none; } }
   .aaa .shade { position:absolute; inset:0; background:linear-gradient(90deg, rgba(0,0,0,.92) 0%, rgba(0,0,0,.78) 30%, rgba(0,0,0,.2) 55%, rgba(0,0,0,0) 70%), linear-gradient(0deg, rgba(0,0,0,.85), transparent 22%); pointer-events:none; }
@@ -128,7 +131,7 @@
   .minfo.up { top:auto; bottom:400px; }
   .ngw { position:absolute; left:6vw; right:6vw; top:clamp(236px,33vh,340px); display:flex; gap:clamp(18px,2.5vw,40px); justify-content:center; flex-wrap:wrap; }
   .ngw h3 { position:absolute; top:-50px; left:0; margin:0; font:700 clamp(24px,2.4vw,36px) 'Oswald',sans-serif; letter-spacing:.14em; color:#fff; text-transform:uppercase; }
-  .ngc { position:relative; width:min(520px,42vw,calc((100vh - 480px) * 16 / 9)); padding:0; border:2px solid #6b5a36; background:#000; cursor:pointer; text-align:left; box-shadow:0 18px 50px rgba(0,0,0,.8); transition:transform .18s, box-shadow .18s, border-color .18s; font-family:'Oswald',sans-serif; }
+  .ngc { position:relative; width:min(520px,calc(42vw / var(--mz,1)),calc((100vh / var(--mz,1) - 480px) * 16 / 9)); padding:0; border:2px solid #6b5a36; background:#000; cursor:pointer; text-align:left; box-shadow:0 18px 50px rgba(0,0,0,.8); transition:transform .18s, box-shadow .18s, border-color .18s; font-family:'Oswald',sans-serif; }
   .ngc canvas { display:block; width:100%; aspect-ratio:16/9; }
   .ngc.on { transform:translateY(-6px) scale(1.02); border-color:var(--gold); box-shadow:0 0 0 2px #ff3b24, 0 24px 60px rgba(0,0,0,.9); }
   .ngc .st { padding:14px 20px 18px; background:linear-gradient(180deg,#141210,#0a0908); }
@@ -201,6 +204,22 @@
   #csub b { color:var(--gold); font-weight:400; margin-right:10px; }
   #zsub { position:absolute; bottom:150px; left:50%; transform:translateX(-50%); width:min(860px,86vw); text-align:center; font-family:'Special Elite',monospace; font-size:clamp(15px,1.5vw,20px); line-height:1.4; color:#f2ead2; text-shadow:0 2px 3px #000,0 0 8px #000; opacity:0; transition:opacity .3s; pointer-events:none; }
   #zsub b { color:#9fd08a; font-weight:400; margin-right:10px; }
+  /* touch controls (phones, tablets): joystick left, look by dragging right, thumb buttons */
+  #touch { position:fixed; inset:0; display:none; z-index:4; touch-action:none; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+  body.touch.play #touch { display:block; }
+  #tjoy { position:absolute; width:clamp(96px,24vmin,150px); height:clamp(96px,24vmin,150px); margin:calc(clamp(96px,24vmin,150px) / -2) 0 0 calc(clamp(96px,24vmin,150px) / -2); border-radius:50%; border:2px solid rgba(232,220,184,.35); background:radial-gradient(circle, rgba(0,0,0,.25), rgba(0,0,0,.05)); left:18vmin; top:calc(100% - 22vmin); pointer-events:none; opacity:.55; }
+  #tjoy i { position:absolute; left:50%; top:50%; width:44%; height:44%; margin:-22% 0 0 -22%; border-radius:50%; background:rgba(232,220,184,.55); box-shadow:0 2px 8px rgba(0,0,0,.6); }
+  #tjoy.on { opacity:1; }
+  .tb { position:absolute; width:clamp(46px,12vmin,72px); height:clamp(46px,12vmin,72px); border-radius:50%; border:2px solid rgba(232,220,184,.5); background:rgba(10,9,8,.42); color:#f2ead2; font:700 clamp(9px,2.4vmin,13px) 'Oswald',sans-serif; letter-spacing:.06em; padding:0; display:flex; align-items:center; justify-content:center; text-align:center; line-height:1.05; text-shadow:0 1px 2px #000; touch-action:none; }
+  .tb.on, .tb:active { background:rgba(179,21,12,.65); border-color:#ff6a3d; }
+  .tb.hot { border-color:#9fd08a; background:rgba(60,110,40,.6); animation:pulse 1.2s ease-in-out infinite; }
+  .tb.big { width:clamp(70px,20vmin,112px); height:clamp(70px,20vmin,112px); font-size:clamp(12px,3.2vmin,17px); background:rgba(140,18,10,.45); }
+  .tb.sq { border-radius:10px; width:clamp(40px,10vmin,58px); height:clamp(34px,8.4vmin,48px); }
+  #rotate { position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center; flex-direction:column; gap:14px; background:#070606; color:#e8dcb8; font:600 18px 'Oswald',sans-serif; letter-spacing:.12em; text-align:center; padding:30px; }
+  #rotate b { font-size:54px; display:block; transform:rotate(90deg); }
+  @media (orientation:portrait) { body.touch #rotate { display:flex; } }
+  .mback { pointer-events:auto; font:700 18px 'Oswald',sans-serif; letter-spacing:.2em; color:#f2ead2; background:rgba(179,21,12,.75); border:2px solid var(--gold); padding:8px 22px; }
+  body.touch #cskip { pointer-events:auto; padding:10px 14px; border:1px solid #555; background:rgba(0,0,0,.5); color:#ccc; }
   #cskip { position:absolute; bottom:3.6vh; right:26px; font:600 12px 'Oswald',sans-serif; letter-spacing:3px; color:#777; }
   #fade { position:fixed; inset:0; background:#000; opacity:0; pointer-events:none; z-index:6; }
   .eps { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:4px 0; }
@@ -247,6 +266,18 @@
   </div>
   <div id="hr" class="p"><div id="keysel"></div><div class="lbl" id="wname">REVOLVER</div><div class="num" id="ammo">6</div></div>
 </div>
+<div id="touch"><div id="tjoy"><i></i></div>
+  <button class="tb big" data-t="fire" style="right:6vmin;bottom:16vmin">PAL</button>
+  <button class="tb" data-t="aim" style="right:30vmin;bottom:8vmin">MÍŘIT</button>
+  <button class="tb" data-t="reload" style="right:8vmin;bottom:38vmin">PŘEBÍT</button>
+  <button class="tb" data-t="jump" style="right:27vmin;bottom:24vmin">SKOK</button>
+  <button class="tb" data-t="crouch" style="right:44vmin;bottom:6vmin">KRČIT</button>
+  <button class="tb" data-t="use" style="right:28vmin;bottom:40vmin">POUŽÍT</button>
+  <button class="tb sq" data-t="weapon" style="right:3vmin;top:30vmin">ZBRAŇ</button>
+  <button class="tb sq" data-t="map" style="right:3vmin;top:42vmin">MAPA</button>
+  <button class="tb sq" data-t="pause" style="left:50%;margin-left:-5vmin;top:15vmin">❚❚</button>
+</div>
+<div id="rotate"><b>📱</b>Otoč telefon na šířku</div>
 <div id="cine"><div class="lb t"></div><div class="lb b"></div><div id="ctitle"></div><div id="csub"></div><div id="cskip">MEZERNÍK · PŘESKOČIT</div></div>
 <div id="fade"></div>
 <canvas id="menubg"></canvas><canvas id="menu3d"></canvas>
@@ -6125,6 +6156,7 @@ function updatePlayer(dt) {
   let ix = 0, iz = 0;
   if (!TRAIN.drv) { if (keys.KeyW || keys.ArrowUp) { ix -= s; iz -= c; } if (keys.KeyS || keys.ArrowDown) { ix += s; iz += c; } }   // on the footplate W/S work the regulator and brake
   if (keys.KeyD || keys.ArrowRight) { ix += c; iz -= s; } if (keys.KeyA || keys.ArrowLeft) { ix -= c; iz += s; }
+  if (TOUCH.joy && !TRAIN.drv) { ix += -s * -TOUCH.my + c * TOUCH.mx; iz += -c * -TOUCH.my - s * TOUCH.mx; }   // touch joystick
   // C crouches (toggle or hold, see settings; not Ctrl: Ctrl+W closes the browser tab); sprint or jump stands you up
   if (player.crouchOn && (keys.ShiftLeft || keys.ShiftRight) && (ix || iz)) player.crouchOn = false;
   if (player.crouchOn && keys.Space) { player.crouchOn = false; keys.Space = false; }
@@ -6972,9 +7004,10 @@ const MISSION_CS = { m1: { pre: 'capture', main: 'cell' }, e2m1: { main: 'cablec
 const SET_DEF = { sens: 1, invertY: false, fov: 80, vol: .8, music: .7, ui: 1, res: 1, crouchToggle: true, minimap: true, bob: true };
 const SET = Object.assign({}, SET_DEF, store.get('cg_settings', {}));
 // GUI scale: designed for 1920×1080, follows the window size, times the player's own factor
-const uiScale = () => clamp(Math.pow(Math.min(innerWidth / 1920, innerHeight / 1080), .8), .78, 2.4) * SET.ui;
+const uiScale = () => { const b = Math.min(innerWidth / 1920, innerHeight / 1080); return (b < .62 ? clamp(b * 1.45, .44, .78) : clamp(Math.pow(b, .8), .78, 2.4)) * SET.ui; };
 function applySettings() {
   document.documentElement.style.setProperty('--ui', uiScale().toFixed(3));
+  const mz = innerHeight < 620 && innerWidth > innerHeight ? innerHeight / 720 : 1; document.documentElement.style.setProperty('--mz', mz.toFixed(3)); document.documentElement.classList.toggle('mz', mz < 1);
   sfx.setVolume(SET.vol);
   const pr = SET.res === 0 ? Math.min(2, devicePixelRatio || 1) : SET.res;
   if (renderer.getPixelRatio() !== pr) { renderer.setPixelRatio(pr); renderer.setSize(innerWidth, innerHeight); }
@@ -7157,6 +7190,8 @@ function tmDraw() {
   }
 }
 const canvas = renderer.domElement;
+if (!document.exitPointerLock) document.exitPointerLock = () => { };   // iOS Safari has no pointer lock at all
+if (!canvas.requestPointerLock) canvas.requestPointerLock = () => { };
 addEventListener('keydown', e => {
   keys[e.code] = true;
   if (game.state === 'cutscene') { if (!e.repeat && (e.code === 'Space' || e.code === 'Enter' || e.code === 'Escape')) endCutscene(true); e.preventDefault(); return; }
@@ -7190,7 +7225,7 @@ addEventListener('wheel', e => {
   if (game.state !== 'playing') return; const dir = e.deltaY > 0 ? 1 : -1; let i = vm.pending >= 0 ? vm.pending : player.weapon;
   for (let k = 0; k < WEAPONS.length; k++) { i = (i + dir + WEAPONS.length) % WEAPONS.length; if (WEAPONS[i].owned) { switchWeapon(i); break; } }
 });
-canvas.addEventListener('click', () => { if (game.state === 'playing' && document.pointerLockElement !== canvas) { const p = canvas.requestPointerLock(); if (p && p.catch) p.catch(() => { }); } });
+canvas.addEventListener('click', () => { if (!TOUCH.on && game.state === 'playing' && document.pointerLockElement !== canvas) { const p = canvas.requestPointerLock(); if (p && p.catch) p.catch(() => { }); } });
 document.addEventListener('pointerlockchange', () => { if (document.pointerLockElement !== canvas && game.state === 'playing') pauseGame(); });
 // embedded in another page (Google Sites…): the host may forbid locking the mouse – offer the game in its own tab
 const IN_FRAME = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
@@ -7591,7 +7626,7 @@ const titleHtml = small => `<div class="logo${small ? ' sm' : ''}"><div class="l
 const GRAIN = (() => { const c = mkCanvas(160, 160), g = c.getContext('2d'), d = g.createImageData(160, 160); for (let i = 0; i < d.data.length; i += 4) { const v = Math.random() * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; } g.putImageData(d, 0, 0); return `url(${c.toDataURL()})`; })();
 document.documentElement.style.setProperty('--grain', GRAIN);
 const FX = '<div class="shade"></div><div class="grain"></div><div class="vig"></div>';
-const hintBar = (back = true) => `<div class="mbar"><span><kbd>↑</kbd><kbd>↓</kbd>VÝBĚR</span><span><kbd>ENTER</kbd>POTVRDIT</span>${back ? '<span><kbd>ESC</kbd>ZPĚT</span>' : ''}<em>v1.4 · ${Object.keys(FBX).length}/6 FBX${soldierTpl ? '' : ' · náhradní postavy'}</em></div>`;
+const hintBar = (back = true) => `<div class="mbar">${TOUCH.on ? (back ? '<button class="mback">◀ ZPĚT</button>' : '') : `<span><kbd>↑</kbd><kbd>↓</kbd>VÝBĚR</span><span><kbd>ENTER</kbd>POTVRDIT</span>${back ? '<span><kbd>ESC</kbd>ZPĚT</span>' : ''}`}<em>v1.4 · ${Object.keys(FBX).length}/6 FBX${soldierTpl ? '' : ' · náhradní postavy'}</em></div>`;
 // keyboard + mouse navigation over every [data-nav] element of the current screen
 const NAV = { i: 0, back: null };
 function navInit(back = null, start = 0) {
@@ -7615,6 +7650,7 @@ addEventListener('keydown', e => {
   else if (e.code === 'Enter' || e.code === 'Space') { e.preventDefault(); items[NAV.i] && items[NAV.i].click(); }
   else if (e.code === 'Escape' || e.code === 'Backspace') { if (NAV.back) { e.preventDefault(); sfx.ctx && sfx.play('switch'); NAV.back(); } }
 });
+document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.mback') && NAV.back) { sfx.ctx && sfx.play('switch'); NAV.back(); } });   // phones have no Esc
 const okSound = () => { if (sfx.ctx) { sfx.play('switch'); sfx.click(sfx.master, 0, 1400, .3); } };
 // the right-hand panel: what the highlighted item does
 const MENU_INFO = {
@@ -7682,7 +7718,7 @@ function showNewGame() {
 }
 function showControls() {
   game.state = 'menu'; menuScreen(true);
-  overlay.innerHTML = `<div class="aaa">${FX}${titleHtml(true)}<div class="spanel"><h3>Ovládání</h3>${KEYS_HTML}<div class="acts"><button class="mi sm" data-nav data-back="1">Zpět</button></div></div>${hintBar()}</div><div id="load"></div>`;
+  overlay.innerHTML = `<div class="aaa">${FX}${titleHtml(true)}<div class="spanel"><h3>Ovládání</h3>${TOUCH.on ? TOUCH_HELP : KEYS_HTML}<div class="acts"><button class="mi sm" data-nav data-back="1">Zpět</button></div></div>${hintBar()}</div><div id="load"></div>`;
   overlay.style.display = 'flex'; $('hud').style.display = 'none';
   overlay.querySelector('[data-back]').onclick = showMainMenu; navInit(showMainMenu);
 }
@@ -7726,13 +7762,73 @@ function showBriefing() {
   setOverlay(`<h1 style="font-size:clamp(28px,5vw,56px)">${LV.name}</h1><h2>${LV.sub}</h2><div class="brief">${LV.brief.map(p => `<p style="color:#cfc4a8;margin:4px 0">${p}</p>`).join('')}<h3>ÚKOLY</h3><ul>${LV.objectives.map(o => `<li>${o.text}</li>`).join('')}</ul></div>`,
     [{ label: LV.outdoor ? 'VYRAZIT' : 'ZAČÍT MISI', fn: startPlaying }, { label: 'MENU', cls: 'sm', fn: showMainMenu }]);
 }
+/* ---------- touch controls: phones and tablets ---------- */
+const TOUCH = { on: !!((window.matchMedia && matchMedia('(pointer: coarse)').matches) || ('ontouchstart' in window && navigator.maxTouchPoints > 0)), mx: 0, my: 0, joy: null, look: new Map(), el: $('touch') };
+if (TOUCH.on) document.body.classList.add('touch');
+(() => {
+  const T = TOUCH, el = T.el, joy = $('tjoy'), knob = joy.querySelector('i'), R = () => joy.offsetWidth / 2;
+  const btn = k => el.querySelector(`[data-t="${k}"]`);
+  const press = (k, down) => {
+    if (game.state !== 'playing') return;
+    if (k === 'fire') { mouseDown = down; if (down) player.queued = true; }
+    else if (!down) { if (k === 'jump') keys.Space = false; return; }
+    else if (k === 'aim') { rightDown = !rightDown; btn('aim').classList.toggle('on', rightDown); }
+    else if (k === 'reload') startReload();
+    else if (k === 'jump') keys.Space = true;
+    else if (k === 'crouch') { if (SET.crouchToggle) player.crouchOn = !player.crouchOn; else keys.KeyC = !keys.KeyC; btn('crouch').classList.toggle('on', SET.crouchToggle ? player.crouchOn : keys.KeyC); }
+    else if (k === 'use') useAction();
+    else if (k === 'weapon') { let i = vm.pending >= 0 ? vm.pending : player.weapon; for (let n = 0; n < WEAPONS.length; n++) { i = (i + 1) % WEAPONS.length; if (WEAPONS[i].owned) { switchWeapon(i); break; } } }
+    else if (k === 'map') tabMap(!TM.on);
+    else if (k === 'pause') pauseGame();
+  };
+  const look = (dx, dy) => { const k = .0058 * SET.sens * (player.zoom ? .3 : player.ads ? .7 : 1); player.yaw -= dx * k; player.pitch = clamp(player.pitch - dy * k * (SET.invertY ? -1 : 1), -1.45, 1.45); vm.swayX = clamp(vm.swayX + dx * .0003, -.04, .04); vm.swayY = clamp(vm.swayY + dy * .0003, -.04, .04); };
+  const setJoy = (x, y) => {
+    const j = T.joy, r = R(); let dx = x - j.x, dy = y - j.y; const d = Math.hypot(dx, dy); if (d > r) { dx *= r / d; dy *= r / d; }
+    T.mx = dx / r; T.my = dy / r; knob.style.transform = `translate(${dx}px,${dy}px)`;
+    keys.ShiftLeft = d > r * 1.15 && T.my < -.5;                                       // pushed hard forward: sprint
+    if (TRAIN.drv) { keys.KeyW = T.my < -.5; keys.KeyS = T.my > .5; }                // on the footplate: regulator and brake
+  };
+  el.addEventListener('touchstart', e => {
+    e.preventDefault(); sfx.init();
+    for (const t of e.changedTouches) {
+      const b = t.target.closest && t.target.closest('[data-t]');
+      if (b) { press(b.dataset.t, true); if (b.dataset.t === 'fire') T.look.set(t.identifier, { x: t.clientX, y: t.clientY, fire: true }); else T.look.set(t.identifier, { btn: b.dataset.t }); continue; }
+      if (t.clientX < innerWidth * .42 && !T.joy) { T.joy = { id: t.identifier, x: t.clientX, y: t.clientY }; joy.style.left = t.clientX + 'px'; joy.style.top = t.clientY + 'px'; joy.classList.add('on'); setJoy(t.clientX, t.clientY); }
+      else T.look.set(t.identifier, { x: t.clientX, y: t.clientY });
+    }
+  }, { passive: false });
+  el.addEventListener('touchmove', e => {
+    e.preventDefault();
+    for (const t of e.changedTouches) {
+      if (T.joy && t.identifier === T.joy.id) { setJoy(t.clientX, t.clientY); continue; }
+      const L = T.look.get(t.identifier); if (!L || L.btn || game.state !== 'playing') continue;
+      look(t.clientX - L.x, t.clientY - L.y); L.x = t.clientX; L.y = t.clientY;
+    }
+  }, { passive: false });
+  const end = e => {
+    for (const t of e.changedTouches) {
+      if (T.joy && t.identifier === T.joy.id) { T.joy = null; T.mx = T.my = 0; keys.ShiftLeft = false; if (TRAIN.on) keys.KeyW = keys.KeyS = false; knob.style.transform = ''; joy.classList.remove('on'); joy.style.left = ''; joy.style.top = ''; continue; }
+      const L = T.look.get(t.identifier); T.look.delete(t.identifier); if (!L) continue;
+      if (L.fire) press('fire', false); else if (L.btn) press(L.btn, false);
+    }
+  };
+  el.addEventListener('touchend', end); el.addEventListener('touchcancel', end);
+  $('cskip').addEventListener('click', () => { if (game.state === 'cutscene') endCutscene(true); });
+  // the "use" button lights up when there is something to use
+  setInterval(() => { if (!TOUCH.on || game.state !== 'playing') return; const p = hud.prompt && hud.prompt.textContent || ''; btn('use').classList.toggle('hot', p.startsWith('[F]')); btn('aim').classList.toggle('on', rightDown); }, 200);
+})();
+const TOUCH_HELP = `<div style="text-align:left;line-height:1.55;font-size:15px;color:#cfc4a8;max-width:600px;margin:0 auto 12px">
+  <p style="margin:0 0 6px"><b style="color:#e6c36a">Levý palec:</b> kamkoli do levé části obrazovky – joystick, pohyb. Zatlač ho až na kraj dopředu a běžíš.</p>
+  <p style="margin:0 0 6px"><b style="color:#e6c36a">Pravý palec:</b> tažením po pravé straně se rozhlížíš. Když držíš PAL, můžeš zároveň táhnout a mířit.</p>
+  <p style="margin:0"><b style="color:#e6c36a">Tlačítka:</b> PAL, MÍŘIT (přepínač), PŘEBÍT, SKOK, KRČIT, POUŽÍT (rozsvítí se, když je co použít), ZBRAŇ, MAPA a ❚❚ pauza.</p></div>`;
 function startPlaying() {
   sfx.init(); sfx.setAmbience(!!(LV && LV.outdoor)); game.state = 'playing'; overlay.style.display = 'none'; $('hud').style.display = 'block';
   for (const k in keys) keys[k] = false; mouseDown = rightDown = false; player.queued = false; clock.getDelta();
   if (player.time < .1) { hud.introT.textContent = LV.name; hud.introS.textContent = LV.sub.toUpperCase(); hud.intro.style.opacity = 1; setTimeout(() => hud.intro.style.opacity = 0, 3200); game.objT = 6; }
+  if (TOUCH.on) { document.body.classList.add('play'); return; }   // no mouse to lock on a phone
   const p = canvas.requestPointerLock(); if (p && p.catch) p.catch(() => { });
 }
-function pauseGame() { game.state = 'paused'; mouseDown = rightDown = false; sfx.flame(false); setOverlay(`<h1>PAUZA</h1><h2>${LV.name}</h2>${KEYS_HTML}`, [{ label: 'POKRAČOVAT', fn: startPlaying }, { label: 'NASTAVENÍ', cls: 'sm', fn: () => showSettings(pauseGame) }, { label: 'RESTART MISE', cls: 'sm', fn: () => { resetLevelState(); showBriefing(); } }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]); }
+function pauseGame() { document.body.classList.remove('play'); TOUCH.joy = null; TOUCH.mx = TOUCH.my = 0; TOUCH.look.clear(); game.state = 'paused'; mouseDown = rightDown = false; sfx.flame(false); setOverlay(`<h1>PAUZA</h1><h2>${LV.name}</h2>${TOUCH.on ? TOUCH_HELP : KEYS_HTML}`, [{ label: 'POKRAČOVAT', fn: startPlaying }, { label: 'NASTAVENÍ', cls: 'sm', fn: () => showSettings(pauseGame) }, { label: 'RESTART MISE', cls: 'sm', fn: () => { resetLevelState(); showBriefing(); } }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]); }
 const fmtTime = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
 const statsHtml = () => `<div class="stats">ZABITO <b>${player.kills}/${game.totalEnemies}</b><br>ODHALEN <b>${game.detections}×</b><br>POKLADY <b>${player.treasure}/${game.totalTreasure}</b><br>ČAS <b>${fmtTime(player.time)}</b><br>SKÓRE <b>${player.score}</b></div>`;
 function die() { game.state = 'dead'; sfx.flame(false); setTimeout(() => { document.exitPointerLock(); setOverlay(`<h1 style="color:#c22">KIA</h1><h2>MISE NESPLNĚNA</h2>${statsHtml()}`, [{ label: 'ZKUSIT ZNOVU', fn: async () => { if (LV.dlc) { game.noCS = true; await startMission(game.level, false); game.noCS = false; return; } resetLevelState(); startPlaying(); } }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]); }, 1500); }
@@ -7879,6 +7975,7 @@ function frame() {
 }
 function tick(dt) {
   time += dt; frameNo++;
+  if (TOUCH.on && (game.state === 'playing') !== TOUCH.pl) { TOUCH.pl = game.state === 'playing'; document.body.classList.toggle('play', TOUCH.pl); if (!TOUCH.pl) { TOUCH.joy = null; TOUCH.mx = TOUCH.my = 0; TOUCH.look.clear(); mouseDown = false; } }
   if (LV && (game.state === 'playing' || game.state === 'dead')) {
     if (game.state === 'playing') updatePlayer(dt);
     else { player.vel.multiplyScalar(.9); camera.position.y = lerp(camera.position.y, player.pos.y + .35, dt * 3); camera.rotation.z = lerp(camera.rotation.z, .5, dt * 3); }
