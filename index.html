@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
 <title>Blázen z Londýna: Tajná Akce</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Oswald:wght@300;400;600;700&family=Anton&display=swap" rel="stylesheet">
@@ -96,7 +97,8 @@
   /* ---- AAA front end: title screen, left-hand menu, info panel, key hints, film grain ---- */
   #overlay > .aaa { zoom:1; }
   /* short landscape screens (phones): the menu is laid out on a virtual 1280×720 screen and zoomed down to fit */
-  html.mz #overlay > .aaa { zoom:var(--mz); inset:auto; left:0; top:0; width:calc(100vw / var(--mz)); height:calc(100vh / var(--mz)); }
+  html.mz #overlay > .aaa { inset:auto; left:0; top:0; width:calc(100% / var(--mz)); height:calc(100% / var(--mz)); transform:scale(var(--mz)); transform-origin:0 0; animation:none; }
+  html.mz #overlay { padding:0; }
   .aaa { position:absolute; inset:0; overflow:hidden; text-align:left; font-family:'Oswald',sans-serif; animation:aaaIn .7s ease-out; }
   @keyframes aaaIn { from { opacity:0; transform:translateX(-24px); } to { opacity:1; transform:none; } }
   .aaa .shade { position:absolute; inset:0; background:linear-gradient(90deg, rgba(0,0,0,.92) 0%, rgba(0,0,0,.78) 30%, rgba(0,0,0,.2) 55%, rgba(0,0,0,0) 70%), linear-gradient(0deg, rgba(0,0,0,.85), transparent 22%); pointer-events:none; }
@@ -7626,7 +7628,7 @@ const titleHtml = small => `<div class="logo${small ? ' sm' : ''}"><div class="l
 const GRAIN = (() => { const c = mkCanvas(160, 160), g = c.getContext('2d'), d = g.createImageData(160, 160); for (let i = 0; i < d.data.length; i += 4) { const v = Math.random() * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; } g.putImageData(d, 0, 0); return `url(${c.toDataURL()})`; })();
 document.documentElement.style.setProperty('--grain', GRAIN);
 const FX = '<div class="shade"></div><div class="grain"></div><div class="vig"></div>';
-const hintBar = (back = true) => `<div class="mbar">${TOUCH.on ? (back ? '<button class="mback">◀ ZPĚT</button>' : '') : `<span><kbd>↑</kbd><kbd>↓</kbd>VÝBĚR</span><span><kbd>ENTER</kbd>POTVRDIT</span>${back ? '<span><kbd>ESC</kbd>ZPĚT</span>' : ''}`}<em>v1.4 · ${Object.keys(FBX).length}/6 FBX${soldierTpl ? '' : ' · náhradní postavy'}</em></div>`;
+const hintBar = (back = true) => `<div class="mbar">${TOUCH.on ? (back ? '<button class="mback">◀ ZPĚT</button>' : '') : `<span><kbd>↑</kbd><kbd>↓</kbd>VÝBĚR</span><span><kbd>ENTER</kbd>POTVRDIT</span>${back ? '<span><kbd>ESC</kbd>ZPĚT</span>' : ''}`}<em>v1.5${TOUCH.on ? ' · touch' : ''} · ${Object.keys(FBX).length}/6 FBX${soldierTpl ? '' : ' · náhradní postavy'}</em></div>`;
 // keyboard + mouse navigation over every [data-nav] element of the current screen
 const NAV = { i: 0, back: null };
 function navInit(back = null, start = 0) {
@@ -7763,8 +7765,11 @@ function showBriefing() {
     [{ label: LV.outdoor ? 'VYRAZIT' : 'ZAČÍT MISI', fn: startPlaying }, { label: 'MENU', cls: 'sm', fn: showMainMenu }]);
 }
 /* ---------- touch controls: phones and tablets ---------- */
-const TOUCH = { on: !!((window.matchMedia && matchMedia('(pointer: coarse)').matches) || ('ontouchstart' in window && navigator.maxTouchPoints > 0)), mx: 0, my: 0, joy: null, look: new Map(), el: $('touch') };
+const TOUCH = { on: !!(/iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || (window.matchMedia && matchMedia('(pointer: coarse)').matches)), mx: 0, my: 0, joy: null, look: new Map(), el: $('touch') };
 if (TOUCH.on) document.body.classList.add('touch');
+addEventListener('touchstart', () => { if (TOUCH.on) return; TOUCH.on = true; document.body.classList.add('touch'); if (game.state === 'menu' && overlay.querySelector('.mlist')) showMainMenu(); }, { passive: true });   // a touch screen we did not recognise
+// on phones there is no console: show script errors on screen so they can be reported
+addEventListener('error', e => { if (!TOUCH.on) return; let b = $('errbox'); if (!b) { b = document.createElement('div'); b.id = 'errbox'; b.style.cssText = 'position:fixed;left:8px;right:8px;bottom:8px;z-index:99;background:rgba(120,0,0,.88);color:#fff;font:12px monospace;padding:6px 8px;pointer-events:none;white-space:pre-wrap'; document.body.appendChild(b); } b.textContent = ('CHYBA: ' + e.message + ' @' + (e.lineno || '?') + '\n' + b.textContent).slice(0, 600); });
 (() => {
   const T = TOUCH, el = T.el, joy = $('tjoy'), knob = joy.querySelector('i'), R = () => joy.offsetWidth / 2;
   const btn = k => el.querySelector(`[data-t="${k}"]`);
