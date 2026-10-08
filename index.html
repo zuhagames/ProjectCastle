@@ -7041,8 +7041,8 @@ CUTSCENES.finale_bj = (() => {
         e.dead = true; e.deadT = 5; e.fallSide = i % 2 ? .3 : -.3; return e;
       });
       const K = CS.cam.filter(k => k[0] < 39.5).map(k => [sh(k[0]), ...k.slice(1)]);
-      const look = A.dead[1], eye = c.clone().addScaledVector(d, .8).addScaledVector(sd, 1.6);
-      K.push([8.61, ...P(eye, c.y + 1.9), ...P(look, look.y + .3)], [12.99, ...P(eye.clone().addScaledVector(sd, -.5), c.y + 1.8), ...P(look, look.y + .2)]);
+      const look = c.clone().lerp(A.dead[1], .5), eye = c.clone().addScaledVector(d, -1).addScaledVector(sd, 3.2);   // from the side: the Eagle over the dead
+      K.push([8.61, ...P(eye, c.y + 2.3), ...P(look, look.y + .5)], [12.99, ...P(eye.clone().addScaledVector(d, .5), c.y + 2.1), ...P(look, look.y + .4)]);
       const bj = A.m.clone().addScaledVector(d, -.45), side = bj.clone().addScaledVector(sd, 2.6).addScaledVector(d, -1.4);
       K.push([43.91, ...P(side, bj.y + 1.6), ...P(bj, bj.y + 1.35)], [62, ...P(side.clone().addScaledVector(d, -.6), bj.y + 1.7), ...P(bj, bj.y + 1.3)],
         [62.01, 30, 9, 92, 60, 9, 22], [82, 24, 13, 98, 60, 12, 18]);
