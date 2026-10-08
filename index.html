@@ -854,6 +854,8 @@ const LEVELS = [
       { after: 'cely', fn: 'freePrisoners', say: ['bj_15', 'vez_1'] }
     ],
     targets: [{ kind: 'lever', cell: [10, 1], oz: -1.3, rot: 1, obj: 'cely', name: 'Cely jsou otevřené' }],
+    squad: [['vezen', 3, 1, PI, { name: 'Vězeň Franta', hp: 80, mortal: true, caged: true, oz: -.7 }], ['vezen2', 4, 1, PI, { name: 'Vězeň Lojza', hp: 80, mortal: true, caged: true, oz: -.3, ox: .6 }],
+      ['vezen', 5, 1, PI, { name: 'Vězeň Pepík', hp: 80, mortal: true, caged: true, oz: -.6, ox: .3 }], ['vezen2', 7, 1, PI, { name: 'Vězeň Karel', hp: 80, mortal: true, caged: true, oz: -.4 }]],
     alarms: [{ cell: [14, 12], side: '+x' }], reinforce: [[16, 6], [21, 2], [18, 7]],
     barrels: [[18, 10, -.8, -.8], [23, 1, 1.2, -1.2], [13, 15, 1.3, -1]],
     enemies: [
@@ -3640,14 +3642,24 @@ const shuffled = (arr) => arr.map(v => [rndL(), v]).sort((a, b) => a[0] - b[0]).
 const cellsOf = rm => { const o = []; for (let z = rm.r[1]; z <= rm.r[3]; z++) for (let x = rm.r[0]; x <= rm.r[2]; x++) o.push([x, z]); return o; };
 const freeCells = rm => cellsOf(rm).filter(([x, z]) => !doorFront.has(cidx(x, z)));
 const FURN = {
-  dungeon(rm) {
+  dungeon(rm) {   // cell rows behind iron bars
     const rows = rm.r[3] - rm.r[1] + 1;
     if (rows >= 3) {
       const zb = rm.z0 + CELL, y = rm.y, h = rm.top - y - .05;
-      // The starting cell in mission 1 must always be freely passable.
-      // Keep the iron-bar visuals, but leave a full-width opening in the
-      // partition so the player can walk out immediately without using F.
+      // Mission 1: your own cell (the first one) stands open – the guard you knocked down left it so. The others are
+      // locked behind barred gates that the lever in the guardroom swings open.
       const startCellsOpen = LV && LV.id === 'm1' && rm.id === 'cells';
+      if (startCellsOpen) for (let x = rm.r[0] + 1; x <= rm.r[2]; x++) {
+        const g0 = x * CELL + 1.8, gw = 1.6;
+        P_.bars(V(x * CELL + .05, y, zb), V(g0, y, zb), y, h); P_.bars(V(g0 + gw, y, zb), V((x + 1) * CELL - .05, y, zb), y, h);
+        if (x > rm.r[0] + 1) P_.bars(V(x * CELL, y, rm.z0 + .05), V(x * CELL, y, zb - .05), y, h);
+        const grp = new THREE.Group(), m = new THREE.MeshLambertMaterial({ map: TX.iron, color: new THREE.Color(.8, .8, .82) });
+        grp.position.set(g0, y, zb); levelRoot.add(grp);
+        for (let i = 0; i <= 9; i++) { const b = new THREE.Mesh(Cyl(.02, .02, h, 5), m); b.position.set(i / 9 * gw, h / 2, 0); grp.add(b); }
+        for (const yy of [.1, h - .1, h * .55]) { const b = new THREE.Mesh(B3(gw, .06, .06), m); b.position.set(gw / 2, yy, 0); grp.add(b); }
+        const occ = addOcc(g0, y, zb - .06, g0 + gw, y + h, zb + .06, { bake: false, bullet: false });
+        CELLGATES.push({ grp, mats: [m], occ, x: g0 + gw / 2, z: zb });
+      }
       if (!startCellsOpen) P_.bars(V(rm.x0 + .05, y, zb), V(rm.x1 - .05, y, zb), y, h);
       for (let x = rm.r[0]; x <= rm.r[2]; x++) {
         if (!startCellsOpen) {
@@ -6617,6 +6629,7 @@ function csBoom(p, s = 1) {
    in a loose wedge behind you, pick their own targets and shoot back; the enemy can shoot them too. A downed comrade
    gets back on his feet after a while (the story needs every one of them until the last mission). */
 const SQ = { on: false, list: [] };
+const CELLGATES = [];   // mission 1.1: the barred gates of the other cells
 const angD = (a, b) => ((b - a + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI;
 TX.markAlly = markTex('V', '#8be070');
 const SAY = { q: [], t: 0, hide: 0 };
@@ -6718,9 +6731,10 @@ function squadInit() {
 }
 function addAlly(t, cx, cz, yaw, o = {}) {
   const e = makeEnemy(t, cx, cz, yaw, o); enemies.splice(enemies.indexOf(e), 1);
-  Object.assign(e, { ally: true, name: o.name || e.T.name, leader: !!o.leader, joined: !o.recruit, hold: !!o.hold, mortal: !!o.mortal, joinLine: o.join, voiceI: SQ.list.length % 3, target: null, scanT: Math.random() * .3, downT: 0, id4: 0, slot: 0 });
+  Object.assign(e, { ally: true, name: o.name || e.T.name, leader: !!o.leader, joined: !o.recruit, hold: !!o.hold || !!o.caged, caged: !!o.caged, mortal: !!o.mortal, joinLine: o.join, voiceI: SQ.list.length % 3, target: null, scanT: Math.random() * .3, downT: 0, id4: 0, slot: 0 });
   e.maxHp = e.hp = o.hp || 170; e.cooldown = 1; tintMats(e.mats, e.x, e.z);
   if (o.wounded) { e.state = 'down'; e.downT = 1e9; }
+  if (e.caged && e.holder) e.holder.visible = false;   // no gun until he gets out
   SQ.list.push(e); return e;
 }
 const squadUp = () => SQ.list.filter(a => a.state !== 'down');
@@ -6769,7 +6783,7 @@ function updateAlly(e, dt) {
   // targets: the nearest live enemy he can see
   e.scanT -= dt;
   if (e.scanT <= 0) {
-    e.scanT = .35; e.target = null; let bd = e.joined ? 36 : 18;
+    e.scanT = .35; e.target = null; let bd = e.caged ? 0 : e.joined ? 36 : 18;
     for (const h of enemies) {
       if (h.state === 'dead' || h.actor || h.T.civ) continue;
       const d = Math.hypot(h.x - e.x, h.z - e.z); if (d >= bd || Math.abs(h.y - e.y) > 9) continue;
@@ -6817,14 +6831,14 @@ function updateAlly(e, dt) {
   }
   if (e.flashT > 0 && e.holder) e.flashSprite.position.copy(enemyMuzzle(e));
   // a green chevron over your men, so you never shoot at them by mistake
-  e.mark.visible = vis && pd > 4 && pd < 40; if (e.mark.visible) { e.mark.material.map = TX.markAlly; e.mark.material.opacity = .8; }
+  e.mark.visible = vis && !e.caged && pd > 4 && pd < 40; if (e.mark.visible) { e.mark.material.map = TX.markAlly; e.mark.material.opacity = .8; }
 }
 // enemies notice your squad and shoot at whoever is nearer: you or one of your men
 function enemyFoe(e, dist, eyeY) {
   e.foeAlly = null; e.atAlly = false; if (!SQ.on) return;
   let bd = 1e9; const sy = Math.sin(e.yaw), cy = Math.cos(e.yaw);
   for (const a of SQ.list) {
-    if (a.state === 'down' || (RIDE.on && a.ride && !LV.rideShootable)) continue;
+    if (a.state === 'down' || a.caged || (RIDE.on && a.ride && !LV.rideShootable)) continue;
     const ax = a.x - e.x, az = a.z - e.z, d = Math.hypot(ax, az) + 1e-4; if (d > bd || d > (e.T.range || 0) * 1.1) continue;
     if (calm(e) && ((ax * sy + az * cy) / d < .25 || d > 22)) continue;
     if (losClear(e.x, eyeY, e.z, a.x, a.y + 1.4, a.z)) { bd = d; e.foeAlly = a; }
@@ -6885,9 +6899,10 @@ const ZO_FN = {
   quake(g) { player.shake = 1.4; for (let i = 0; i < 4; i++) after(i * .35, () => { sfx.play('explode', V(player.pos.x + rand(-30, 30), player.pos.y + 8, player.pos.z - 40), 1.6); player.shake = Math.min(1.5, player.shake + .6); }); },
   // mission 1.1: the lever in the guardroom opens every cell – the prisoners grab what they can and come with you
   freePrisoners() {
-    [['vezen', 3, 1, 'Vězeň Franta'], ['vezen2', 4, 1, 'Vězeň Lojza'], ['vezen', 5, 1, 'Vězeň Pepík'], ['vezen2', 6, 1, 'Vězeň Karel']].forEach(([t, cx, cz, name], i) => addAlly(t, cx, cz, PI, { name, hp: 80, mortal: true, oz: -.6 + (i % 2) * .4 }));
+    for (const g of CELLGATES) { g.occ.active = false; const t0 = time; ZO.movers.push({ tick: () => { const k = Math.min(1, (time - t0) / .9); g.grp.rotation.y = 1.7 * k * (2 - k); return k < 1; } }); sfx.play('door', g.grp.position, .8); }
+    if (SQ.on) navBuild();   // the open gates are walkable now
+    for (const a of SQ.list) if (a.caged) { a.caged = false; a.hold = false; if (a.holder) a.holder.visible = true; }
     SQ.list.filter(a => a.joined).forEach((a, k) => a.slot = k);
-    if (!SQ.on) { SQ.on = true; navBuild(); }
     log('<span style="color:#9fd08a">Vězni z cel se přidali k tobě</span>');
   },
   squadAll() { SQ.list.forEach(a => { a.joined = true; a.hold = false; }); SQ.list.forEach((a, k) => a.slot = k); },
@@ -7904,7 +7919,7 @@ function startPlaying() {
 function pauseGame() { document.body.classList.remove('play'); TOUCH.joy = null; TOUCH.mx = TOUCH.my = 0; TOUCH.look.clear(); game.state = 'paused'; mouseDown = rightDown = false; sfx.flame(false); setOverlay(`<h1>PAUZA</h1><h2>${LV.name}</h2>${TOUCH.on ? TOUCH_HELP : KEYS_HTML}`, [{ label: 'POKRAČOVAT', fn: startPlaying }, { label: 'NASTAVENÍ', cls: 'sm', fn: () => showSettings(pauseGame) }, { label: 'RESTART MISE', cls: 'sm', fn: () => { resetLevelState(); showBriefing(); } }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]); }
 const fmtTime = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
 const statsHtml = () => `<div class="stats">ZABITO <b>${player.kills}/${game.totalEnemies}</b><br>ODHALEN <b>${game.detections}×</b><br>POKLADY <b>${player.treasure}/${game.totalTreasure}</b><br>ČAS <b>${fmtTime(player.time)}</b><br>SKÓRE <b>${player.score}</b></div>`;
-function die() { game.state = 'dead'; sfx.flame(false); setTimeout(() => { document.exitPointerLock(); setOverlay(`<h1 style="color:#c22">KIA</h1><h2>MISE NESPLNĚNA</h2>${statsHtml()}`, [{ label: 'ZKUSIT ZNOVU', fn: async () => { if (LV.dlc) { game.noCS = true; await startMission(game.level, false); game.noCS = false; return; } resetLevelState(); startPlaying(); } }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]); }, 1500); }
+function die() { game.state = 'dead'; sfx.flame(false); setTimeout(() => { document.exitPointerLock(); setOverlay(`<h1 style="color:#c22">KIA</h1><h2>MISE NESPLNĚNA</h2>${statsHtml()}`, [{ label: 'ZKUSIT ZNOVU', fn: async () => { if (LV.dlc || LV.trig) { game.noCS = true; await startMission(game.level, false); game.noCS = false; return; } resetLevelState(); startPlaying(); } }, { label: 'HLAVNÍ MENU', cls: 'sm', fn: showMainMenu }]); }, 1500); }
 function win() {
   if (game.state !== 'playing') return; game.state = 'won'; sfx.flame(false);
   player.score += Math.max(0, 3000 - Math.floor(player.time) * 4); if (!game.detections) { player.score += 1500; log('Duch: neodhalen +1500'); } document.exitPointerLock();
@@ -7986,10 +8001,11 @@ async function loadLevel(i, def = null) {
   setLoad('Stavím hrad…'); await nextFrame();
   clearLevel();
   LV = structuredClone(L0); rndL = mulberry32(1234 + i * 77);
-  initGrid(); applyAtmosphere(); buildRoomSurfaces(); buildDoors(); buildOutdoor(); buildExterior(); buildDecor(); mmReset();
+  CELLGATES.length = 0; initGrid(); applyAtmosphere(); buildRoomSurfaces(); buildDoors(); buildOutdoor(); buildExterior(); buildDecor(); mmReset();
   await buildWorldMeshes(p => setLoad(`Zapékám světla a stíny… ${Math.round(p * 100)} %`));
   buildBarrels(); buildDoorLeaves(); buildPassability(); computeAlarmFlows();
   for (const d of destructibles) if (d.mats) tintMats(d.mats, d.pos.x, d.pos.z, 1.1);
+  for (const g of CELLGATES) tintMats(g.mats, g.x, g.z - 1, 1.1);
   if (OUT.cabin) tintMats(OUT.cabinMats, OUT.cabin.position.x, OUT.cabin.position.z + 2, 1.2);
   game.totalTreasure = 0;
   for (const [k, cx, cz, ox = 0, oz = 0] of LV.pickups) { const p = C(cx, cz, ox, oz); addPickup(k, p, surfaceY(p.x, p.z)); if (k === 'g') game.totalTreasure++; }
