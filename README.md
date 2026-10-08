@@ -8,7 +8,9 @@
 
 Říjen 1943. Americký agent B. J., kterému Londýn říká **Orel**, je chycen v lesích pod hradem Grimhold a odvlečen do kobek. Na hradě sídlí štáb tajné operace **Finsternis** – dr. Zeman tu staví rakety na Londýn a v laboratoři pod kaplí probouzí Übersoldaty.
 
-Orel uteče z cely, ukradne plány, sjede lanovkou do údolí, probojuje se nočním hvozdem, naskočí na zvláštní vlak do podzemní továrny Wolfsgrund – a nechá celou horu vyletět do vzduchu.
+Orel uteče z cely, postřílí noční hlídku ve strážnici a otevře cely ostatním vězňům. Ukradne plány, sjede lanovkou do údolí, zatímco po kabině pálí Krügerovi muži z horní stanice, probojuje se nočním hvozdem, naskočí na zvláštní vlak do podzemní továrny Wolfsgrund – a nechá celou horu vyletět do vzduchu.
+
+Jenže u východu ze štoly nečeká komando SOE, které ho mělo odvézt domů. Čeká tam muž, kterého Orel tu noc nechal ležet ve strážnici.
 
 | Epizoda | Mise |
 | --- | --- |
@@ -16,9 +18,11 @@ Orel uteče z cely, ukradne plány, sjede lanovkou do údolí, probojuje se noč
 | **2 · Noční hvozd** | 2.1 Údolní stanice · 2.2 Lesní tábor · 2.3 Nádraží Wolfsgrund · 2.4 Zvláštní vlak |
 | **3 · Operace Finsternis** | 3.1 Brána Wolfsgrund · 3.2 Podzemní továrna · 3.3 Srdce temnoty |
 
-- **Epizoda 1** – kobky, kuchyně a vinný sklep, rytířský sál, štáb SS, knihovna, kaple a krypta, kde v Zemanově laboratoři čeká první Übersoldat.
+- **Epizoda 1** – kobky a strážnice (páka v ní otevře cely a propuštění vězni jdou s tebou), kuchyně a vinný sklep, rytířský sál, štáb SS, knihovna, kaple a krypta, kde v Zemanově laboratoři čeká první Übersoldat.
 - **Epizoda 2** – venku a v noci: smrkové lesy, hájovna na kopci, polní tábor s věžemi a reflektory, nádraží s vlaky. Mise 2.4 se hraje na jedoucím vlaku – probojuješ se vagon po vagonu až do lokomotivy a sám ji dovedeš do Wolfsgrundu.
-- **Epizoda 3** – vykládací rampa pod skalní stěnou, podzemní továrna na rakety a finální souboj s Übersoldatem Mk II.
+- **Epizoda 3** – vykládací rampa pod skalní stěnou, podzemní továrna na rakety a finální souboj s Übersoldatem Mk II. Po výbuchu hory přijde ještě jeden souboj – na nože.
+
+Hlavní hra a rozšíření vyprávějí tutéž noc ze dvou stran. Co Orel jen zahlédne nebo o tom vůbec neví – druhou kabinu na laně, výsadek SOE, který ho má dostat domů, muže, který jde po jeho krvavé stopě – to v rozšíření prožiješ jako Brandt.
 
 ![Úvodní cutscéna – B. J. obklíčený hlídkou s baterkami](docs/screenshot-cutscene.jpg)
 
