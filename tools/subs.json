@@ -37,7 +37,7 @@
  ],
  "bj_05": [
   "bj",
-  "Londýne, tady Orel. Jsem venku z Grimholdu. Mám plány i Zemanův deník."
+  "Londýne, tady Orel. Jsem venku z Grimholdu. Mám plány i Zemanův deník. A kulku v rameni."
  ],
  "lon_02": [
   "lon",
@@ -54,6 +54,10 @@
  "bj_07": [
   "bj",
   "Štěstí si nechte, plukovníku. Mně stačí náboje."
+ ],
+ "bj_12": [
+  "bj",
+  "Druhá kabina. Tak oni to nevzdají."
  ],
  "zem_01": [
   "zem",
@@ -86,6 +90,38 @@
  "bj_10": [
   "bj",
   "Domů. To zní dobře."
+ ],
+ "bj_13": [
+  "bj",
+  "Komando SOE. Všichni mrtví. Někdo tu na mě čekal."
+ ],
+ "lon_07": [
+  "lon",
+  "Orle, komando SOE se neozývá. Co se tam stalo?"
+ ],
+ "bj_14": [
+  "bj",
+  "Komando je mrtvé. Čekal tu na mě voják z Grimholdu. Měl jsem ho dorazit už ve strážnici."
+ ],
+ "kes_m1": [
+  "kes",
+  "Slyšels něco? Dole u cel."
+ ],
+ "bj_15": [
+  "bj",
+  "Vstávejte, chlapi. Cely jsou otevřené. Seberte zbraně a nadělejte jim tu pořádný zmatek."
+ ],
+ "vez_1": [
+  "P",
+  "Díky, Orle! Jdeme s tebou!"
+ ],
+ "lon_06": [
+  "lon",
+  "Orle, tady Londýn. Dnes v noci seskočí nad Wolfsgrundem komando SOE. Počká na vás u nouzového východu z továrny a zavolá letadlo."
+ ],
+ "bj_11": [
+  "bj",
+  "Rozumím. Ať nestřílejí po první postavě, co vyleze ze štoly."
  ],
  "zem_03": [
   "zem",

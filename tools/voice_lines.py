@@ -13,11 +13,12 @@ LINES = [
     ('bj_03', 'bj', 'Doktor si bude muset počkat.'),
     ('bj_04', 'bj', 'Revolver a klíče. A teď ven z téhle díry.'),
     # episode 2: down the cable car
-    ('bj_05', 'bj', 'Londýne, tady Orel. Jsem venku z Grimholdu. Mám plány i Zemanův deník.'),
+    ('bj_05', 'bj', 'Londýne, tady Orel. Jsem venku z Grimholdu. Mám plány i Zemanův deník. A kulku v rameni.'),
     ('lon_02', 'lon', 'Výborně, Orle. A co je v tom deníku?'),
     ('bj_06', 'bj', 'Wolfsgrund. Podzemní továrna, kam vede jen železnice. Tam stavějí Finsternis.'),
     ('lon_03', 'lon', 'Pak tam musíte vy. Spojka odboje na vás čeká v hájovně nad údolím. Hodně štěstí.'),
     ('bj_07', 'bj', 'Štěstí si nechte, plukovníku. Mně stačí náboje.'),
+    ('bj_12', 'bj', 'Druhá kabina. Tak oni to nevzdají.'),
     # episode 3: the ramp at Wolfsgrund
     ('zem_01', 'zem', 'Der Übersoldat Mark Zwei ist bereit, Standartenführer. Wir müssen ihn nur noch wecken.', 'Übersoldat Mk II je připraven, Standartenführere. Stačí ho jen probudit.'),
     ('off_04', 'off', 'Und die Raketen, Herr Doktor?', 'A rakety, pane doktore?'),
@@ -28,6 +29,17 @@ LINES = [
     ('bj_09', 'bj', 'To nebylo zemětřesení, Londýne. To byl Wolfsgrund. Operace Finsternis skončila.'),
     ('lon_05', 'lon', 'Skvělá práce, Orle. Je čas vrátit se domů.'),
     ('bj_10', 'bj', 'Domů. To zní dobře.'),
+    # finale: the knife fight, then London (the main game's side of the expansion's ending)
+    ('bj_13', 'bj', 'Komando SOE. Všichni mrtví. Někdo tu na mě čekal.'),
+    ('lon_07', 'lon', 'Orle, komando SOE se neozývá. Co se tam stalo?'),
+    ('bj_14', 'bj', 'Komando je mrtvé. Čekal tu na mě voják z Grimholdu. Měl jsem ho dorazit už ve strážnici.'),
+    # mission 1.1: the guardroom next to the cells, and the other prisoners
+    ('kes_m1', 'kes', 'Hast du was gehört? Unten bei den Zellen.', 'Slyšels něco? Dole u cel.'),
+    ('bj_15', 'bj', 'Vstávejte, chlapi. Cely jsou otevřené. Seberte zbraně a nadělejte jim tu pořádný zmatek.'),
+    ('vez_1', 'P', 'Díky, Orle! Jdeme s tebou!'),
+    # mission 2.4: London on the radio – the SOE team
+    ('lon_06', 'lon', 'Orle, tady Londýn. Dnes v noci seskočí nad Wolfsgrundem komando SOE. Počká na vás u nouzového východu z továrny a zavolá letadlo.'),
+    ('bj_11', 'bj', 'Rozumím. Ať nestřílejí po první postavě, co vyleze ze štoly.'),
     # in-game: Zeman and B.J.
     ('zem_03', 'zem', 'Wachen! Haltet ihn auf!', 'Stráže! Zastavte ho!'),
     ('bj_obj1', 'bj', 'Mám to.'), ('bj_obj2', 'bj', 'Další odškrtnuto.'), ('bj_obj3', 'bj', 'Tohle se bude v Londýně hodit.'),
