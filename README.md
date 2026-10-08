@@ -53,8 +53,6 @@ Na hradě je poplach a Orel pustil z cel všechny vězně. Brandt se vyzbrojí v
 
 Na horní stanici přiběhnete pozdě – Orel právě odjíždí v první kabině. Přivoláš druhou a celé družstvo s ní sjíždí do údolí, zatímco partyzáni na pasekách pod lany pálí po kabině. Ty střílíš z oken.
 
-![Sjezd lanovkou do údolí pod palbou partyzánů](docs/zo-cablecar.jpg)
-
 ### Dál po jeho stopě
 
 V údolí najdeš krev na zábradlí a stopy do lesa. V hájovně, kde se Orel sešel s odbojem, zjistíš, že míří do Wolfsgrundu – a nad lesem se otevřou padáky: britský výsadek SOE si pro něj přiletěl. U Wolfsgrundu se probiješ přes rampu, zničíš vysílačku komanda a čekáš u únikové štoly. Pak vybuchne hora.
