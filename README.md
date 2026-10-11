@@ -19,7 +19,7 @@ Jenže u východu ze štoly nečeká komando SOE, které ho mělo odvézt domů.
 | **3 · Operace Finsternis** | 3.1 Brána Wolfsgrund · 3.2 Podzemní továrna · 3.3 Srdce temnoty |
 
 - **Epizoda 1** – kobky a strážnice (páka v ní otevře cely a propuštění vězni jdou s tebou), kuchyně a vinný sklep, rytířský sál, štáb SS, knihovna, kaple a krypta, kde v Zemanově laboratoři čeká první Übersoldat.
-- **Epizoda 2** – venku a v noci: smrkové lesy, hájovna na kopci, polní tábor s věžemi a reflektory, nádraží s vlaky. Mise 2.4 se hraje na jedoucím vlaku – probojuješ se vagon po vagonu až do lokomotivy a sám ji dovedeš do Wolfsgrundu.
+- **Epizoda 2** – venku a v noci: smrkové lesy, hájovna na kopci, polní tábor s věžemi a reflektory, nádraží s vlaky. Mise 2.4 se hraje na jedoucím vlaku – probojuješ se vagon po vagonu až do lokomotivy a vlak tě doveze do Wolfsgrundu.
 - **Epizoda 3** – vykládací rampa pod skalní stěnou, podzemní továrna na rakety a finální souboj s Übersoldatem Mk II. Po výbuchu hory přijde ještě jeden souboj – na nože.
 
 Hlavní hra a rozšíření vyprávějí tutéž noc ze dvou stran. Co Orel jen zahlédne nebo o tom vůbec neví – druhou kabinu na laně, výsadek SOE, který ho má dostat domů, muže, který jde po jeho krvavé stopě – to v rozšíření prožiješ jako Brandt.
