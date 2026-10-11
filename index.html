@@ -1242,16 +1242,15 @@ LEVELS.push(asciiLevel({
 LEVELS.push({
   id: 'e2m4', ep: 2, train: true, name: 'MISE 2.4 · ZVLÁŠTNÍ VLAK', sub: 'Noční jízda do Wolfsgrundu', w: 34, h: 3,
   brief: ['Schoval ses ve služebním voze na konci zvláštního vlaku. Souprava se řítí nocí do hor – a je plná vojáků.',
-    'Probojuj se vagon po vagonu dopředu: otevřené vozy, krytý vůz, plošina s raketou, municí a protiletadlovým kanonem, tendr.',
-    'V lokomotivě převezmi řízení. Regulátor [W] přidává páru, brzda [S] zpomaluje. Dodržuj rychlost v zatáčkách a na mostě – jinak vykolejíš.',
-    'Ve Wolfsgrundu zastav u vykládací rampy. Nedobrzdíš-li, skončíš na zarážedle.'],
+    'Probojuj se vagon po vagonu dopředu: otevřené vozy, kryté vozy s municí, plošinové vozy a tendr.',
+    'V lokomotivě vyřiď strojvedoucího a převezmi regulátor – vlak pak dovezeš až k vykládací rampě ve Wolfsgrundu.'],
   rooms: [
     R('brake', [1, 1, 2, 1], 'boxcar', 1.3, 4.3, 'Služební vůz'),
     R('gon1', [4, 1, 6, 1], 'opencar', 1.3, 0, 'Otevřený vůz', { wallY: 2.45 }),
     R('box1', [8, 1, 10, 1], 'boxcar', 1.3, 4.3, 'Krytý vůz'),
-    R('flat1', [12, 1, 14, 1], 'flatcar', 1.3, 0, 'Plošinový vůz s raketou', { wallY: 1.75 }),
+    R('flat1', [12, 1, 14, 1], 'flatcar', 1.3, 0, 'Plošinový vůz', { wallY: 1.75 }),
     R('box2', [16, 1, 18, 1], 'boxcar', 1.3, 4.3, 'Vůz s municí'),
-    R('flak', [20, 1, 22, 1], 'flatcar', 1.3, 0, 'Protiletadlový vůz', { wallY: 1.75 }),
+    R('flak', [20, 1, 22, 1], 'flatcar', 1.3, 0, 'Plošinový vůz', { wallY: 1.75 }),
     R('box3', [24, 1, 26, 1], 'boxcar', 1.3, 4.3, 'Vůz zvláštního nákladu'),
     R('tender', [28, 1, 29, 1], 'tender', 1.3, 0, 'Tendr', { wallY: 2.7 }),
     R('cab', [31, 1, 32, 1], 'cab', 1.3, 0, 'Kabina lokomotivy', { wallY: 2.45 })
@@ -1260,8 +1259,7 @@ LEVELS.push({
   start: [1, 1, -PI / 2],
   trig: [{ t: 6, say: ['lon_06', 'bj_11'] }],   // London on the radio: the SOE team that the expansion fights at Wolfsgrund
   objectives: [
-    { id: 'cab', text: 'Probojuj se vlakem až do lokomotivy' },
-    { id: 'drive', text: 'Převezmi řízení a zastav vlak u rampy ve Wolfsgrundu' },
+    { id: 'cab', text: 'Probojuj se vlakem až do lokomotivy a převezmi ji' },
     { id: 'tre', text: 'Volitelné: posbírej poklady', optional: true }
   ],
   targets: [{ kind: 'regulator', cell: [32, 1], ox: 1.25, oz: 0, rot: 0, obj: 'cab', name: 'Lokomotiva je tvoje!' }],
@@ -1270,9 +1268,7 @@ LEVELS.push({
   props: [
     ['crates', 4, 1, -.4, -.9, 0], ['crates', 6, 1, .2, .8, 2], ['drums', 5, 1, .6, -.9, 0, { n: 3 }],
     ['crates', 8, 1, -.6, -1.1, 0], ['crates', 10, 1, .6, 1.1, 2], ['lantern', 9, 1, 0, 1.5],
-    ['rocket', 13, 1, 0, 0, 0, { cradle: true, len: 10 }],
     ['drums', 16, 1, -.5, 1, 0, { n: 6 }], ['crates', 18, 1, .4, -1, 0], ['crates', 17, 1, -1.2, 1.1, 2],
-    ['flak', 21, 1, 0, 0, 0],
     ['crates', 24, 1, -.6, -1.1, 0], ['crates', 26, 1, .6, 1.1, 2], ['crates', 25, 1, .2, -1.2, 0],
     ['coal', 28, 1, .8, -.4]
   ],
@@ -2431,10 +2427,10 @@ function trainReset() { if (!TRAIN.on) return; TRAIN.drv = null; for (const m of
 // the footplate: take the regulator
 function takeTrain(d) {
   d.used = true; sfx.play('clang', d.pos); sfx.play('switch', d.pos);
-  completeObjective('cab'); log(d.name || 'Lokomotiva je tvoje!'); TRAIN.ckpt = true;
-  TRAIN.drv = { s: 0, v: TRAIN.speed, reg: .45, brk: 0, over: 0, msgSeg: -1 };
-  buildTrainMovers(); $('drive').style.display = 'block';
-  log('<span style="color:#e6c36a">[W] regulátor · [S] brzda</span>');
+  completeObjective('cab'); log(d.name || 'Lokomotiva je tvoje!');
+  // no driving: the run into Wolfsgrund is told by the next mission's opening scene at the ramp
+  log('<span style="color:#e6c36a">Pouštíš páru – vlak se žene k Wolfsgrundu…</span>'); player.shake = .3;
+  after(1.4, () => { if (game.state === 'playing') win(); });
 }
 function trainResume() {   // retry after a derailment: back on the footplate, the train already yours
   for (const e of enemies) if (e.state !== 'dead') { e.state = 'dead'; e.deadT = 9; e.root.visible = false; e.blob.visible = false; }
@@ -3544,7 +3540,7 @@ Object.assign(P_, {
   signal(pos, rot = 0) { put('iron', B3(.15, 6, .15), pos, rot, 0, 3, 0); put('iron', B3(.5, 1.2, .3), pos, rot, 0, 5.6, .15); const g = mkGlow(L(V(0, 5.9, .34), pos, rot), .75, [1.9, .15, .1]); sprites.push(g); OUT.signals.push(g); addOccLocal(pos, rot, 0, 3, 0, .12, 3, .12, { kind: 'prop' }); },
   coal(pos) { put('coal', tileUV(lathe([[0, 0], [2.3, 0], [1.7, .9], [.8, 1.6], [0, 1.85]], 12), 3, 1), pos, 0, 0, 0, 0); addOccLocal(pos, 0, 0, .8, 0, 1.6, .8, 1.6, {}); },
   rocket(pos, rot = 0, opt = {}) { // A4 / "Finsternis" rocket in black-and-white trials paint, on a cradle or upright in a gantry
-    const k = opt.stand ? .74 : .8, Lr = 14 * k, R = .83 * k, prof = [[0, 0], [R * .62, 0], [R * .62, .25], [R, Lr * .18], [R, Lr * .62], [R * .84, Lr * .78], [R * .45, Lr * .92], [R * .12, Lr * .99], [0, Lr]];
+    const k = opt.stand ? .74 : .8, Lr = opt.len || 14 * k, R = .83 * k, prof = [[0, 0], [R * .62, 0], [R * .62, .25], [R, Lr * .18], [R, Lr * .62], [R * .84, Lr * .78], [R * .45, Lr * .92], [R * .12, Lr * .99], [0, Lr]];
     const body = tileUV(lathe(prof, 16), 2, 3), fins = [0, 1, 2, 3].map(i => { const f = shapeGeo([[0, 0], [R * 1.5, -.1], [R * 1.4, Lr * .12], [0, Lr * .2]], .06); f.translate(R * .8, 0, 0); f.rotateY(i * Math.PI / 2 + Math.PI / 4); return f; });
     if (opt.stand) {
       put('rocket', body, pos, rot, 0, .6, 0); fins.forEach(f => put('iron', f, pos, rot, 0, .6, 0));
